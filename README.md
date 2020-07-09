@@ -1,6 +1,6 @@
 # Follow
 
-decentralized, censorship resistant publication and subscription on IPFS
+decentralized, censorship resistant publication and subscription (social media) on IPFS
 
 ## Status
 
@@ -97,51 +97,6 @@ Identity objects _will_ be automatically re-fetched periodically, followed by th
 ![](Screenshot3.png)
 
 ## How to run
-
-install and run IPFS as daemon.
-
-### Windows
-
-- download [ipfs](https://github.com/ipfs/go-ipfs/releases/download/v0.6.0/go-ipfs_v0.6.0_windows-amd64.zip)
-- extract contents to: `C:\Program Files\go-ipfs\`
-- run: [ipfs_daemon.ps1](ipfs_daemon.ps1)
-
-### Linux
-
-install ipfs via your package manager
-
-then you can make a systemd service to have it run automatically
-
-```
-mkdir -p ~/.config/systemd/user/
-nano ~/.config/systemd/user/ipfs.service
-```
-
-systemd service file: [ipfs.service](ipfs.service)
-
-```
-sudo systemctl enable ~/.config/systemd/user/ipfs.service
-sudo systemctl restart ipfs
-```
-
-### Ensure ipfs will accept http api connections
-
-```
-ipfs init
-ipfs config Addresses.API /ip4/0.0.0.0/tcp/5001
-ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["http://localhost:8964", "http://127.0.0.1:5001", "https://webui.ipfs.io"]'
-ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods '["PUT", "GET", "POST"]'
-```
-
-Reference: https://github.com/INFURA/tutorials/wiki/IPFS-and-CORS
-
-### Run IPFS
-
-```
-ipfs daemon
-```
-
-### Clone the repo and run
 
 ```
 git clone git@github.com:iohzrd/follow.git
