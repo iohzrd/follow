@@ -13,7 +13,7 @@ merging planned for future...
 
 Also, this app will probably break frequently for the foreseeable future so don't get attached to your posts just yet ;)
 
-If a breaking change occurs, try manually editing your identity object, stored in the "user data" directory
+If a breaking change occurs, try manually editing your identity object, stored in electrons "user data" directory
 
 ## Architecture
 
@@ -142,6 +142,14 @@ QmYDXoHqGKgrqXKrZ8Rs3cQJyaWVkVLqY28S2nGEQ3o75C
 ```
 
 ## Shilling...
+
+btc
+
+```
+bc1q8ggm58rue6ssw26cxpmlez55scdvawh9kas2m7
+```
+
+or
 
 https://www.patreon.com/user?u=18416317&fan_landing=true
 
