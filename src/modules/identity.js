@@ -107,8 +107,7 @@ class Identity {
 
   load() {
     console.log("Identity.read()");
-    const raw = fs.readFileSync(this.identityFilePath);
-    const obj = JSON.parse(raw);
+    const obj = fs.readJsonSync(this.identityFilePath);
     for (var prop in obj) this[prop] = obj[prop];
     if (this.self === true) {
       this.publish();
@@ -171,13 +170,12 @@ class Identity {
     console.log(identityFileCID);
     const cid = `${identityFileCID[0]}/identity.json`;
     const identityJson = Buffer.concat(await all(this.ipfs.cat(cid)));
-    await fs.writeFile(this.identityFilePath, identityJson); // temp
+    await fs.writeJson(this.identityFilePath, identityJson, { spaces: 2 }); // temp
     return JSON.parse(identityJson);
   }
 
   async getIdentityFile(path) {
-    const identityRaw = await fs.readFile(path);
-    return JSON.parse(identityRaw);
+    return fs.readJsonSync(path);
   }
 
   async getIdentity(id) {
@@ -250,18 +248,12 @@ class Identity {
     console.log("post");
     console.log(post);
     const postPath = path.join(this.identityPostsPath, `${cid}.json`);
-    await fs.writeFile(postPath, post);
+    await fs.writeJson(postPath, post, { spaces: 2 });
     return JSON.parse(post);
   }
 
   async getPostFile(path) {
-    console.log("getPostFile");
-    console.log("path");
-    console.log(path);
-    const postRaw = await fs.readFile(path);
-    console.log("postRaw");
-    console.log(postRaw);
-    return JSON.parse(postRaw);
+    return await fs.readJson(path);
   }
 
   async getPost(cid) {

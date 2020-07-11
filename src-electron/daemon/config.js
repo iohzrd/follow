@@ -49,8 +49,8 @@ function applyDefaults(ipfsd) {
   config.Swarm.DisableNatPortMap = false;
   config.Swarm.ConnMgr = config.Swarm.ConnMgr || {};
   config.Swarm.ConnMgr.GracePeriod = "300s";
-  config.Swarm.ConnMgr.LowWater = 32;
-  config.Swarm.ConnMgr.HighWater = 256;
+  config.Swarm.ConnMgr.LowWater = 64;
+  config.Swarm.ConnMgr.HighWater = 512;
 
   config.Discovery = config.Discovery || {};
   config.Discovery.MDNS = config.Discovery.MDNS || {};
