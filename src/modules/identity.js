@@ -91,23 +91,28 @@ class Identity {
       // avoid fetching infinite identities
       await this.getFollowingDeep();
       console.log("registering setInterval for self");
-      setInterval(async function() {
+      setInterval(async function () {
         console.log("refreshing feed...");
         await _this.getFollowingDeep();
-      }, _this.following.length * 60 * 1000);
+      }, 5 * 60 * 1000);
+      setInterval(async function () {
+        console.log("auto-publish...");
+        await _this.publish()
+      }, 60 * 60 * 1000);
     } else {
       // get the latest from IPFS
       console.log("registering setInterval for other");
-      setInterval(async function() {
+      setInterval(async function () {
         console.log("refreshing identity...");
         await _this.update();
-      }, _this.following.length * 60 * 1000);
+      }, 5 * 60 * 1000);
     }
   }
 
   load() {
     console.log("Identity.read()");
-    const obj = fs.readJsonSync(this.identityFilePath);
+    const raw = fs.readFileSync(this.identityFilePath);
+    const obj = JSON.parse(raw);
     for (var prop in obj) this[prop] = obj[prop];
     if (this.self === true) {
       this.publish();
@@ -158,9 +163,12 @@ class Identity {
     return await this.ipfs.pin.add(`${identityFileCID}/identity.json`);
   }
 
-  async pinIdentityObject(cid) {
-    console.log(`Identity.pinIdentityObject(${cid})`);
-    return await this.ipfs.pin.add(cid);
+  async pinCID(cid) {
+    console.log(`Identity.pinCID(${cid})`);
+    const pinResult = await this.ipfs.pin.add(cid);
+    console.log("pinResult")
+    console.log(pinResult)
+    return pinResult
   }
 
   async getIdentityIpfs(id) {
@@ -169,13 +177,15 @@ class Identity {
     console.log("identityFileCID");
     console.log(identityFileCID);
     const cid = `${identityFileCID[0]}/identity.json`;
+    await this.pinCID(cid)
     const identityJson = Buffer.concat(await all(this.ipfs.cat(cid)));
-    await fs.writeJson(this.identityFilePath, identityJson, { spaces: 2 }); // temp
+    await fs.writeFile(this.identityFilePath, identityJson); // temp
     return JSON.parse(identityJson);
   }
 
   async getIdentityFile(path) {
-    return fs.readJsonSync(path);
+    const identityRaw = await fs.readFile(path);
+    return JSON.parse(identityRaw);
   }
 
   async getIdentity(id) {
@@ -220,12 +230,13 @@ class Identity {
         // console.log(post)
         if (!this.feed.some(id => id.ts === post.ts)) {
           console.log("about to push...");
-          const files = post.files;
+          if (post.files && post.files.length) {
+            post.files.forEach(p => {
+              const idx = post.files.indexOf(p);
+              post.files[idx] = path.join(this.identityPostsPath, p);
+            });
+          }
 
-          files.forEach(p => {
-            const idx = files.indexOf(p);
-            files[idx] = path.join(this.identityPostsPath, p);
-          });
 
           this.feed.push(post);
           this.feed.sort((a, b) => (a.ts > b.ts ? -1 : 1));
@@ -244,16 +255,18 @@ class Identity {
 
   async getPostIpfs(cid) {
     console.log("getPostIpfs");
+    await this.pinCID(cid)
     const post = Buffer.concat(await all(this.ipfs.cat(cid)));
     console.log("post");
     console.log(post);
     const postPath = path.join(this.identityPostsPath, `${cid}.json`);
-    await fs.writeJson(postPath, post, { spaces: 2 });
+    await fs.writeFile(postPath, post);
     return JSON.parse(post);
   }
 
   async getPostFile(path) {
-    return await fs.readJson(path);
+    const postRaw = await fs.readFile(path);
+    return JSON.parse(postRaw);
   }
 
   async getPost(cid) {
