@@ -30,12 +30,12 @@
     "from2": "^2.3.0",
     "fs-extra": "^9.0.1",
     "go-ipfs-dep": "^0.6.0",
-    "i18next": "^19.5.4",
+    "i18next": "^19.6.0",
     "ipfs-http-client": "^44.3.0",
     "ipfsd-ctl": "^4.1.1",
     "is-ipfs": "^1.0.3",
     "it-all": "^1.0.2",
-    "quasar": "^1.12.8",
+    "quasar": "^1.12.10",
     "render-media": "^3.4.3",
     "sudo-prompt": "^9.2.1",
     "webtorrent": "^0.108.6",
@@ -44,7 +44,7 @@
     "ytdl-core": "^3.1.2"
   },
   "devDependencies": {
-    "@quasar/app": "^2.0.2",
+    "@quasar/app": "^2.0.4",
     "babel-eslint": "^10.1.0",
     "devtron": "^1.4.0",
     "electron": "^9.1.0",
