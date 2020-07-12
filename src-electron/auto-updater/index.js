@@ -73,7 +73,7 @@ function setup (ctx) {
     })
 
     if (opt === 1) {
-      shell.openExternal(`https://github.com/ipfs-shipyard/ipfs-desktop/releases/v${version}`)
+      shell.openExternal(`https://github.com/iohzrd/follow/releases/v${version}`)
     }
   })
 

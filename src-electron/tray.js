@@ -220,10 +220,10 @@ function buildMenu(ctx) {
           enabled: false
         },
         {
-          label: `ipfs-desktop ${VERSION}`,
+          label: `follow ${VERSION}`,
           click: () => {
             shell.openExternal(
-              "https://github.com/ipfs-shipyard/ipfs-desktop/releases"
+              "https://github.com/iohzrd/follow/releases"
             );
           }
         },
@@ -247,7 +247,7 @@ function buildMenu(ctx) {
           label: i18n.t("viewOnGitHub"),
           click: () => {
             shell.openExternal(
-              "https://github.com/ipfs-shipyard/ipfs-desktop/blob/master/README.md"
+              "https://github.com/iohzrd/follow/blob/master/README.md"
             );
           }
         },

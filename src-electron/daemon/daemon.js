@@ -38,7 +38,7 @@ function getIpfsBinPath() {
 
 function writeIpfsBinaryPath(path) {
   fs.outputFileSync(
-    join(app.getPath("home"), "./.ipfs-desktop/IPFS_EXEC").replace(
+    join(app.getPath("home"), "./.follow/IPFS_EXEC").replace(
       "app.asar",
       "app.asar.unpacked"
     ),

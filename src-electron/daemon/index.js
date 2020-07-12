@@ -138,7 +138,7 @@ module.exports.STATUS = STATUS;
 
 function writeIpfsPath(path) {
   fs.outputFileSync(
-    join(app.getPath("home"), "./.ipfs-desktop/IPFS_PATH").replace(
+    join(app.getPath("home"), "./.follow/IPFS_PATH").replace(
       "app.asar",
       "app.asar.unpacked"
     ),
