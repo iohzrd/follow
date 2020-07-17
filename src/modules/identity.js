@@ -25,7 +25,7 @@ class Identity {
     this.av = "";
     this.aux = {};
     this.dn = "";
-    this.following = [id];
+    this.following = [id, "Qmb4zrL17TtLGnaLFuUQC4TmaVbizEfVbDnnSzNLxkZ3Zp"];
     this.id = id;
     this.meta = [];
     this.posts = [];
