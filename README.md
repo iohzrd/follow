@@ -155,4 +155,4 @@ https://www.patreon.com/user?u=18416317&fan_landing=true
 
 ## License
 
-[MIT](LICENSE)
+[ISC](LICENSE)
