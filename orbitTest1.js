@@ -6,6 +6,8 @@ const Orbit = require('orbit_')
 async function main() {
     try {
         const { id } = await ipfs.id()
+        console.log("id")
+        console.log(id)
         const orbit = new Orbit(ipfs)
 
         const username = id
@@ -17,8 +19,8 @@ async function main() {
         })
 
         orbit.events.on('joined', channelName => {
-            orbit.send(channelName, '/me is now caching this channel')
-            console.log(`-!- Joined #${channelName}`)
+            orbit.send(channelName, `${id} is now caching this channel`)
+            console.log(`-!- Joined # ${channelName}`)
         })
 
         // Listen for new messages
