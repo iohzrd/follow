@@ -5,9 +5,10 @@ const Orbit = require('orbit_')
 
 async function main() {
     try {
+        const { id } = await ipfs.id()
         const orbit = new Orbit(ipfs)
 
-        const username = 'Qmb4zrL17TtLGnaLFuUQC4TmaVbizEfVbDnnSzNLxkZ3Zp'
+        const username = id
         const channel = 'QmUsHMBjzxGMJy19d9XUNHKRQ21eUNsRAdAa8VMrJbQowJ_comments'
 
         orbit.events.on('connected', () => {
