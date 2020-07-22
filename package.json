@@ -35,7 +35,7 @@
     "ipfsd-ctl": "^5.0.0",
     "is-ipfs": "^1.0.3",
     "it-all": "^1.0.2",
-    "orbit_": "^0.2.0-rc1",
+    "orbit_": "git://github.com/iohzrd/orbit-core.git",
     "quasar": "^1.12.13",
     "render-media": "^3.4.3",
     "sudo-prompt": "^9.2.1",
