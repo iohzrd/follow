@@ -39,11 +39,7 @@ class Identity {
     this.followStoragePath = path.join(this.appDataPath, "Follow Storage");
     this.identityPath = path.join(this.followStoragePath, this.id);
     this.ipfs = null;
-    this.leveldb = levelup(
-      encode(leveldown(this.followStoragePath), {
-        valueEncoding: "json"
-      })
-    );
+    this.leveldb = null;
     // const orbitOptions = {
     //   directory: this.followStoragePath
     // };
@@ -85,6 +81,11 @@ class Identity {
       fs.mkdirSync(this.followStoragePath);
     }
     // ensure db
+    this.leveldb = levelup(
+      encode(leveldown(this.followStoragePath), {
+        valueEncoding: "json"
+      })
+    );
     if (!(await this.dbContainsKey(this.leveldb, this.id))) {
       await this.save();
     } else {
@@ -289,7 +290,7 @@ class Identity {
     // console.log("addRet");
     // console.log(addRet);
     this.posts.unshift(addRet.path);
-    await this.save();
+    this.save();
     this.getFeed();
   }
 }
