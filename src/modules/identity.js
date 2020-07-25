@@ -91,6 +91,7 @@ class Identity {
       await this.load();
     }
     await this.getFeed();
+    await this.publish();
     const _this = this;
     setInterval(async function() {
       console.log("refreshing feed...");
@@ -117,10 +118,10 @@ class Identity {
 
   async publish() {
     console.log("Identity.publish()");
-    const content = await this.serialize();
+    const idObj = await this.serialize();
     const obj = {
       path: "identity.json",
-      content: content
+      content: JSON.stringify(idObj)
     };
     const addOptions = {
       pin: true,
@@ -163,7 +164,7 @@ class Identity {
         await this.leveldb.put(id, idObj);
       }
     }
-    console.log(idObj);
+    // console.log(idObj);
     return idObj;
   }
 
@@ -256,8 +257,8 @@ class Identity {
 
   async addPost(files, body) {
     console.log("Identity.addPost()");
-    console.log(files);
-    console.log(body);
+    // console.log(files);
+    // console.log(body);
     const postObj = {
       body: body,
       cid: "",
@@ -268,9 +269,8 @@ class Identity {
       publisher: this.id,
       ts: Math.floor(new Date().getTime())
     };
-    console.log(postObj);
+    // console.log(postObj);
 
-    // console.log("Identity.ipfsAddRecursive()");
     // let rootCid = "";
     // const files = [];
     // if (files.length) {
@@ -286,10 +286,10 @@ class Identity {
     // files = files;
     const json = { path: "", content: Buffer.from(JSON.stringify(postObj)) };
     const addRet = await this.ipfs.add(json);
-    console.log("addRet");
-    console.log(addRet);
+    // console.log("addRet");
+    // console.log(addRet);
     this.posts.unshift(addRet.path);
-    this.save();
+    await this.save();
     this.getFeed();
   }
 }
