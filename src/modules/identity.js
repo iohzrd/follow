@@ -23,34 +23,25 @@ class Identity {
     };
   }
 
-  constructor() {
+  constructor(id) {
     console.log(`Identity.constructor()`);
     this.av = "";
     this.aux = {};
     this.dn = "";
-    this.following = [];
-    this.id = "";
+    this.following = [id];
+    this.id = id;
     this.meta = [];
     this.posts = [];
     this.ts = Math.floor(new Date().getTime());
 
     // private
-    this.appDataPath = path.join(APP_DATA_PATH, "follow");
-    this.followStoragePath = path.join(this.appDataPath, "Follow Storage");
-    this.identityPath = path.join(this.followStoragePath, this.id);
     this.ipfs = null;
     this.leveldb = null;
-    // const orbitOptions = {
-    //   directory: this.followStoragePath
-    // };
-    // this.orbit = new Orbit(this.ipfs, orbitOptions);
-    // this.orbit.connect(this.id);
-    // console.log(this.orbit);
-
     this.feed = [];
     this.following_deep = [];
     this.meta_deep = [];
     this.posts_deep = [];
+    this.init();
   }
 
   dbContainsKey(db, key) {
@@ -72,14 +63,18 @@ class Identity {
     const { id } = await this.ipfs.id();
     console.log(id);
     this.id = id;
-    this.following = [id];
-    // ensure directories...
+
+    // ensure paths and directories...
+    this.appDataPath = path.join(APP_DATA_PATH, "follow");
     if (!fs.existsSync(this.appDataPath)) {
       fs.mkdirSync(this.appDataPath);
     }
+    this.followStoragePath = path.join(this.appDataPath, "Follow Storage");
     if (!fs.existsSync(this.followStoragePath)) {
       fs.mkdirSync(this.followStoragePath);
     }
+    this.identityPath = path.join(this.followStoragePath, this.id);
+
     // ensure db
     this.leveldb = levelup(
       encode(leveldown(this.followStoragePath), {
@@ -93,6 +88,15 @@ class Identity {
     }
     await this.getFeed();
     await this.publish();
+
+    // // init orbit
+    // const orbitOptions = {
+    //   directory: this.followStoragePath
+    // };
+    // this.orbit = new Orbit(this.ipfs, orbitOptions);
+    // this.orbit.connect(this.id);
+    // console.log(this.orbit);
+
     const _this = this;
     setInterval(async function() {
       console.log("refreshing feed...");
