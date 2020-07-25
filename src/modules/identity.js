@@ -74,6 +74,7 @@ class Identity {
       protocol: "http"
     });
     const { id } = await this.ipfs.id();
+    console.log(id);
     this.id = id;
     this.following = [id];
     // ensure directories...
@@ -111,6 +112,7 @@ class Identity {
   async save() {
     console.log("Identity.save()");
     await this.leveldb.put(this.id, this.serialize());
+    await this.publish();
   }
 
   async publish() {
@@ -187,10 +189,6 @@ class Identity {
     console.log("getPostIpfs");
     await this.pinCID(cid);
     const post = Buffer.concat(await all(this.ipfs.cat(cid)));
-    // console.log("post");
-    // console.log(post);
-    const postPath = path.join(this.identityPostsPath, `${cid}.json`);
-    await fs.writeFile(postPath, post);
     return JSON.parse(post);
   }
 
@@ -260,49 +258,39 @@ class Identity {
     console.log("Identity.addPost()");
     console.log(files);
     console.log(body);
-    // const postObj = {
-    //   body: body,
-    //   cid: "",
-    //   dn: this.dn,
-    //   files: files,
-    //   magnet: "",
-    //   meta: [],
-    //   publisher: this.id,
-    //   ts: Math.floor(new Date().getTime())
-    // };
-    // console.log(postObj);
-    // const post = new Post(this, files, body, this.ipfs);
+    const postObj = {
+      body: body,
+      cid: "",
+      dn: this.dn,
+      files: files,
+      magnet: "",
+      meta: [],
+      publisher: this.id,
+      ts: Math.floor(new Date().getTime())
+    };
+    console.log(postObj);
 
     // console.log("Identity.ipfsAddRecursive()");
     // let rootCid = "";
     // const files = [];
-    // if (this.files.length) {
-    //   const addRet = await all(this.ipfs.addAll(this.postPath));
+    // if (files.length) {
+    //   const addRet = await all(ipfs.addAll(postPath));
     //   addRet.forEach(element => {
-    //     if (element.path !== this.ts) {
+    //     if (element.path !== ts) {
     //       files.push(element.path);
     //     }
     //   });
     //   rootCid = addRet.slice(-1)[0].cid.string;
     // }
-    // this.cid = rootCid;
-    // this.files = files;
-    // const postObj = this.serialize();
-    // const cid = await this.ipfsAddJson(postObj);
-
-    // console.log(`Identity.ipfsAddPostJson(${path})`);
-    // const json = { path: "", content: Buffer.from(JSON.stringify(postObj)) };
-    // var addRet = await all(this.ipfs.add(json));
-    // return addRet.slice(-1)[0].cid.string;
-
-    // // cache post obj...
-    // const postJsonPath = path.join(this.identityPostsPath, `${cid}.json`);
-    // await fs.writeFile(postJsonPath, JSON.stringify(postObj));
-    // postCif= cid;
-
-    // this.posts.unshift(postCid);
-    // this.save();
-    // this.getFeed();
+    // cid = rootCid;
+    // files = files;
+    const json = { path: "", content: Buffer.from(JSON.stringify(postObj)) };
+    const addRet = await this.ipfs.add(json);
+    console.log("addRet");
+    console.log(addRet);
+    this.posts.unshift(addRet.path);
+    this.save();
+    this.getFeed();
   }
 }
 
