@@ -7,7 +7,7 @@
 // https://quasar.dev/quasar-cli/quasar-conf-js
 /* eslint-env node */
 
-module.exports = function (/* ctx */) {
+module.exports = function(/* ctx */) {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
@@ -106,7 +106,7 @@ module.exports = function (/* ctx */) {
       manifest: {
         name: "follow",
         short_name: "follow",
-        description: "A Quasar Framework app",
+        description: "Decentralized social media",
         display: "standalone",
         orientation: "portrait",
         background_color: "#ffffff",

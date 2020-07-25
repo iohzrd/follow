@@ -79,9 +79,6 @@
 </template>
 
 <script>
-var remote = require("electron").remote;
-// const WebTorrent = remote.require("webtorrent-hybrid");
-const IpfsHttpClient = remote.require("ipfs-http-client");
 const { Identity } = require("./modules/identity");
 
 const menuList = [
@@ -134,15 +131,9 @@ export default {
   },
   methods: {
     async init() {
-      const ipfs = await IpfsHttpClient({
-        host: "localhost",
-        port: "5001",
-        protocol: "http"
-      });
-      // const client = new WebTorrent();
-      const { id } = await ipfs.id();
-      this.ipfsId = id;
-      this.identity = new Identity(this.ipfsId, true);
+      this.identity = new Identity();
+      await this.identity.init();
+      this.ipfsId = this.identity.id;
     },
     async addNewFollowing(id) {
       this.identity.addToFollowing(id);
