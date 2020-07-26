@@ -127,6 +127,9 @@ export default {
       prompt: false
     };
   },
+  created() {
+    this.$q.dark.set(true);
+  },
   mounted: function() {
     this.init();
   },
