@@ -289,10 +289,17 @@ class Identity {
     // cid = rootCid;
     // files = files;
     // const json = { path: "", content: Buffer.from(JSON.stringify(postObj)) }
-    const obj = {
-      path: "post.json",
-      content: JSON.stringify(postObj)
-    };
+    const indexHTML = await fs.readFile("src/modules/postStandalone.html");
+    const obj = [
+      {
+        path: "post.json",
+        content: JSON.stringify(postObj)
+      },
+      {
+        path: "index.html",
+        content: indexHTML
+      }
+    ];
     const addOptions = {
       // pin: true,
       wrapWithDirectory: true,

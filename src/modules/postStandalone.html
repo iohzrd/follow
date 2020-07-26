@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      function loadJSON(path, success, error) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              if (success) success(JSON.parse(xhr.responseText));
+            } else {
+              if (error) error(xhr);
+            }
+          }
+        };
+        xhr.open("GET", path, true);
+        xhr.send();
+      }
+
+      function handlePostJson(data) {
+        console.log(data);
+        var div = document.createElement("div"); // Create a <li> node
+        div.innerText = data.body;
+        document.getElementById("body").appendChild(div); // Append <li> to <ul> with
+      }
+
+      function handleErr(err) {
+        console.error(xhr);
+      }
+
+      loadJSON("post.json", handlePostJson, handleErr);
+    </script>
+  </head>
+  <body id="body"></body>
+</html>
