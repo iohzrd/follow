@@ -71,10 +71,8 @@
   </div>
 </template>
 <script>
-var remote = require("electron").remote;
-const IpfsHttpClient = remote.require("ipfs-http-client");
-const all = remote.require("it-all");
-// const fs = remote.require("fs-extra");
+const IpfsHttpClient = require("ipfs-http-client");
+const all = require("it-all");
 const render = require("render-media");
 const from2 = require("from2");
 
@@ -106,6 +104,8 @@ export default {
   },
   methods: {
     async getPost() {
+      console.log(this.post);
+      console.log(this.post.identity);
       this.identity = this.post.identity;
 
       this.av = this.post.identity.av;
@@ -149,8 +149,11 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .get-content-button {
   float: right;
+}
+:any-link {
+  color: $primary;
 }
 </style>
