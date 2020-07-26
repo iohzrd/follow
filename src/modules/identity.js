@@ -1,13 +1,12 @@
-var { remote } = require("electron");
+const { remote } = require("electron");
 const APP_DATA_PATH = remote.app.getPath("appData");
 const path = require("path");
-var fs = require("fs-extra");
+const fs = require("fs-extra");
 const all = require("it-all");
 const IpfsHttpClient = require("ipfs-http-client");
 const levelup = require("levelup");
 const leveldown = require("leveldown");
 const encode = require("encoding-down");
-// const Orbit = require("orbit_");
 
 class Identity {
   serialize() {
@@ -89,14 +88,6 @@ class Identity {
     await this.getFeed();
     await this.publish();
 
-    // // init orbit
-    // const orbitOptions = {
-    //   directory: this.followStoragePath
-    // };
-    // this.orbit = new Orbit(this.ipfs, orbitOptions);
-    // this.orbit.connect(this.id);
-    // console.log(this.orbit);
-
     const _this = this;
     setInterval(async function() {
       console.log("refreshing feed...");
@@ -112,7 +103,7 @@ class Identity {
   async load() {
     console.log("Identity.read()");
     const idObj = await this.leveldb.get(this.id);
-    for (var prop in idObj) this[prop] = idObj[prop];
+    for (const prop in idObj) this[prop] = idObj[prop];
   }
 
   async save() {
@@ -133,7 +124,7 @@ class Identity {
       wrapWithDirectory: true,
       timeout: 10000
     };
-    var pub = await this.ipfs.add(obj, addOptions);
+    const pub = await this.ipfs.add(obj, addOptions);
     return await this.ipfs.name.publish(pub.cid.string, { lifetime: "8760h" });
   }
 
@@ -169,18 +160,21 @@ class Identity {
         await this.leveldb.put(id, idObj);
       }
     }
-    // console.log(idObj);
+    console.log(idObj);
     return idObj;
   }
 
   async updateFollowing() {
     console.log("updateFollowing()");
+    const following_deep = [];
     for await (const fid of this.following) {
       if (fid !== this.id) {
         const idObj = await this.getIdentityIpfs(fid);
+        following_deep.push(idObj);
         await this.leveldb.put(fid, idObj);
       }
     }
+    this.following_deep = following_deep;
   }
 
   async addToFollowing(id) {
@@ -193,8 +187,13 @@ class Identity {
 
   async getPostIpfs(cid) {
     console.log("getPostIpfs");
-    await this.pinCID(cid);
-    const post = Buffer.concat(await all(this.ipfs.cat(cid)));
+    // await this.pinCID(cid);
+    let post;
+    try {
+      post = Buffer.concat(await all(this.ipfs.cat(`${cid}/post.json`)));
+    } catch (error) {
+      post = Buffer.concat(await all(this.ipfs.cat(cid)));
+    }
     return JSON.parse(post);
   }
 
@@ -289,13 +288,25 @@ class Identity {
     // }
     // cid = rootCid;
     // files = files;
-    const json = { path: "", content: Buffer.from(JSON.stringify(postObj)) };
-    const addRet = await this.ipfs.add(json);
-    // console.log("addRet");
-    // console.log(addRet);
-    this.posts.unshift(addRet.path);
-    this.save();
-    this.getFeed();
+    // const json = { path: "", content: Buffer.from(JSON.stringify(postObj)) }
+    const obj = {
+      path: "post.json",
+      content: JSON.stringify(postObj)
+    };
+    const addOptions = {
+      // pin: true,
+      wrapWithDirectory: true,
+      timeout: 10000
+    };
+    const addRet = await this.ipfs.add(obj, addOptions);
+    console.log("addRet");
+    console.log(addRet);
+    const cid = addRet.cid.string;
+    if (typeof cid === "string" && cid.length == 46) {
+      this.posts.unshift(cid);
+      this.save();
+      this.getFeed();
+    }
   }
 }
 
