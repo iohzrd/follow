@@ -31,6 +31,15 @@
 
             <q-separator v-if="menuItem.separator" />
           </q-list>
+
+          <q-item>
+            <q-item-section avatar>
+              <q-icon name="style" />
+            </q-item-section>
+            <q-item-section>
+              <q-toggle v-model="dark" color="green" />
+            </q-item-section>
+          </q-item>
         </q-scroll-area>
       </q-drawer>
       <q-page-container>
@@ -116,9 +125,18 @@ export default {
       idToFollow: "",
       identity: {},
       ipfsId: "",
+      dark: true,
       menuList,
       prompt: false
     };
+  },
+  watch: {
+    dark: {
+      handler: function(after) {
+        this.dark = after;
+        this.$q.dark.set(this.dark);
+      }
+    }
   },
   created() {
     this.$q.dark.set(true);
