@@ -5,7 +5,13 @@ const defaults = {
   ipfsConfig: {
     type: "go",
     path: "",
-    flags: ["--migrate", "--enable-gc", "--routing", "dhtclient"],
+    flags: [
+      "--migrate",
+      "--enable-gc",
+      "--enable-pubsub-experiment",
+      "--routing",
+      "dhtclient"
+    ],
     keysize: 2048
   },
   language: (electron.app || electron.remote.app).getLocale(),
@@ -19,6 +25,7 @@ const migrations = {
     const flags = store.get("ipfsConfig.flags", []);
 
     if (
+      !flags.includes("--enable-pubsub-experiment") ||
       flags.includes("--migrate=true") ||
       flags.includes("--enable-gc=true")
     ) {
