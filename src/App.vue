@@ -1,6 +1,6 @@
 <template>
   <div id="q-app">
-    <q-layout view="hHh Lpr lff">
+    <q-layout view="hhh lpR lfr">
       <q-header unelevated class="bg-black row no-wrap">
         <q-toolbar>
           <q-btn flat round dense icon="menu" @click="drawer = !drawer" />
@@ -12,14 +12,7 @@
         <q-btn unelevated icon="person_add" @click="prompt = true" />
       </q-header>
 
-      <q-drawer
-        v-model="drawer"
-        show-if-above
-        :width="200"
-        :breakpoint="500"
-        bordered
-        content-class="bg-grey-3"
-      >
+      <q-drawer v-model="drawer" show-if-above side="left" bordered>
         <q-scroll-area class="fit">
           <q-list v-for="(menuItem, index) in menuList" :key="index">
             <q-item

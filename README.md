@@ -108,6 +108,7 @@ npm start
 ## TODO
 
 - bundle IPFS binaries and manage execution
+- include index.html with posts to allow styling for browser consumption...
 - change the post list to only contain CID strings, save post objects to file
 - periodically update identities you follow...
 - periodically re-publish self identity
