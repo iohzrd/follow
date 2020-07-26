@@ -229,13 +229,6 @@ class Identity {
         postObj.postCid = postCid;
         postObj.identity = idObj;
         if (!this.feed.some(id => id.ts === postObj.ts)) {
-          if (postObj.files && postObj.files.length) {
-            postObj.files.forEach(p => {
-              const idx = postObj.files.indexOf(p);
-              postObj.files[idx] = path.join(this.identityPostsPath, p);
-            });
-          }
-
           console.log("pushing...");
           this.feed.push(postObj);
           this.feed.sort((a, b) => (a.ts > b.ts ? -1 : 1));
@@ -259,36 +252,49 @@ class Identity {
     return feed;
   }
 
-  async addPost(files, body) {
+  async addPost(body, files) {
     console.log("Identity.addPost()");
-    // console.log(files);
-    // console.log(body);
+    console.log(files);
+    console.log(body);
+    let filesRoot = "";
+    let addedFiles = [];
+    let fileNames = [];
+
+    let ts = Math.floor(new Date().getTime());
+    if (files.length) {
+      for await (const file of files) {
+        const fileObj = {
+          path: file.name,
+          content: await fs.readFile(file.path)
+        };
+        fileNames.push(file.name);
+        addedFiles.push(fileObj);
+      }
+
+      console.log(fileNames);
+      console.log(addedFiles);
+      const addOptions = {
+        // pin: true,
+        wrapWithDirectory: true,
+        timeout: 10000
+      };
+      const addRet = await this.ipfs.add(addedFiles, addOptions);
+      filesRoot = addRet.cid.string;
+      console.log("addRet");
+      console.log(addRet);
+    }
+
     const postObj = {
       body: body,
-      cid: "",
       dn: this.dn,
-      files: files,
+      files: fileNames,
+      filesRoot: filesRoot,
       magnet: "",
       meta: [],
       publisher: this.id,
-      ts: Math.floor(new Date().getTime())
+      ts: ts
     };
-    // console.log(postObj);
-
-    // let rootCid = "";
-    // const files = [];
-    // if (files.length) {
-    //   const addRet = await all(ipfs.addAll(postPath));
-    //   addRet.forEach(element => {
-    //     if (element.path !== ts) {
-    //       files.push(element.path);
-    //     }
-    //   });
-    //   rootCid = addRet.slice(-1)[0].cid.string;
-    // }
-    // cid = rootCid;
-    // files = files;
-    // const json = { path: "", content: Buffer.from(JSON.stringify(postObj)) }
+    console.log(postObj);
     const indexHTML = await fs.readFile("src/modules/postStandalone.html");
     const obj = [
       {

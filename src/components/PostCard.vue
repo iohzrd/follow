@@ -52,8 +52,8 @@
         {{ body }}
       </q-card-section>
 
-      <q-card-section v-if="files.length && cid">
-        <div :id="cid" class="media-contrainer" />
+      <q-card-section v-if="files.length && filesRoot">
+        <div :id="filesRoot" class="media-contrainer" />
       </q-card-section>
 
       <q-card-actions align="right">
@@ -63,7 +63,7 @@
           color="primary"
           label="view files"
           class="get-content-button"
-          @click="getContent(cid)"
+          @click="getContent(filesRoot)"
         >
         </q-btn>
       </q-card-actions>
@@ -88,7 +88,7 @@ export default {
     return {
       av: "",
       body: "",
-      cid: "",
+      filesRoot: "",
       dn: "",
       dt: "",
       files: [],
@@ -114,22 +114,19 @@ export default {
 
       this.body = this.post.body;
       this.files = this.post.files;
-      this.cid = this.post.cid;
+      this.filesRoot = this.post.filesRoot;
       this.dt = new Date(Number(this.post.ts));
       this.magnet = this.post.magnet;
       this.meta = this.post.meta;
       this.ts = this.post.ts;
-      // if (this.cid) {
-      //   await this.getContent(this.cid);
-      // }
     },
-    async getContent(cid) {
+    async getContent(filesRoot) {
       const ipfs = await IpfsHttpClient({
         host: "localhost",
         port: "5001",
         protocol: "http"
       });
-      var files = await all(ipfs.ls(cid));
+      var files = await all(ipfs.ls(filesRoot));
       for await (const file of files) {
         var buf = Buffer.concat(await all(ipfs.cat(file.path)));
         var f = {
@@ -139,7 +136,7 @@ export default {
           }
         };
 
-        render.append(f, `#${cid}`, function(err, elem) {
+        render.append(f, `#${filesRoot}`, function(err, elem) {
           if (err) return console.error(err.message);
           console.log(elem); // this is the newly created element with the media in it
         });

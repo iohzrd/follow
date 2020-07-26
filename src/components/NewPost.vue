@@ -54,7 +54,7 @@ export default {
   computed: {},
   methods: {
     publish: async function() {
-      await this.identity.addPost(this.files, this.body);
+      await this.identity.addPost(this.body, this.files);
       this.body = "";
       this.files = [];
     }
