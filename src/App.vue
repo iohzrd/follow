@@ -1,7 +1,7 @@
 <template>
   <div id="q-app">
-    <q-layout view="hHh LpR lfr">
-      <q-header unelevated class="bg-black row no-wrap">
+    <q-layout view="hhh Lpr lFr">
+      <q-header class="bg-black row no-wrap">
         <q-toolbar>
           <q-btn flat round dense icon="menu" @click="drawer = !drawer" />
           <q-toolbar-title>Follow</q-toolbar-title>
@@ -12,7 +12,7 @@
         <q-btn unelevated icon="person_add" @click="prompt = true" />
       </q-header>
 
-      <q-drawer v-model="drawer" show-if-above side="left" bordered>
+      <q-drawer v-model="drawer" show-if-above side="left" behavior="desktop">
         <q-scroll-area class="fit">
           <q-list v-for="(menuItem, index) in menuList" :key="index">
             <q-item
