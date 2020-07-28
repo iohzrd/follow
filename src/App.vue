@@ -12,7 +12,13 @@
         <q-btn unelevated icon="person_add" @click="prompt = true" />
       </q-header>
 
-      <q-drawer v-model="drawer" show-if-above side="left" behavior="desktop">
+      <q-drawer
+        v-model="drawer"
+        behavior="desktop"
+        bordered
+        show-if-above
+        side="left"
+      >
         <q-scroll-area class="fit">
           <q-list v-for="(menuItem, index) in menuList" :key="index">
             <q-item

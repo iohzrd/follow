@@ -1,8 +1,13 @@
 <template>
-  <div id="app"></div>
+  <div v-if="post">
+    <q-card flat bordered class="my-card">
+      <q-card-section v-for="(value, key) in post" :key="key">
+        <div v-if="key != 'identity'">{{ key }}: "{{ value }}"</div>
+      </q-card-section>
+    </q-card>
+  </div>
 </template>
 <script>
-// const { Identity } = require("../modules/identity");
 export default {
   name: "Post",
   props: {
@@ -14,7 +19,9 @@ export default {
   data: function() {
     return {};
   },
-  mounted: function() {},
+  mounted: function() {
+    console.log(this.post);
+  },
   methods: {}
 };
 </script>

@@ -10,15 +10,13 @@
           <q-card-section />
           <div class="col">
             <div class="text-subtitle1">
-              <router-link
-                :identity="post.identity"
-                :to="{ name: 'post' }"
-                :post="post"
-              >
+              Time:
+              <router-link :to="{ name: 'Post', params: { post: post } }">
                 {{ dt }}
               </router-link>
             </div>
             <div class="text-subtitle1">
+              From:
               <router-link
                 :identity="post.identity"
                 :to="{ name: 'Identity', params: { identity: post.identity } }"
@@ -29,21 +27,14 @@
           </div>
 
           <div class="col-auto">
-            <q-btn color="grey-7" round flat icon="more_vert">
-              <q-menu cover auto-close>
-                <q-list>
-                  <q-item clickable>
-                    <q-item-section>Remove Card</q-item-section>
-                  </q-item>
-                  <q-item clickable>
-                    <q-item-section>Send Feedback</q-item-section>
-                  </q-item>
-                  <q-item clickable>
-                    <q-item-section>Share</q-item-section>
-                  </q-item>
-                </q-list>
-              </q-menu>
-            </q-btn>
+            <q-btn
+              v-if="files.length"
+              color="primary"
+              flat
+              icon="preview"
+              label="view files"
+              @click="getContent(filesRoot)"
+            />
           </div>
         </div>
       </q-card-section>
@@ -56,25 +47,53 @@
         <div :id="filesRoot" class="media-contrainer" />
       </q-card-section>
 
-      <q-card-actions align="right">
+      <q-card-actions class="q">
         <q-btn
-          v-if="files.length"
-          flat
+          class="col"
           color="primary"
-          label="view files"
-          class="get-content-button"
-          @click="getContent(filesRoot)"
-        >
-        </q-btn>
+          flat
+          icon="comment"
+          label="Comment"
+        />
+        <q-btn
+          class="col"
+          color="primary"
+          flat
+          icon="autorenew"
+          label="Repost"
+        />
+        <q-btn
+          class="col"
+          color="primary"
+          flat
+          icon="share"
+          label="Share"
+          @click="shareModal = true"
+        />
       </q-card-actions>
     </q-card>
+    <q-dialog v-model="shareModal">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Link</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          {{ shareLink }}
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn v-close-popup flat label="OK" color="primary" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 <script>
 const IpfsHttpClient = require("ipfs-http-client");
 const all = require("it-all");
-const render = require("render-media");
 const from2 = require("from2");
+const render = require("render-media");
 
 export default {
   name: "PostCard",
@@ -96,7 +115,9 @@ export default {
       identity: {},
       magnet: "",
       meta: [],
-      ts: ""
+      ts: "",
+      shareModal: false,
+      shareLink: ""
     };
   },
   mounted: function() {
@@ -115,10 +136,12 @@ export default {
       this.body = this.post.body;
       this.files = this.post.files;
       this.filesRoot = this.post.filesRoot;
-      this.dt = new Date(Number(this.post.ts));
+      this.dt = new Date(Number(this.post.ts)).toLocaleString();
       this.magnet = this.post.magnet;
       this.meta = this.post.meta;
       this.ts = this.post.ts;
+
+      this.shareLink = "https://ipfs.io/ipfs/" + this.post.postCid;
     },
     async getContent(filesRoot) {
       const ipfs = await IpfsHttpClient({

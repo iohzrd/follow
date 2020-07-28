@@ -222,10 +222,9 @@ class Identity {
       const idObj = await this.getIdentity(fid);
       for await (const postCid of idObj.posts) {
         const postObj = await this.getPost(fid, postCid);
-        // console.log(fid);
+        // console.log(fid);so
         // console.log("postObj");
         // console.log(postObj);
-        postObj.dt = new Date(Number(postObj.ts));
         postObj.postCid = postCid;
         postObj.identity = idObj;
         if (!this.feed.some(id => id.ts === postObj.ts)) {

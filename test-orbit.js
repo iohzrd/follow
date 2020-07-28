@@ -17,14 +17,19 @@ async function main() {
     const orbit = new Orbit(ipfs);
     console.log(orbit._options);
 
-    const channel = "chat";
-
     orbit.events.on("connected", () => {
       console.log(`-!- Orbit connected`);
-      orbit.join(channel);
+      orbit.join("channel1");
+      orbit.join("channel2");
     });
 
     orbit.events.on("joined", channelName => {
+      console.log("orbit.channels");
+      const channels = orbit.channels;
+      if (channels["channel2"]) {
+        console.log("already joined...");
+        console.log(true);
+      }
       orbit.send(channelName, `is now caching this channel`);
       console.log(`-!- Joined # ${channelName}`);
     });
