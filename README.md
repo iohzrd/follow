@@ -113,13 +113,15 @@ npm start
 - [x] bundle IPFS binaries and manage execution
 - [ ] "re-post" / mirror a post
 - [ ] per post comments via pubsub
+- [ ] Distribute binaries / Auto-update
+- [ ] post view
+- [ ] meta view ("playlists" / arbitrary user defined categorization)
+- [ ] meta comment system (topic based bulletin board)
+- [ ] settings view
 - [ ] include index.html with posts to allow styling for browser consumption...
 - [ ] Migrate core logic to use IPC...
 - [ ] progress events for spinners and such
 - [ ] add banners to following view (amount of new posts etc...)
-- [ ] post view
-- [ ] meta view ("playlists" / arbitrary user defined categorization)
-- [ ] settings view (iframe ipfs web-gui? lol)
 - [ ] "remix"(clone and modify) other users "playlists"...
 - [ ] seed posts as web torrents (for redundancy)
 - [ ] sign posts (probably the list of CIDs or maybe body)
