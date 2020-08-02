@@ -93,8 +93,6 @@ Identity objects _will_ be automatically re-fetched periodically, followed by th
 ## Screenshot
 
 ![](Screenshot1.png)
-![](Screenshot2.png)
-![](Screenshot3.png)
 
 ## How to run
 
@@ -107,28 +105,26 @@ npm start
 
 ## TODO
 
-- bundle IPFS binaries and manage execution
-- include index.html with posts to allow styling for browser consumption...
-- change the post list to only contain CID strings, save post objects to file
-- periodically update identities you follow...
-- periodically re-publish self identity
-- enable file in posts
-- per post comments via pubsub
-- progress events for spinners and such
-- cache and pin content, load cached by default. fetch new async
-- "re-post" / mirror a post
-- "remix"(clone and modify) other users "playlists"...
-- add banners to following view (amount of new posts etc...)
-- post view (file manager?)
-- meta view ("playlists" / arbitrary user defined categorization)
-- seed posts as web torrents (for redundancy)
-- sign posts (probably the list of CIDs or maybe body)
-- settings view (iframe ipfs web-gui? lol)
-- traverse through ID's (profile.following -> profile view...)
-- use IPLD
-- TOR?
-- rss / json-feed?
--
+[x] prototype logic
+[x] periodically re-publish self identity
+[x] periodically update identities you follow...
+[x] cache posts
+[x] enable file in posts
+[x] bundle IPFS binaries and manage execution
+[] "re-post" / mirror a post
+[] per post comments via pubsub
+[] include index.html with posts to allow styling for browser consumption...
+[] Migrate core logic to use IPC...
+[] progress events for spinners and such
+[] add banners to following view (amount of new posts etc...)
+[] post view
+[] meta view ("playlists" / arbitrary user defined categorization)
+[] settings view (iframe ipfs web-gui? lol)
+[] "remix"(clone and modify) other users "playlists"...
+[] seed posts as web torrents (for redundancy)
+[] sign posts (probably the list of CIDs or maybe body)
+[] use IPLD
+[] TOR integration
 
 ## Follow me
 
@@ -152,7 +148,7 @@ bc1q8ggm58rue6ssw26cxpmlez55scdvawh9kas2m7
 
 or
 
-https://www.patreon.com/user?u=18416317&fan_landing=true
+https://www.subscribestar.com/iohzrd
 
 ## License
 
