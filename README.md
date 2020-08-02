@@ -2,6 +2,8 @@
 
 decentralized, censorship resistant publication and subscription (social media) on IPFS
 
+![](Screenshot1.png)
+
 ## Status
 
 Alpha
@@ -89,10 +91,6 @@ The users identity object CID can now be retrieved by querying IPNS with their I
 Once a user "follows" another user, the process of fetching their posts is done automatically. The posts are presented chronologically in a "feed" with the all posts from all the other ID's the user follows.
 
 Identity objects _will_ be automatically re-fetched periodically, followed by their new posts.
-
-## Screenshot
-
-![](Screenshot1.png)
 
 ## How to run
 
