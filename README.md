@@ -117,6 +117,7 @@ npm start
 - [ ] meta comment system (topic based bulletin board)
 - [ ] settings view
 - [ ] include index.html with posts to allow styling for browser consumption...
+- [ ] implement tray.
 - [ ] Migrate core logic to use IPC...
 - [ ] progress events for spinners and such
 - [ ] add banners to following view (amount of new posts etc...)
@@ -148,7 +149,7 @@ bc1q8ggm58rue6ssw26cxpmlez55scdvawh9kas2m7
 
 or
 
-https://www.subscribestar.com/iohzrd
+https://www.patreon.com/iohzrd
 
 ## License
 
