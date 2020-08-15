@@ -38,7 +38,7 @@
     "it-all": "^1.0.2",
     "leveldown": "^5.6.0",
     "levelup": "^4.4.0",
-    "orbit_": "git://github.com/iohzrd/orbit-core.git",
+    "orbit_": "0.2.0-rc1",
     "quasar": "^1.12.13",
     "render-media": "^3.4.3",
     "sudo-prompt": "^9.2.1",
