@@ -30,7 +30,7 @@
     "fix-path": "^3.0.0",
     "from2": "^2.3.0",
     "fs-extra": "^9.0.1",
-    "go-ipfs-dep": "^0.6.0",
+    "go-ipfs": "^0.6.0",
     "i18next": "^19.6.3",
     "ipfs-http-client": "^46.0.0",
     "ipfsd-ctl": "^6.0.0",
