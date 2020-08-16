@@ -30,7 +30,7 @@ function getIpfsBinPath() {
   return (
     process.env.IPFS_GO_EXEC ||
     getCustomBinary() ||
-    require("go-ipfs-dep")
+    require("go-ipfs")
       .path()
       .replace("app.asar", "app.asar.unpacked")
   );
