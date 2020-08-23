@@ -37,9 +37,9 @@ class Identity {
     this.ipfs = null;
     this.leveldb = null;
     this.feed = [];
-    this.following_deep = [];
-    this.meta_deep = [];
-    this.posts_deep = [];
+    this.following_deep = {};
+    this.meta_deep = {};
+    this.posts_deep = {};
     this.init();
   }
 
@@ -124,8 +124,13 @@ class Identity {
       wrapWithDirectory: true,
       timeout: 10000
     };
-    const pub = await this.ipfs.add(obj, addOptions);
-    return await this.ipfs.name.publish(pub.cid.string, { lifetime: "8760h" });
+    const pubObj = await this.ipfs.add(obj, addOptions);
+    const pubRet = await this.ipfs.name.publish(pubObj.cid.string, {
+      lifetime: "8760h"
+    });
+    console.log("publish complete");
+    console.log(pubRet);
+    return pubRet;
   }
 
   async pinCID(cid) {
@@ -181,7 +186,7 @@ class Identity {
     console.log("Identity.addToFollowing()");
     if (!this.following.includes(id)) {
       this.following.push(id);
-      await this.leveldb.put(this.id, this.serialize());
+      await this.save();
     }
   }
 
@@ -218,11 +223,12 @@ class Identity {
 
   async getFeed() {
     console.log("getFeed()");
+    // this.feed = [];
     for await (const fid of this.following) {
       const idObj = await this.getIdentity(fid);
       for await (const postCid of idObj.posts) {
         const postObj = await this.getPost(fid, postCid);
-        // console.log(fid);so
+        // console.log(fid);
         // console.log("postObj");
         // console.log(postObj);
         postObj.postCid = postCid;
@@ -249,6 +255,14 @@ class Identity {
     feed.sort((a, b) => (a.ts > b.ts ? -1 : 1));
 
     return feed;
+  }
+
+  async repost(cid) {
+    console.log("Identity.repost()");
+    if (!this.posts.includes(cid)) {
+      this.posts.unshift(cid);
+      await this.save();
+    }
   }
 
   async addPost(body, files) {
@@ -279,7 +293,7 @@ class Identity {
       };
       const addRet = await this.ipfs.add(addedFiles, addOptions);
       filesRoot = addRet.cid.string;
-      console.log("addRet");
+      console.log("addRet1");
       console.log(addRet);
     }
 
@@ -293,6 +307,7 @@ class Identity {
       publisher: this.id,
       ts: ts
     };
+    console.log("postObj");
     console.log(postObj);
     const indexHTML = await fs.readFile("src/modules/postStandalone.html");
     const obj = [
@@ -311,7 +326,7 @@ class Identity {
       timeout: 10000
     };
     const addRet = await this.ipfs.add(obj, addOptions);
-    console.log("addRet");
+    console.log("addRet2");
     console.log(addRet);
     const cid = addRet.cid.string;
     if (typeof cid === "string" && cid.length == 46) {
@@ -320,6 +335,26 @@ class Identity {
       this.getFeed();
     }
   }
+
+  async removePost(cid) {
+    console.log("Identity.removePost()");
+    const feedIndex = this.feed.indexOf(cid);
+    if (feedIndex > -1) {
+      this.feed.splice(feedIndex, 1);
+    }
+    const postsIndex = this.posts.indexOf(cid);
+    if (postsIndex > -1) {
+      this.posts.splice(postsIndex, 1);
+    }
+    const idObj = await this.getIdentity(this.id);
+    if (idObj.posts_deep && idObj.posts_deep[cid]) {
+      delete idObj.posts_deep[cid];
+      await this.leveldb.put(this.id, idObj);
+    }
+    this.save();
+    this.getFeed();
+  }
+  //
 }
 
 module.exports.Identity = Identity;

@@ -1,6 +1,6 @@
 <template>
   <div v-if="post">
-    <q-card flat bordered class="my-card">
+    <q-card flat bordered>
       <q-card-section>
         <div class="row items-center no-wrap">
           <q-avatar>
@@ -20,9 +20,8 @@
               <router-link
                 :identity="post.identity"
                 :to="{ name: 'Identity', params: { identity: post.identity } }"
+                >{{ post.identity.dn || post.identity.id }}</router-link
               >
-                {{ post.identity.dn || post.identity.id }}
-              </router-link>
             </div>
           </div>
 
@@ -36,15 +35,51 @@
               @click="getContent(filesRoot)"
             />
           </div>
+
+          <div v-if="post.identity.id == identity.id">
+            <div class="col-auto">
+              <q-btn color="grey-7" round flat icon="more_vert">
+                <q-menu cover auto-close>
+                  <q-list>
+                    <q-item clickable>
+                      <q-item-section @click="deleteModal = true"
+                        >Delete post</q-item-section
+                      >
+                    </q-item>
+                  </q-list>
+                </q-menu>
+              </q-btn>
+            </div>
+          </div>
         </div>
       </q-card-section>
 
-      <q-card-section>
-        {{ body }}
-      </q-card-section>
+      <q-card-section v-if="body">{{ body }}</q-card-section>
 
-      <q-card-section v-if="files.length && filesRoot">
-        <div :id="filesRoot" class="media-contrainer" />
+      <q-card-section v-if="filesRoot && fileObjs.length" class="q-pa-md">
+        <div class="q-gutter-sm row items-start">
+          <div v-for="(fileObj, idx) in fileObjs" :key="fileObj.name">
+            <q-img
+              v-if="fileObj.mime.includes('image')"
+              :alt="fileObj.name"
+              :src="fileObj.blobUrl"
+              spinner-color="primary"
+              spinner-size="82px"
+              style="height: 125px; width: 125px"
+              @click="
+                slide = idx;
+                carousel = true;
+              "
+            />
+            <!-- <q-video
+              v-else-if="fileObj.mime.includes('video')"
+              :autoplay="false"
+              :src="fileObj.blobUrl"
+              controls
+              allowfullscreen
+            /> -->
+          </div>
+        </div>
       </q-card-section>
 
       <q-card-actions class="q">
@@ -55,13 +90,16 @@
           icon="comment"
           label="Comment"
         />
-        <q-btn
-          class="col"
-          color="primary"
-          flat
-          icon="autorenew"
-          label="Repost"
-        />
+        <div v-if="post.identity.id != identity.id">
+          <q-btn
+            class="col"
+            color="primary"
+            flat
+            icon="autorenew"
+            label="Repost"
+            @click="repost()"
+          />
+        </div>
         <q-btn
           class="col"
           color="primary"
@@ -72,32 +110,71 @@
         />
       </q-card-actions>
     </q-card>
+
+    <!-- media modal -->
+    <q-dialog v-model="carousel">
+      <q-responsive :ratio="16 / 9" style="width: 100%; max-width: 1000px;">
+        <q-carousel v-model="slide" animated infinite swipeable thumbnails>
+          <q-carousel-slide
+            v-for="(fileObj, idx) in fileObjs"
+            :key="fileObj.name"
+            :name="idx"
+            :img-src="fileObj.blobUrl"
+            class="img"
+          />
+        </q-carousel>
+      </q-responsive>
+    </q-dialog>
+
+    <!-- share link modal -->
     <q-dialog v-model="shareModal">
       <q-card>
         <q-card-section>
           <div class="text-h6">Link</div>
         </q-card-section>
 
-        <q-card-section class="q-pt-none">
-          {{ shareLink }}
-        </q-card-section>
+        <q-card-section>{{ shareLink }}</q-card-section>
 
         <q-card-actions align="right">
           <q-btn v-close-popup flat label="OK" color="primary" />
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- delete post confirmation modal -->
+    <q-dialog v-model="deleteModal">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Are you sure?</div>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn v-close-popup flat label="Cancel" color="primary" />
+          <q-btn
+            v-close-popup
+            flat
+            label="Delete"
+            color="primary"
+            @click="removePost()"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 <script>
+// import { ipcRenderer } from "electron";
 const IpfsHttpClient = require("ipfs-http-client");
 const all = require("it-all");
-const from2 = require("from2");
-const render = require("render-media");
+const FileType = require("file-type");
 
 export default {
   name: "PostCard",
   props: {
+    identity: {
+      type: Object,
+      required: true
+    },
     post: {
       type: Object,
       required: true
@@ -111,23 +188,33 @@ export default {
       dn: "",
       dt: "",
       files: [],
+      fileObjs: [],
+      carousel: false,
+      slide: 0,
       id: "",
-      identity: {},
       magnet: "",
       meta: [],
       ts: "",
       shareModal: false,
+      deleteModal: false,
       shareLink: ""
     };
   },
   mounted: function() {
-    this.getPost();
+    this.init();
   },
   methods: {
-    async getPost() {
+    async init() {
+      this.getPost();
+      if (this.filesRoot) {
+        await this.getContent(this.filesRoot);
+      }
+    },
+    getPost() {
+      console.log("this.post");
       console.log(this.post);
+      console.log("this.post.identity");
       console.log(this.post.identity);
-      this.identity = this.post.identity;
 
       this.av = this.post.identity.av;
       this.dn = this.post.identity.dn;
@@ -143,26 +230,46 @@ export default {
 
       this.shareLink = "https://ipfs.io/ipfs/" + this.post.postCid;
     },
+    async removePost() {
+      this.identity.removePost(this.post.postCid);
+      // ipcRenderer.send("repost", this.post.postCid);
+    },
+    async repost() {
+      this.identity.repost(this.post.postCid);
+      // ipcRenderer.send("repost", this.post.postCid);
+    },
     async getContent(filesRoot) {
+      console.log("getContent");
+      console.log("filesRoot");
+      console.log(filesRoot);
       const ipfs = await IpfsHttpClient({
         host: "localhost",
         port: "5001",
         protocol: "http"
       });
-      var files = await all(ipfs.ls(filesRoot));
+      console.log(ipfs);
+      const files = await all(ipfs.ls(filesRoot));
       for await (const file of files) {
-        var buf = Buffer.concat(await all(ipfs.cat(file.path)));
-        var f = {
-          name: file.name,
-          createReadStream: function() {
-            return from2([buf]);
-          }
+        console.log("file");
+        console.log(file);
+        // var buf = Buffer.concat(await all(ipfs.cat(file.path)));
+        let bufs = [];
+        for await (const buf of ipfs.cat(file.path)) {
+          bufs.push(buf);
+        }
+        const buf = Buffer.concat(bufs);
+        console.log("buf");
+        console.log(buf);
+        const fType = await FileType.fromBuffer(buf);
+        var blob = new Blob([buf], { type: fType.mime });
+        var urlCreator = window.URL || window.webkitURL;
+        var blobUrl = urlCreator.createObjectURL(blob);
+        const fileObj = {
+          ...file,
+          ...fType,
+          blobUrl
         };
-
-        render.append(f, `#${filesRoot}`, function(err, elem) {
-          if (err) return console.error(err.message);
-          console.log(elem); // this is the newly created element with the media in it
-        });
+        this.fileObjs.push(fileObj);
       }
     }
   }

@@ -19,9 +19,14 @@
 
       function handlePostJson(data) {
         console.log(data);
-        var div = document.createElement("div"); // Create a <li> node
-        div.innerText = data.body;
-        document.getElementById("body").appendChild(div); // Append <li> to <ul> with
+        for (const key in data) {
+          if (data.hasOwnProperty(key)) {
+            const element = data[key];
+            var div = document.createElement("div"); // Create a <li> node
+            div.innerText = `${key}: ${element}`;
+            document.getElementById("body").appendChild(div); // Append <li> to <ul> with
+          }
+        }
       }
 
       function handleErr(err) {

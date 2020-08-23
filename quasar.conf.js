@@ -155,7 +155,7 @@ module.exports = function(/* ctx */) {
 
     // Full list of options: https://quasar.dev/quasar-cli/developing-electron-apps/configuring-electron
     electron: {
-      bundler: "packager", // 'packager' or 'builder'
+      bundler: "builder", // 'packager' or 'builder'
 
       packager: {
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
@@ -163,15 +163,25 @@ module.exports = function(/* ctx */) {
         // appBundleId: '',
         // appCategoryType: '',
         // osxSign: '',
-        // protocol: 'myapp://path',
+        // protocol: 'follow://path',
         // Windows only
         // win32metadata: { ... }
       },
 
       builder: {
         // https://www.electron.build/configuration/configuration
-
-        appId: "follow"
+        appId: "com.follow.follow",
+        win: {
+          target: "nsis"
+        },
+        linux: {
+          target: "AppImage"
+        },
+        publish: {
+          provider: "github",
+          repo: "follow",
+          owner: "iohzrd"
+        }
       },
 
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration

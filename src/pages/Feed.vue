@@ -7,6 +7,7 @@
           v-for="post in feed"
           :id="post.id"
           :key="post.ts"
+          :identity="identity"
           :post="post"
         />
       </div>

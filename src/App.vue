@@ -1,6 +1,6 @@
 <template>
   <div id="q-app">
-    <q-layout view="hhh Lpr lFr">
+    <q-layout view="hHh Lpr lFr">
       <q-header class="bg-black row no-wrap">
         <q-toolbar>
           <q-btn flat round dense icon="menu" @click="drawer = !drawer" />
@@ -9,7 +9,7 @@
           <q-space />
         </q-toolbar>
 
-        <q-btn unelevated icon="person_add" @click="prompt = true" />
+        <q-btn unelevated icon="person_add" @click="addPrompt = true" />
       </q-header>
 
       <q-drawer
@@ -56,7 +56,8 @@
         </q-page>
       </q-page-container>
 
-      <q-dialog v-model="prompt" persistent>
+      <!-- follow new id modal -->
+      <q-dialog v-model="addPrompt" persistent>
         <q-card style="min-width: 350px">
           <q-card-section>
             <div class="text-h6">Enter an ID to follow</div>
@@ -67,7 +68,7 @@
               v-model="idToFollow"
               dense
               autofocus
-              @keyup.enter="prompt = false"
+              @keyup.enter="addPrompt = false"
             />
           </q-card-section>
 
@@ -127,13 +128,13 @@ export default {
   name: "App",
   data() {
     return {
+      addPrompt: false,
+      dark: true,
       drawer: false,
       idToFollow: "",
       identity: {},
       ipfsId: "",
-      dark: true,
-      menuList,
-      prompt: false
+      menuList
     };
   },
   watch: {
