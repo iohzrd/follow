@@ -4,9 +4,10 @@
       <NewPost class="new-post" :identity="identity" />
       <div v-if="feed">
         <PostCard
-          v-for="post in feed"
+          v-for="(post, index) in feed"
           :id="post.id"
           :key="post.ts"
+          :index="index"
           :identity="identity"
           :post="post"
         />
@@ -40,12 +41,13 @@ export default {
     "identity.feed": {
       deep: true,
       handler: function(after) {
+        console.log("identity.feed changed!");
         this.feed = after;
       }
     }
   },
 
-  mounted: async function() {
+  mounted: function() {
     this.feed = this.identity.feed;
   }
 };

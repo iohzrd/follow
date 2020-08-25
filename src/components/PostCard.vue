@@ -120,7 +120,6 @@
             :key="fileObj.name"
             :name="idx"
             :img-src="fileObj.blobUrl"
-            class="img"
           />
         </q-carousel>
       </q-responsive>
@@ -177,6 +176,10 @@ export default {
     },
     post: {
       type: Object,
+      required: true
+    },
+    index: {
+      type: Number,
       required: true
     }
   },

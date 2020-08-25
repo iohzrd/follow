@@ -223,7 +223,6 @@ class Identity {
 
   async getFeed() {
     console.log("getFeed()");
-    // this.feed = [];
     for await (const fid of this.following) {
       const idObj = await this.getIdentity(fid);
       for await (const postCid of idObj.posts) {
@@ -338,10 +337,11 @@ class Identity {
 
   async removePost(cid) {
     console.log("Identity.removePost()");
-    const feedIndex = this.feed.indexOf(cid);
-    if (feedIndex > -1) {
-      this.feed.splice(feedIndex, 1);
-    }
+    this.feed = [];
+    // const feedIndex = this.feed.indexOf(cid);
+    // if (feedIndex > -1) {
+    //   this.feed.splice(feedIndex, 1);
+    // }
     const postsIndex = this.posts.indexOf(cid);
     if (postsIndex > -1) {
       this.posts.splice(postsIndex, 1);
