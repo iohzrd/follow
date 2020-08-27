@@ -159,8 +159,19 @@ class Identity {
       console.log("loading identity from DB...");
       idObj = await this.leveldb.get(id);
     } else {
-      console.log("loading identity from IPFS...");
-      idObj = await this.getIdentityIpfs(id);
+      console.log(
+        "inserting blank identity into DB. We'll grab the real one when we can..."
+      );
+      idObj = {
+        av: "",
+        aux: {},
+        dn: "",
+        following: [id],
+        id: id,
+        meta: [],
+        posts: [],
+        ts: Math.floor(new Date().getTime())
+      };
       if (id !== this.id) {
         await this.leveldb.put(id, idObj);
       }
@@ -172,11 +183,16 @@ class Identity {
   async updateFollowing() {
     console.log("updateFollowing()");
     const following_deep = [];
-    for await (const fid of this.following) {
-      if (fid !== this.id) {
-        const idObj = await this.getIdentityIpfs(fid);
-        following_deep.push(idObj);
-        await this.leveldb.put(fid, idObj);
+    for await (const id of this.following) {
+      try {
+        if (id !== this.id) {
+          const idObj = await this.getIdentityIpfs(id);
+          following_deep.push(idObj);
+          await this.leveldb.put(id, idObj);
+        }
+      } catch (error) {
+        console.log(`failed to fetch identity: ${id}`);
+        console.log(error);
       }
     }
     this.following_deep = following_deep;
