@@ -34,7 +34,7 @@
     "fs-extra": "^9.0.1",
     "go-ipfs": "^0.6.0",
     "i18next": "^19.7.0",
-    "ipfs-http-client": "^46.1.0",
+    "ipfs-http-client": "^46.1.1",
     "ipfs-utils": "3.0.0",
     "ipfsd-ctl": "^7.0.0",
     "is-ipfs": "^2.0.0",
