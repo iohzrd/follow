@@ -2,13 +2,13 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "src/*": ["src/*"],
       "app/*": ["*"],
+      "assets/*": ["assets/*"],
+      "boot/*": ["src/boot/*"],
       "components/*": ["src/components/*"],
       "layouts/*": ["src/layouts/*"],
       "pages/*": ["src/pages/*"],
-      "assets/*": ["src/assets/*"],
-      "boot/*": ["src/boot/*"],
+      "src/*": ["src/*"],
       "vue$": ["node_modules/vue/dist/vue.esm.js"]
     }
   },
