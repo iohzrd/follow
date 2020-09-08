@@ -2,8 +2,6 @@
 
 decentralized, censorship resistant publication and subscription (social media) on IPFS
 
-![](Screenshot1.png)
-
 ## Status
 
 Alpha
