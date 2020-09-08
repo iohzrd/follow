@@ -11,17 +11,14 @@
           <div class="col">
             <div class="text-subtitle1">
               Time:
-              <router-link :to="{ name: 'Post', params: { post: post } }">
-                {{ dt }}
-              </router-link>
+              <router-link :to="{ name: 'Post', params: { post: post } }">{{ dt }}</router-link>
             </div>
             <div class="text-subtitle1">
               From:
               <router-link
                 :identity="post.identity"
                 :to="{ name: 'Identity', params: { identity: post.identity } }"
-                >{{ post.identity.dn || post.identity.id }}</router-link
-              >
+              >{{ post.identity.dn || post.identity.id }}</router-link>
             </div>
           </div>
 
@@ -42,9 +39,7 @@
                 <q-menu cover auto-close>
                   <q-list>
                     <q-item clickable>
-                      <q-item-section @click="deleteModal = true"
-                        >Delete post</q-item-section
-                      >
+                      <q-item-section @click="deleteModal = true">Delete post</q-item-section>
                     </q-item>
                   </q-list>
                 </q-menu>
@@ -77,19 +72,13 @@
               :src="fileObj.blobUrl"
               controls
               allowfullscreen
-            /> -->
+            />-->
           </div>
         </div>
       </q-card-section>
 
       <q-card-actions class="q">
-        <q-btn
-          class="col"
-          color="primary"
-          flat
-          icon="comment"
-          label="Comment"
-        />
+        <q-btn class="col" color="primary" flat icon="comment" label="Comment" />
         <div v-if="post.identity.id != identity.id">
           <q-btn
             class="col"
@@ -113,13 +102,14 @@
 
     <!-- media modal -->
     <q-dialog v-model="carousel">
-      <q-responsive :ratio="16 / 9" style="width: 100%; max-width: 1000px;">
+      <q-responsive style="height: 100%; width: 100%;  max-width: 100%;">
         <q-carousel v-model="slide" animated infinite swipeable thumbnails>
           <q-carousel-slide
             v-for="(fileObj, idx) in fileObjs"
             :key="fileObj.name"
             :name="idx"
             :img-src="fileObj.blobUrl"
+            style="height: 100%; width: 100%;"
           />
         </q-carousel>
       </q-responsive>
@@ -149,13 +139,7 @@
 
         <q-card-actions align="right">
           <q-btn v-close-popup flat label="Cancel" color="primary" />
-          <q-btn
-            v-close-popup
-            flat
-            label="Delete"
-            color="primary"
-            @click="removePost()"
-          />
+          <q-btn v-close-popup flat label="Delete" color="primary" @click="removePost()" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -172,18 +156,18 @@ export default {
   props: {
     identity: {
       type: Object,
-      required: true
+      required: true,
     },
     post: {
       type: Object,
-      required: true
+      required: true,
     },
     index: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
-  data: function() {
+  data: function () {
     return {
       av: "",
       body: "",
@@ -200,10 +184,10 @@ export default {
       ts: "",
       shareModal: false,
       deleteModal: false,
-      shareLink: ""
+      shareLink: "",
     };
   },
-  mounted: function() {
+  mounted: function () {
     this.init();
   },
   methods: {
@@ -248,7 +232,7 @@ export default {
       const ipfs = await IpfsHttpClient({
         host: "localhost",
         port: "5001",
-        protocol: "http"
+        protocol: "http",
       });
       console.log(ipfs);
       const files = await all(ipfs.ls(filesRoot));
@@ -270,12 +254,12 @@ export default {
         const fileObj = {
           ...file,
           ...fType,
-          blobUrl
+          blobUrl,
         };
         this.fileObjs.push(fileObj);
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

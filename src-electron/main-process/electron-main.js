@@ -2,17 +2,15 @@ import { app, dialog, BrowserWindow, nativeTheme } from "electron";
 const fixPath = require("fix-path");
 const { criticalErrorDialog } = require("../dialogs");
 const logger = require("../common/logger");
-// const setupProtocolHandlers = require("./protocol-handlers");
-// const setupI18n = require("../i18n");
+// const setupProtocolHandlers = require("../protocol-handlers");
+const setupI18n = require("../i18n");
 const setupDaemon = require("../daemon");
-// const setupAutoLaunch = require("./auto-launch");
-// const setupDownloadCid = require("./download-cid");
-// const setupTakeScreenshot = require("./take-screenshot");
+const setupAutoLaunch = require("../auto-launch");
 const setupAppMenu = require("../app-menu");
-// const setupArgvFilesHandler = require("./argv-files-handler");
-// const setupAutoUpdater = require("./auto-updater");
-// const setupTray = require("../tray");
-// const setupSecondInstance = require("./second-instance");
+// const setupAutoUpdater = require("../auto-updater");
+const setupTray = require("../tray");
+const setupDownloadCid = require("../download-cid");
+// const setupAnalytics = require("../analytics");
 
 // Hide Dock
 if (app.dock) app.dock.hide();
@@ -120,11 +118,19 @@ async function main() {
   }
 
   try {
-    // await setupI18n(ctx);
+    // await setupAnalytics(ctx); // ctx.countlyDeviceId
+    await setupI18n(ctx);
     await setupAppMenu(ctx);
-    // await setupTray(ctx); // ctx.tray
+
+    await setupTray(ctx); // ctx.tray
     await setupDaemon(ctx); // ctx.getIpfsd, startIpfs, stopIpfs, restartIpfs
     // await setupAutoUpdater(ctx); // ctx.checkForUpdates
+
+    await Promise.all([
+      setupAutoLaunch(ctx),
+      // Setup global shortcuts
+      setupDownloadCid(ctx)
+    ]);
 
     // open electron
     await createWindow();

@@ -1,0 +1,119 @@
+{
+  "ipfsIsRunning": "IPFS動作中",
+  "ipfsIsStopping": "IPFSを停止しています",
+  "ipfsIsStarting": "IPFSを起動しています",
+  "ipfsIsNotRunning": "IPFS停止中",
+  "ipfsHasErrored": "エラー",
+  "start": "起動",
+  "stop": "停止",
+  "restart": "再起動",
+  "about": "About",
+  "advanced": "詳細",
+  "openRepoDir": "リポジトリのフォルダを開く",
+  "openLogsDir": "ログのフォルダを開く",
+  "openConfigFile": "設定ファイルを開く",
+  "viewOnGitHub": "Githubを参照する",
+  "status": "状態",
+  "files": "ファイル",
+  "settings": "設定",
+  "quit": "閉じる",
+  "versions": "バージョン",
+  "screenshotTaken": "スクリーンショットが取得されました",
+  "shareableLinkCopied": "共有リンクをクリップボードにコピーされました。スクリーンショットを見るにはここをクリックしてください。",
+  "couldNotTakeScreenshot": "スクリーンショットを取得できませんでした",
+  "errorwhileTakingScreenshot": "スクリーンショット取得中にエラーが発生しました",
+  "clickToOpenLogs": "ログを開く",
+  "ipfsNotRunning": "IPFS停止中",
+  "cantDownloadHash": "ハッシュをダウンロードできませんでした",
+  "invalidHashClipboard": "The hash on the clipboard is not valid.",
+  "errorWhileDownloadingHash": "ハッシュの取得中にエラーが発生しました。",
+  "errorWhileWritingFiles": "あなたのファイルシステムへのファイル書き込み中にエラーが発生しました。",
+  "hashDownloaded": "ハッシュのダウンロードが完了しました",
+  "hashDownloadedClickToView": "ハッシュ { hash } のコンテンツをダウンロードしました。クリックしてください。",
+  "updateAvailable": "利用可能なアップデートがあります。",
+  "clickToInstall": "新しいバージョンのIPFSデスクトップをインストールするにはこちらをクリック。",
+  "updateNotAvailable": "利用可能なアップデートはありません",
+  "runningLatestVersion": "最新のバージョンを利用中です。",
+  "couldNotCheckForUpdates": "アップデートをチェックできませんでした。",
+  "pleaseCheckInternet": "インターネットへ接続されているか確認してください。",
+  "checkForUpdates": "アップデートを確認しています...",
+  "yes": "Yes",
+  "no": "No",
+  "close": "Close",
+  "ok": "OK",
+  "cancel": "Cancel",
+  "reportTheError": "Report the error",
+  "restartIpfsDesktop": "Restart IPFS Desktop",
+  "openLogs": "Open logs",
+  "takeScreenshot": "Take Screenshot",
+  "downloadHash": "Download Hash",
+  "moveRepositoryLocation": "Move Repository Location",
+  "polkitDialog": {
+    "title": "Polkit not found",
+    "message": "IPFS can't be added to /usr/local/bin/ without polkit agent."
+  },
+  "noPermissionDialog": {
+    "title": "No permission",
+    "message": "IPFS couldn't be added to /usr/local/bin/, either because you entered the wrong password, or you denied permission."
+  },
+  "ipfsNotRunningDialog": {
+    "title": "IPFS停止中",
+    "message": "IPFS needs to be running to perform this action. Do you want to start the daemon?"
+  },
+  "recoverableErrorDialog": {
+    "title": "An error has occurred",
+    "message": "An error occurred but it does not prevent the execution of IPFS Desktop. You can either inspect the logs for yourself or report the error to the developers."
+  },
+  "cannotConnectToApiDialog": {
+    "title": "Cannot connect to API",
+    "message": "IPFS Desktop cannot connect to the API address provided: { addr }."
+  },
+  "ipfsDesktopHasShutdownDialog": {
+    "title": "IPFS Desktop has shutdown",
+    "message": "IPFS Desktop has shutdown because of an error. You can restart the app or report the error to the developers, which requires a GitHub account."
+  },
+  "moveRepositoryWarnDialog": {
+    "title": "Move repository",
+    "message": "If your repository is taking too much space on your main drive, you can move it to some other location. Bear in mind that the new location must always be available in order for IPFS Desktop to work correctly.",
+    "action": "Move and restart node"
+  },
+  "moveRepositorySuccessDialog": {
+    "title": "Repository moved successfully",
+    "message": "Your repository was successfully moved to { location } and your configuration was updated. The daemon will now start up again."
+  },
+  "moveRepositorySameDirDialog": {
+    "title": "Same directory selected",
+    "message": "The directory you picked is the same as the current one: { location }. Hence, no changes will be made."
+  },
+  "moveRepositoryDirExists": {
+    "title": " Directory already exists",
+    "message": "The directory { location } already exists. Please try using a different one."
+  },
+  "busyPortsDialog": {
+    "title": "Ports are busy",
+    "message": "The ports { port1 } and { port2 } are not available. Do you want to use { alt1 } and { alt2 } instead?",
+    "action": "Use ports { alt1 } and { alt2 } instead"
+  },
+  "busyPortDialog": {
+    "title": "Port is busy",
+    "message": "The port { port } is not available. Do you want to use { alt } instead?",
+    "action": "Use port { alt } instead"
+  },
+  "multipleBusyPortsDialog": {
+    "title": "Ports are busy",
+    "message": "Cannot bind to one or more of the API or Gateway addresses because the ports are busy.",
+    "action": "Open configuration file"
+  },
+  "itemsAddedNotification": {
+    "title": "Items added",
+    "message": "{ count } items added to your node. A shareable link was copied to your clipboard. Click here to see your files."
+  },
+  "itemAddedNotification": {
+    "title": "Item added",
+    "message": "Item added to your node. A shareable link was copied to your clipboard. Click here to see your file."
+  },
+  "itemsFailedNotification": {
+    "title": "Failed to add items",
+    "message": "Could not add your items to your node."
+  }
+}

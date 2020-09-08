@@ -76,7 +76,7 @@ function sendNotification(failures, successes, launch, path) {
   });
 }
 
-module.exports = async function({ getIpfsd, launchWebUI }, files) {
+module.exports = async function({ getIpfsd }, files) {
   const ipfsd = await getIpfsd();
 
   if (!ipfsd) {
@@ -119,7 +119,7 @@ module.exports = async function({ getIpfsd, launchWebUI }, files) {
   }
 
   const { cid, path } = await makeShareableObject(ipfsd.api, successes);
-  sendNotification(failures, successes, launchWebUI, path);
+  sendNotification(failures, successes, path);
 
   const url = `https://ipfs.io/ipfs/${cid.toString()}`;
   clipboard.writeText(url);

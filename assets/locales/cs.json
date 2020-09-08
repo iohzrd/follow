@@ -1,0 +1,242 @@
+{
+  "ipfsIsRunning": "IPFS is Running",
+  "ipfsIsStopping": "IPFS is Stopping",
+  "ipfsIsStarting": "IPFS is Starting",
+  "ipfsIsNotRunning": "IPFS is Not Running",
+  "ipfsHasErrored": "IPFS has Errored",
+  "runningWithGC": "Running (GC in progress)",
+  "start": "Začít",
+  "stop": "Zastavit",
+  "restart": "Restartovat",
+  "about": "O projektu",
+  "advanced": "Pokročilý",
+  "openRepoDir": "Otevřít adresář úložiště",
+  "openLogsDir": "Otevřít adresář Logů",
+  "openConfigFile": "Otevřít konfigurační soubor",
+  "viewOnGitHub": "View on GitHub…",
+  "helpUsTranslate": "Help Translate This App…",
+  "readReleaseNotes": "Přečtěte si poznámky k vydání",
+  "status": "Stav",
+  "files": "Soubory",
+  "peers": "Uzly",
+  "quit": "Konec",
+  "versions": "Verze",
+  "screenshotTaken": "Snímek byl pořízen",
+  "shareableLinkCopied": "Odkaz ke sdílení byl zkopírován do schránky. Klepnutím sem zobrazíte snímek obrazovky.",
+  "couldNotTakeScreenshot": "Snímek obrazovky nelze pořídit",
+  "errorwhileTakingScreenshot": "Při pořizování snímku obrazovky došlo k chybě.",
+  "clickToOpenLogs": "Klepnutím sem otevřete logy.",
+  "ipfsNotRunning": "IPFS neběží",
+  "checkForUpdates": "Check for Updates…",
+  "yes": "Ano",
+  "no": "Ne",
+  "close": "Zavřít",
+  "ok": "OK",
+  "cancel": "Zrušit",
+  "enable": "Enable",
+  "reportTheError": "Nahlásit chybu",
+  "restartIpfsDesktop": "Restartovat IPFS Desktop",
+  "openLogs": "Otevřít logy",
+  "takeScreenshot": "Udělat snímek obrazovky",
+  "downloadCid": "Download…",
+  "moveRepositoryLocation": "Přesunout umístění repozitáře",
+  "runGarbageCollector": "Spustit sběr odpadu",
+  "selectDirectory": "Vyberat adresář",
+  "customIpfsBinary": "Custom IPFS Binary",
+  "setCustomIpfsBinary": "Set Custom IPFS Binary",
+  "clearCustomIpfsBinary": "Clear Custom IPFS Binary",
+  "polkitDialog": {
+    "title": "Polkit nebyl nalezen",
+    "message": "IPFS nelze přidat do /usr/local/bin/ bez agenta polkit."
+  },
+  "noPermissionDialog": {
+    "title": "Žádné oprávnění",
+    "message": "IPFS nelze přidat do /usr/local/bin/, buď proto, že jste zadali nesprávné heslo, nebo jste odmítli povolení."
+  },
+  "ipfsNotRunningDialog": {
+    "title": "IPFS neběží",
+    "message": "Pro provedení této akce musí být spuštěn IPFS. Chcete spustit démona?"
+  },
+  "recoverableErrorDialog": {
+    "title": "Nastala chyba",
+    "message": "Došlo k chybě, ale nezabrání to spuštění Desktop IPFS. Můžete si prohlédnout logy pro sebe nebo nahlásit chybu vývojářům."
+  },
+  "cannotConnectToApiDialog": {
+    "title": "Nelze se připojit k API",
+    "message": "IPFS Desktop se nemůže připojit k uvedené adrese API: { addr }."
+  },
+  "ipfsDesktopHasShutdownDialog": {
+    "title": "Desktop IPFS byl vypnut",
+    "message": "Desktop IPFS se vypnul kvůli chybě. Můžete restartovat aplikaci nebo nahlásit chybu vývojářům, což vyžadují účet na GitHub."
+  },
+  "moveRepositoryWarnDialog": {
+    "title": "Přesunout úložiště",
+    "message": "Pokud vaše úložiště zabírá příliš mnoho místa na hlavním disku, můžete jej přesunout na jiné místo. Nezapomeňte, že nové umístění musí být vždy dostupné, aby IPFS Desktop fungoval správně.",
+    "action": "Přesunout a restartovat uzel"
+  },
+  "moveRepositorySuccessDialog": {
+    "title": "Úložiště bylo úspěšně přesunuto",
+    "message": "Vaše úložiště bylo úspěšně přesunuto do { location } a vaše konfigurace byla aktualizována. Démon se nyní znovu spustí."
+  },
+  "moveRepositorySameDirDialog": {
+    "title": "Byl vybrán stejný adresář",
+    "message": "Zvolený adresář je stejný jako aktuální: { location }. Proto nebudou provedeny žádné změny."
+  },
+  "moveRepositoryDirExists": {
+    "title": "Adresář již existuje",
+    "message": "Adresář { location } již existuje. Zkuste použít jiný."
+  },
+  "busyPortsDialog": {
+    "title": "Porty jsou zaneprázdněny",
+    "message": "Porty { port1 } a{ port2 } nejsou k dispozici. Chcete použít namísto nich { alt1 } a{ alt2 }?",
+    "action": "Použít porty raději { alt1 } a{ alt2 } "
+  },
+  "busyPortDialog": {
+    "title": "Port je zaneprázdněn",
+    "message": "Port { port }není k dispozici. Chcete použít místo něj { alt } ?",
+    "action": "Použít raději { alt } "
+  },
+  "multipleBusyPortsDialog": {
+    "title": "Porty jsou zaneprázdněny",
+    "message": "Nelze navázat na jednu nebo více adres API nebo Gateway, protože jsou porty zaneprázdněny.",
+    "action": "Otevřete konfigurační soubor"
+  },
+  "itemsAddedNotification": {
+    "title": "Položky přidány",
+    "message": "{ count } položky přidané do vašeho uzlu. Do vaší schránky byl zkopírován odkaz, který lze sdílet. Kliknutím sem zobrazíte své soubory."
+  },
+  "itemAddedNotification": {
+    "title": "Položka přidána",
+    "message": "Položka byla přidána do vašeho uzlu. Do vaší schránky byl zkopírován odkaz, který lze sdílet. Kliknutím sem zobrazíte svůj soubor."
+  },
+  "itemsFailedNotification": {
+    "title": "Nepodařilo se přidat položky",
+    "message": "Položky nelze přidat do uzlu."
+  },
+  "updateAvailableDialog": {
+    "title": "Aktualizace je k dispozici",
+    "message": "K dispozici je nová verze ({ version }) IPFS. Stahování začne brzy na pozadí."
+  },
+  "updateNotAvailableDialog": {
+    "title": "Aktualizace není k dispozici",
+    "message": "You are on the latest version of IPFS Desktop ({ version })."
+  },
+  "updateErrorDialog": {
+    "title": "Aktualizace se nepodařilo stáhnout",
+    "message": "Aktualizaci nebylo možné stáhnout. Zkontrolujte připojení k internetu a akci opakujte."
+  },
+  "updateDownloadedDialog": {
+    "title": "Aktualizace stažena",
+    "message": "Aktualizace verze { version } stažena. Chcete-li nainstalovat aktualizaci, restartujte prosím IPFS.",
+    "action": "Restartovat"
+  },
+  "updateDownloadedNotification": {
+    "title": "Aktualizace stažena",
+    "message": "Aktualizace IPFS verze { version } stažena. Klepnutím na toto oznámení ji nainstalujte."
+  },
+  "runGarbageCollectorWarning": {
+    "title": "Garbage collector",
+    "message": "Running the garbage collector (GC) will remove from your repository all objects that are not pinned or on your MFS. This may take a while. Do you wish to proceed?",
+    "action": "Spustit"
+  },
+  "runGarbageCollectorDone": {
+    "title": "Garbage collector",
+    "message": "Garbage collector byl úspěšně spuštěn."
+  },
+  "moveRepositoryFailed": {
+    "title": "Přesunout úložiště",
+    "message": "Nelze přesunout úložiště z \"{ currDir }\" do \"{ newDir }\"."
+  },
+  "cantAddIpfsToPath": {
+    "title": "IPFS na PATH",
+    "message": "Nelze přidat IPFS na PATH."
+  },
+  "runGarbageCollectorErrored": {
+    "title": "Garbage collector",
+    "message": "The garbage collector run could not be completed successfully."
+  },
+  "downloadCidContentDialog": {
+    "title": "Download to a local directory",
+    "message": "Enter a CID, IPFS path, or IPNS path:",
+    "action": "Další"
+  },
+  "cantResolveCidDialog": {
+    "title": "Chyba",
+    "message": "Unable to resolve \"{ path }\"."
+  },
+  "couldNotGetCidDialog": {
+    "title": "Chyba",
+    "message": "Unable to fetch \"{ path }\"."
+  },
+  "contentsSavedDialog": {
+    "title": "Success",
+    "message": "The contents of \"{ path }\" were successfully downloaded.",
+    "action": "See Files"
+  },
+  "couldNotSaveDialog": {
+    "title": "Could not write to disk",
+    "message": "There was an error writing to the disk. Please try again."
+  },
+  "launchAtLoginNotSupported": {
+    "title": "Chyba",
+    "message": "Launch at login is not supported on your platform."
+  },
+  "launchAtLoginFailed": {
+    "title": "Chyba",
+    "message": "Launch at login could not be enabled on your machine."
+  },
+  "enableIpfsOnPath": {
+    "title": "Enable IPFS on PATH",
+    "message": "By enabling this option, IPFS will be available on your command line as \"ipfs\". This action is reversible.",
+    "action": "Enable"
+  },
+  "disableIpfsOnPath": {
+    "title": "Disable IPFS on PATH",
+    "message": "By disabling this option, IPFS will no longer be available on your command line as \"ipfs\".",
+    "action": "Disable"
+  },
+  "enableGlobalTakeScreenshotShortcut": {
+    "title": "Enable screenshot shortcut",
+    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to take screenshots as long as IPFS Desktop is running."
+  },
+  "enableGlobalDownloadShortcut": {
+    "title": "Enable download shortcut",
+    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to download files as long as IPFS Desktop is running."
+  },
+  "installNpmOnIpfsWarning": {
+    "title": "Install npm on IPFS",
+    "message": "This experimental feature installs the \"ipfs-npm\" package on your system. It requires Node.js to be installed.",
+    "action": "Install"
+  },
+  "unableToInstallNpmOnIpfs": {
+    "title": "Chyba",
+    "message": "It was not possible to install \"ipfs-npm\" package on your system. Please check the logs for more information or try installing it manually by running \"npm install -g ipfs-npm\" on your command line."
+  },
+  "unableToUninstallNpmOnIpfs": {
+    "title": "Chyba",
+    "message": "It was not possible to uninstall \"ipfs-npm\" package on your system. Please check the logs for more information or try uninstalling it manually by running \"npm uninstall -g ipfs-npm\" on your command line."
+  },
+  "settings": {
+    "settings": "Nastavení",
+    "preferences": "Preferences",
+    "openNodeSettings": "Open Node Settings",
+    "appPreferences": "App Preferences",
+    "launchOnStartup": "Launch at Login",
+    "takeScreenshotShortcut": "Global Screenshot Shortcut",
+    "downloadHashShortcut": "Global Download Shortcut",
+    "experiments": "Experimenty",
+    "npmOnIpfs": "npm on IPFS"
+  },
+  "setCustomIpfsBinaryConfirmation": {
+    "title": "Custom IPFS binary",
+    "message": "By setting a custom IPFS, IPFS Desktop will no longer use the bundled IPFS version and will use the binary you specify. Do you wish to proceed?"
+  },
+  "setCustomIpfsBinarySuccess": {
+    "title": "Custom IPFS binary",
+    "message": "IPFS Desktop will start using the binary located at { path }. To start using it, IPFS needs to be restarted first."
+  },
+  "clearCustomIpfsBinarySuccess": {
+    "title": "Clear custom IPFS binary",
+    "message": "The custom IPFS binary was cleared. To start using the bundled IPFS version, IPFS needs to be restarted first."
+  }
+}

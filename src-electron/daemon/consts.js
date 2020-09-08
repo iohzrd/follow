@@ -1,5 +1,3 @@
-// credit ipfs-desktop
-
 module.exports = Object.freeze({
   STATUS: {
     STARTING_STARTED: 1,

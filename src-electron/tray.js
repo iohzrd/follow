@@ -1,7 +1,6 @@
 const { Menu, Tray, shell, app, ipcMain } = require("electron");
 const i18n = require("i18next");
 const path = require("path");
-const addToIpfs = require("./add-to-ipfs");
 const logger = require("./common/logger");
 const store = require("./common/store");
 const moveRepositoryLocation = require("./move-repository-location");
@@ -15,17 +14,16 @@ const { STATUS } = require("./daemon");
 const { IS_MAC, IS_WIN, VERSION, GO_IPFS_VERSION } = require("./common/consts");
 
 const {
-  CONFIG_KEY: SCREENSHOT_KEY,
-  SHORTCUT: SCREENSHOT_SHORTCUT,
-  takeScreenshot
-} = require("./take-screenshot");
-const {
   CONFIG_KEY: DOWNLOAD_KEY,
   SHORTCUT: DOWNLOAD_SHORTCUT,
   downloadCid
 } = require("./download-cid");
+const {
+  CONFIG_KEY: AUTO_LAUNCH_KEY,
+  isSupported: supportsLaunchAtLogin
+} = require("./auto-launch");
 
-const CONFIG_KEYS = [SCREENSHOT_KEY, DOWNLOAD_KEY];
+const CONFIG_KEYS = [AUTO_LAUNCH_KEY, DOWNLOAD_KEY];
 
 function buildCheckbox(key, label) {
   return {
@@ -87,37 +85,7 @@ function buildMenu(ctx) {
       visible: false
     },
     { type: "separator" },
-    {
-      id: "webuiStatus",
-      label: i18n.t("status"),
-      click: () => {
-        ctx.launchWebUI("/");
-      }
-    },
-    {
-      id: "webuiFiles",
-      label: i18n.t("files"),
-      click: () => {
-        ctx.launchWebUI("/files");
-      }
-    },
-    {
-      id: "webuiPeers",
-      label: i18n.t("peers"),
-      click: () => {
-        ctx.launchWebUI("/peers");
-      }
-    },
-    { type: "separator" },
-    {
-      id: "takeScreenshot",
-      label: i18n.t("takeScreenshot"),
-      click: () => {
-        takeScreenshot(ctx);
-      },
-      accelerator: IS_MAC ? SCREENSHOT_SHORTCUT : null,
-      enabled: false
-    },
+
     {
       id: "downloadCid",
       label: i18n.t("downloadCid"),
@@ -134,26 +102,11 @@ function buildMenu(ctx) {
         : i18n.t("settings.settings"),
       submenu: [
         {
-          id: "webuiNodeSettings",
-          label: i18n.t("settings.openNodeSettings"),
-          click: () => {
-            ctx.launchWebUI("/settings");
-          }
-        },
-        { type: "separator" },
-        {
           label: i18n.t("settings.appPreferences"),
           enabled: false
         },
-        buildCheckbox(IPFS_PATH_KEY, "settings.ipfsCommandLineTools"),
-        buildCheckbox(SCREENSHOT_KEY, "settings.takeScreenshotShortcut"),
-        buildCheckbox(DOWNLOAD_KEY, "settings.downloadHashShortcut"),
-        { type: "separator" },
-        {
-          label: i18n.t("settings.experiments"),
-          enabled: false
-        },
-        buildCheckbox(NPM_IPFS_KEY, "settings.npmOnIpfs")
+        buildCheckbox(AUTO_LAUNCH_KEY, "settings.launchOnStartup"),
+        buildCheckbox(DOWNLOAD_KEY, "settings.downloadHashShortcut")
       ]
     },
     {
@@ -222,9 +175,7 @@ function buildMenu(ctx) {
         {
           label: `follow ${VERSION}`,
           click: () => {
-            shell.openExternal(
-              "https://github.com/iohzrd/follow/releases"
-            );
+            shell.openExternal("https://github.com/iohzrd/follow/releases");
           }
         },
         {
@@ -254,7 +205,7 @@ function buildMenu(ctx) {
         {
           label: i18n.t("helpUsTranslate"),
           click: () => {
-            shell.openExternal("https://www.transifex.com/ipfs/ipfs-desktop/");
+            shell.openExternal("https://www.transifex.com/ipfs/follow/");
           }
         }
       ]
@@ -291,12 +242,6 @@ module.exports = function(ctx) {
     status: null,
     gcRunning: false
   };
-
-  // macOS tray drop files
-  tray.on("drop-files", async (_, files) => {
-    await addToIpfs(ctx, files);
-    ctx.launchWebUI("/files", { focus: false });
-  });
 
   if (!IS_MAC) {
     // Show the context menu on left click on other
@@ -346,21 +291,11 @@ module.exports = function(ctx) {
     menu.getMenuItemById("restartIpfs").visible =
       status === STATUS.STARTING_FINISHED || errored;
 
-    menu.getMenuItemById("webuiStatus").enabled =
-      status === STATUS.STARTING_FINISHED;
-    menu.getMenuItemById("webuiFiles").enabled =
-      status === STATUS.STARTING_FINISHED;
-    menu.getMenuItemById("webuiPeers").enabled =
-      status === STATUS.STARTING_FINISHED;
-    menu.getMenuItemById("webuiNodeSettings").enabled =
-      status === STATUS.STARTING_FINISHED;
-
     menu.getMenuItemById("startIpfs").enabled = !gcRunning;
     menu.getMenuItemById("stopIpfs").enabled = !gcRunning;
     menu.getMenuItemById("restartIpfs").enabled = !gcRunning;
 
-    menu.getMenuItemById("takeScreenshot").enabled =
-      status === STATUS.STARTING_FINISHED;
+    menu.getMenuItemById(AUTO_LAUNCH_KEY).enabled = supportsLaunchAtLogin();
     menu.getMenuItemById("downloadCid").enabled =
       status === STATUS.STARTING_FINISHED;
 

@@ -1,9 +1,15 @@
-module.exports = ({ pallette, message, defaultValue, buttons, id }) => (`<!DOCTYPE html>
+module.exports = ({
+  pallette,
+  message,
+  defaultValue,
+  buttons,
+  id
+}) => `<!DOCTYPE html>
 <html>
   <body>
     <p>${message}</p>
     <input type="text" value="${defaultValue}" />
-    <div id="buttons">${buttons.join('\n')}</div>
+    <div id="buttons">${buttons.join("\n")}</div>
   </body>
   <style>
   :root {
@@ -92,4 +98,4 @@ module.exports = ({ pallette, message, defaultValue, buttons, id }) => (`<!DOCTY
       }
     })
   </script>
-</html>`)
+</html>`;

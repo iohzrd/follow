@@ -1,5 +1,3 @@
-// credit ipfs-desktop
-
 const { join } = require("path");
 const fs = require("fs-extra");
 const multiaddr = require("multiaddr");
@@ -43,19 +41,14 @@ function applyDefaults(ipfsd) {
 
   // Ensure strict CORS checking
   // See: https://github.com/ipfs/js-ipfsd-ctl/issues/333
-  config.API = {
-    HTTPHeaders: {
-      "Access-Control-Allow-Methods": ["PUT", "POST", "GET"],
-      "Access-Control-Allow-Origin": ["http://localhost:1589"]
-    }
-  };
+  config.API = { HTTPHeaders: {} };
 
   config.Swarm = config.Swarm || {};
   config.Swarm.DisableNatPortMap = false;
   config.Swarm.ConnMgr = config.Swarm.ConnMgr || {};
   config.Swarm.ConnMgr.GracePeriod = "300s";
-  config.Swarm.ConnMgr.LowWater = 32;
-  config.Swarm.ConnMgr.HighWater = 256;
+  config.Swarm.ConnMgr.LowWater = 50;
+  config.Swarm.ConnMgr.HighWater = 300;
 
   config.Discovery = config.Discovery || {};
   config.Discovery.MDNS = config.Discovery.MDNS || {};

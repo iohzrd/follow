@@ -1,5 +1,3 @@
-// credit ipfs-desktop
-
 const Ctl = require("ipfsd-ctl");
 const i18n = require("i18next");
 const fs = require("fs-extra");
@@ -38,7 +36,7 @@ function getIpfsBinPath() {
 
 function writeIpfsBinaryPath(path) {
   fs.outputFileSync(
-    join(app.getPath("home"), "./.follow/IPFS_EXEC").replace(
+    join(app.getPath("home"), "./.config/follow/IPFS_EXEC").replace(
       "app.asar",
       "app.asar.unpacked"
     ),

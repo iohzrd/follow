@@ -1,5 +1,3 @@
-// credit ipfs-desktop
-
 const { app, ipcMain } = require("electron");
 const fs = require("fs-extra");
 const { join } = require("path");
@@ -138,7 +136,7 @@ module.exports.STATUS = STATUS;
 
 function writeIpfsPath(path) {
   fs.outputFileSync(
-    join(app.getPath("home"), "./.follow/IPFS_PATH").replace(
+    join(app.getPath("home"), "./.config/follow/IPFS_PATH").replace(
       "app.asar",
       "app.asar.unpacked"
     ),
