@@ -6,9 +6,7 @@
           <router-link
             :identity="iden"
             :to="{ name: 'Identity', params: { identity: iden } }"
-          >
-            {{ iden.id }} - {{ iden.dn }}
-          </router-link>
+          >{{ iden.id }} - {{ iden.dn }}</router-link>
         </div>
       </q-card-section>
     </q-card>
@@ -22,12 +20,12 @@ export default {
   props: {
     identity: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
-  data: function() {
+  data: function () {
     return {
-      following_deep: []
+      following_deep: [],
     };
   },
   watch: {
@@ -36,14 +34,14 @@ export default {
       async handler(event) {
         this.following_deep = event;
         console.log(this.following_deep);
-      }
-    }
+      },
+    },
   },
-  mounted: function() {
+  mounted: function () {
     this.following_deep = this.identity.following_deep;
     console.log(this.following_deep);
   },
-  methods: {}
+  methods: {},
 };
 </script>
 

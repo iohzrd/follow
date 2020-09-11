@@ -13,16 +13,16 @@ export default {
   props: {
     post: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
-  data: function() {
+  data: function () {
     return {};
   },
-  mounted: function() {
+  mounted: function () {
     console.log(this.post);
   },
-  methods: {}
+  methods: {},
 };
 </script>
 <style scoped></style>

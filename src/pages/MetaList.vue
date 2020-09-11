@@ -8,14 +8,14 @@ export default {
   props: {
     obj: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
-  data: function() {
+  data: function () {
     return {};
   },
-  mounted: function() {},
-  methods: {}
+  mounted: function () {},
+  methods: {},
 };
 </script>
 <style scoped></style>

@@ -12,27 +12,14 @@
         <q-btn unelevated icon="person_add" @click="addPrompt = true" />
       </q-header>
 
-      <q-drawer
-        v-model="drawer"
-        behavior="desktop"
-        bordered
-        show-if-above
-        side="left"
-      >
+      <q-drawer v-model="drawer" behavior="desktop" bordered show-if-above side="left">
         <q-scroll-area class="fit">
           <q-list v-for="(menuItem, index) in menuList" :key="index">
-            <q-item
-              v-ripple
-              clickable
-              :to="{ name: menuItem.route }"
-              :identity="identity"
-            >
+            <q-item v-ripple clickable :to="{ name: menuItem.route }" :identity="identity">
               <q-item-section avatar>
                 <q-icon :name="menuItem.icon" />
               </q-item-section>
-              <q-item-section>
-                {{ menuItem.label }}
-              </q-item-section>
+              <q-item-section>{{ menuItem.label }}</q-item-section>
             </q-item>
 
             <q-separator v-if="menuItem.separator" />
@@ -64,22 +51,12 @@
           </q-card-section>
 
           <q-card-section class="q-pt-none">
-            <q-input
-              v-model="idToFollow"
-              dense
-              autofocus
-              @keyup.enter="addPrompt = false"
-            />
+            <q-input v-model="idToFollow" dense autofocus @keyup.enter="addPrompt = false" />
           </q-card-section>
 
           <q-card-actions align="right" class="text-primary">
             <q-btn v-close-popup flat label="Cancel" />
-            <q-btn
-              v-close-popup
-              flat
-              label="Add ID"
-              @click="addNewFollowing(idToFollow)"
-            />
+            <q-btn v-close-popup flat label="Add ID" @click="addNewFollowing(idToFollow)" />
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -96,32 +73,32 @@ const menuList = [
     icon: "rss_feed",
     label: "Feed",
     route: "Feed",
-    separator: false
+    separator: false,
   },
   {
     icon: "featured_play_list",
     label: "Collections",
     route: "MetaList",
-    separator: false
+    separator: false,
   },
   {
     icon: "people",
     label: "Following",
     route: "IdentityList",
-    separator: false
+    separator: false,
   },
   {
     icon: "assignment_ind",
     label: "Profile",
     route: "Identity",
-    separator: false
+    separator: false,
   },
   {
     icon: "settings",
     label: "Settings",
     route: "Settings",
-    separator: false
-  }
+    separator: false,
+  },
 ];
 
 export default {
@@ -134,21 +111,21 @@ export default {
       idToFollow: "",
       identity: {},
       ipfsId: "",
-      menuList
+      menuList,
     };
   },
   watch: {
     dark: {
-      handler: function(after) {
+      handler: function (after) {
         this.dark = after;
         this.$q.dark.set(this.dark);
-      }
-    }
+      },
+    },
   },
   created() {
     this.$q.dark.set(true);
   },
-  mounted: function() {
+  mounted: function () {
     this.init();
   },
   methods: {
@@ -156,7 +133,7 @@ export default {
       const ipfs = await IpfsHttpClient({
         host: "localhost",
         port: "5001",
-        protocol: "http"
+        protocol: "http",
       });
       const { id } = await ipfs.id();
       this.ipfsId = id;
@@ -165,8 +142,8 @@ export default {
     async addNewFollowing(id) {
       this.identity.addToFollowing(id);
       this.idToFollow = "";
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>

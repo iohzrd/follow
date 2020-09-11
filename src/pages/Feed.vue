@@ -24,32 +24,32 @@ export default {
   name: "Feed",
   components: {
     NewPost,
-    PostCard
+    PostCard,
   },
   props: {
     identity: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
-  data: function() {
+  data: function () {
     return {
-      feed: []
+      feed: [],
     };
   },
   watch: {
     "identity.feed": {
       deep: true,
-      handler: function(after) {
+      handler: function (after) {
         console.log("identity.feed changed!");
         this.feed = after;
-      }
-    }
+      },
+    },
   },
 
-  mounted: function() {
+  mounted: function () {
     this.feed = this.identity.feed;
-  }
+  },
 };
 </script>
 

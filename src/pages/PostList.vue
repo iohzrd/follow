@@ -20,27 +20,27 @@ import PostCard from "../components/PostCard.vue";
 export default {
   name: "PostList",
   components: {
-    PostCard
+    PostCard,
   },
   props: {
     identity: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
-  data: function() {
+  data: function () {
     return {
-      posts: []
+      posts: [],
     };
   },
-  mounted: function() {
+  mounted: function () {
     this.getPosts();
   },
   methods: {
     async getPosts() {
       this.posts = await this.identity.getPostList();
-    }
-  }
+    },
+  },
 };
 </script>
 

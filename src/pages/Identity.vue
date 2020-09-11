@@ -6,25 +6,23 @@
     <div>Last update: {{ dt }}</div>
     <br />
     <h6>Info:</h6>
-    <div v-for="obj in aux" :key="obj">
-      placeholder
-    </div>
+    <div v-for="obj in aux" :key="obj">placeholder</div>
     <br />
     <h6>Following:</h6>
     <div v-for="iden in following_deep" :key="iden">
       <router-link
         :identity="iden"
         :to="{ name: 'Identity', params: { identity: iden } }"
-      >
-        {{ iden.id }} - {{ iden.dn }}
-      </router-link>
+      >{{ iden.id }} - {{ iden.dn }}</router-link>
     </div>
     <br />
     <h6>Collections:</h6>
     <div v-for="obj in meta_deep" :key="obj">
-      <router-link :to="{ name: 'Meta', params: { obj } }" :obj="obj">{{
+      <router-link :to="{ name: 'Meta', params: { obj } }" :obj="obj">
+        {{
         obj
-      }}</router-link>
+        }}
+      </router-link>
     </div>
     <br />
     <h6>Posts:</h6>
@@ -47,10 +45,10 @@ export default {
   props: {
     identity: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
-  data: function() {
+  data: function () {
     return {
       av: "",
       aux: {},
@@ -63,13 +61,13 @@ export default {
       meta_deep: [],
       posts: [],
       posts_deep: [],
-      ts: 0
+      ts: 0,
     };
   },
   computed: {
     getIdentity() {
       return this.identity;
-    }
+    },
   },
   watch: {
     "identity.posts_deep": {
@@ -81,17 +79,17 @@ export default {
         deep: true,
         async handler(event) {
           this.meta = event;
-        }
+        },
       },
       "identity.following_deep": {
         deep: true,
         async handler(event) {
           this.following_deep = event;
-        }
-      }
-    }
+        },
+      },
+    },
   },
-  mounted: async function() {
+  mounted: async function () {
     console.log("IdentityObj.init()");
     this.aux = this.identity.aux;
     this.av = this.identity.av;
@@ -106,7 +104,7 @@ export default {
     this.posts_deep = this.identity.posts_deep;
     this.ts = this.identity.ts;
   },
-  methods: {}
+  methods: {},
 };
 </script>
 
