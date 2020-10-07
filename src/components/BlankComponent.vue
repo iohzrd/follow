@@ -2,18 +2,13 @@
   <div id="app"></div>
 </template>
 <script>
-// const { Identity } = require("../modules/identity");
 export default {
   name: "BlankComponent",
-  props: {
-    id: {
-      type: String,
-      required: true
-    }
-  },
+  props: {},
   data: function() {
     return {};
   },
+  watch: {},
   mounted: function() {},
   methods: {}
 };
