@@ -1,6 +1,6 @@
 <template>
-  <div v-if="following_deep" class="following-container">
-    <q-card v-for="iden in following_deep" :key="iden">
+  <div v-if="identity" class="following-container">
+    <q-card v-for="iden in identity.following_deep" :key="iden">
       <q-card-section>
         <div class="text">
           <router-link
@@ -14,7 +14,6 @@
 </template>
 
 <script>
-// const { Identity } = require("../modules/identity");
 export default {
   name: "IdentityList",
   props: {
@@ -24,9 +23,7 @@ export default {
     },
   },
   data: function () {
-    return {
-      following_deep: [],
-    };
+    return {};
   },
   watch: {
     "identity.following_deep": {
@@ -37,9 +34,10 @@ export default {
       },
     },
   },
-  mounted: function () {
-    this.following_deep = this.identity.following_deep;
-    console.log(this.following_deep);
+  mounted: async function () {
+    await this.identity.updateFollowing();
+    console.log("following_deep");
+    console.log(this.identity.following_deep);
   },
   methods: {},
 };

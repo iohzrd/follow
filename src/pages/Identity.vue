@@ -1,47 +1,93 @@
 <template>
   <div v-if="identity" class="identity-container">
     <br />
-    <img :src="av" />
-    <h6>{{ dn }} ({{ identity.id }})</h6>
+    <!-- avatar -->
+    <img :src="identity.av" />
+    <!-- display name -->
+    <h6>
+      {{ identity.dn }}
+      <q-btn
+        flat
+        round
+        color="primary"
+        icon="edit"
+        @click="editIdentityString(identity.dn)"
+      />
+    </h6>
+    <!-- identity -->
+    <h6>({{ identity.id }})</h6>
+    <!-- time of last publication -->
     <div>Last update: {{ dt }}</div>
     <br />
+    <!-- auxiliary fields -->
     <h6>Info:</h6>
-    <div v-for="obj in aux" :key="obj">placeholder</div>
+    <div v-for="obj in identity.aux" :key="obj">placeholder</div>
     <br />
+    <!-- following -->
     <h6>Following:</h6>
-    <div v-for="iden in following_deep" :key="iden">
+    <div v-for="iden in identity.following_deep" :key="iden">
       <router-link
         :identity="iden"
         :to="{ name: 'Identity', params: { identity: iden } }"
-      >{{ iden.id }} - {{ iden.dn }}</router-link>
+        >{{ iden.id }} - {{ iden.dn }}</router-link
+      >
     </div>
     <br />
+    <!-- meta  -->
     <h6>Collections:</h6>
-    <div v-for="obj in meta_deep" :key="obj">
+    <div v-for="obj in identity.meta_deep" :key="obj">
       <router-link :to="{ name: 'Meta', params: { obj } }" :obj="obj">
-        {{
-        obj
-        }}
+        {{ obj }}
       </router-link>
     </div>
     <br />
+    <!-- posts  -->
     <h6>Posts:</h6>
-    <PostCard
-      v-for="post in posts_deep"
+    <!-- <PostCard
+      v-for="post in identity.posts_deep"
       :id="post.id"
       :key="post.ts"
       class="post-card"
       :post="post"
-    ></PostCard>
+    ></PostCard>-->
+
+    <!-- edit field modal -->
+    <q-dialog v-model="editModal" persistent>
+      <q-card style="min-width: 350px">
+        <q-card-section>
+          <div class="text-h6">Enter an ID to follow</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input
+            v-model="editModal"
+            dense
+            autofocus
+            @keyup.enter="editModal = false"
+            @keyup.escape="editModal = false"
+          />
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn v-close-popup flat label="Cancel" />
+          <q-btn
+            v-close-popup
+            flat
+            label="Add ID"
+            @click="addNewFollowing(editModal)"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <!-- end -->
   </div>
 </template>
 
 <script>
-import PostCard from "../components/PostCard.vue";
-// const { Identity } = require("../modules/identity");
+// import PostCard from "../components/PostCard.vue";
 export default {
   name: "Identity",
-  components: { PostCard },
+  // components: { PostCard },
   props: {
     identity: {
       type: Object,
@@ -50,24 +96,9 @@ export default {
   },
   data: function () {
     return {
-      av: "",
-      aux: {},
-      id: "",
-      dn: "",
+      editModal: false,
       dt: "",
-      following: [],
-      following_deep: [],
-      meta: [],
-      meta_deep: [],
-      posts: [],
-      posts_deep: [],
-      ts: 0,
     };
-  },
-  computed: {
-    getIdentity() {
-      return this.identity;
-    },
   },
   watch: {
     "identity.posts_deep": {
@@ -75,36 +106,32 @@ export default {
       async handler(event) {
         this.posts = event;
       },
-      "identity.meta_deep": {
-        deep: true,
-        async handler(event) {
-          this.meta = event;
-        },
+    },
+    "identity.meta_deep": {
+      deep: true,
+      async handler(event) {
+        this.meta = event;
       },
-      "identity.following_deep": {
-        deep: true,
-        async handler(event) {
-          this.following_deep = event;
-        },
+    },
+    "identity.following_deep": {
+      deep: true,
+      async handler(event) {
+        this.following_deep = event;
       },
     },
   },
   mounted: async function () {
     console.log("IdentityObj.init()");
-    this.aux = this.identity.aux;
-    this.av = this.identity.av;
-    this.dn = this.identity.dn;
+    console.log(this.identity);
     this.dt = new Date(Number(this.identity.ts));
-    this.following = this.identity.following; // convert to deep
-    this.following_deep = this.identity.following_deep; // convert to deep
-    this.id = this.identity.id;
-    this.meta = this.identity.meta; // convert to deep
-    this.meta_deep = this.identity.meta_deep; // convert to deep
-    this.posts = this.identity.posts;
-    this.posts_deep = this.identity.posts_deep;
-    this.ts = this.identity.ts;
   },
-  methods: {},
+  methods: {
+    editIdentityString(field, fieldName) {
+      console.log(field);
+      console.log(fieldName);
+      this.editModal = true;
+    },
+  },
 };
 </script>
 

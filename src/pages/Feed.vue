@@ -1,14 +1,13 @@
 <template>
   <q-page class="flex flex-center">
     <div class="feed-container">
-      <NewPost class="new-post" :identity="identity" />
+      <NewPost class="new-post" />
       <div v-if="feed">
         <PostCard
           v-for="(post, index) in feed"
           :id="post.id"
           :key="post.ts"
           :index="index"
-          :identity="identity"
           :post="post"
         />
       </div>
@@ -17,6 +16,7 @@
 </template>
 
 <script>
+import { ipcRenderer } from "electron";
 import NewPost from "../components/NewPost.vue";
 import PostCard from "../components/PostCard.vue";
 
@@ -24,33 +24,32 @@ export default {
   name: "Feed",
   components: {
     NewPost,
-    PostCard,
+    PostCard
   },
-  props: {
-    identity: {
-      type: Object,
-      required: true,
-    },
-  },
-  data: function () {
+  props: {},
+  data: function() {
     return {
       feed: [],
+      refreshInterval: null
     };
   },
-  watch: {
-    "identity.feed": {
-      deep: true,
-      handler: function (after) {
-        console.log("identity.feed changed!");
-        this.feed = after;
-      },
-    },
+  beforeDestroy: function() {
+    clearInterval(this.refreshInterval);
   },
-
-  mounted: function () {
-    this.feed = this.identity.feed;
+  mounted: function() {
+    ipcRenderer.on("feedItem", (event, postObj) => {
+      if (!this.feed.some(id => id.ts === postObj.ts)) {
+        this.feed.push(postObj);
+        this.feed.sort((a, b) => (a.ts > b.ts ? -1 : 1));
+      }
+    });
+    ipcRenderer.send("getFeed");
+    this.refreshInterval = setInterval(async function() {
+      console.log("refreshing feed...");
+      // ipcRenderer.send("updateFollowing");
+      ipcRenderer.send("getFeed");
+    }, 1 * 60 * 1000);
   },
+  methods: {}
 };
 </script>
-
-<style scoped></style>

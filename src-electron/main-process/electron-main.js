@@ -11,6 +11,8 @@ const setupAppMenu = require("../app-menu");
 const setupTray = require("../tray");
 const setupDownloadCid = require("../download-cid");
 // const setupAnalytics = require("../analytics");
+const setupIdentity = require("../identity");
+// const setupOrbit = require("../orbit");
 
 // Hide Dock
 if (app.dock) app.dock.hide();
@@ -121,7 +123,6 @@ async function main() {
     // await setupAnalytics(ctx); // ctx.countlyDeviceId
     await setupI18n(ctx);
     await setupAppMenu(ctx);
-
     await setupTray(ctx); // ctx.tray
     await setupDaemon(ctx); // ctx.getIpfsd, startIpfs, stopIpfs, restartIpfs
     // await setupAutoUpdater(ctx); // ctx.checkForUpdates
@@ -131,6 +132,11 @@ async function main() {
       // Setup global shortcuts
       setupDownloadCid(ctx)
     ]);
+
+    // // Setup identity
+    await setupIdentity(ctx);
+    // // Setup orbit
+    // await setupOrbit(ctx);
 
     // open electron
     await createWindow();

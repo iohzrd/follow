@@ -4,24 +4,31 @@
       <q-card-section>
         <div class="row items-center no-wrap">
           <q-avatar>
-            <img v-if="av" :src="av" />
-            <q-icon v-if="!av" :size="'xl'" :name="'assignment_ind'" />
+            <img v-if="post.identity.av" :src="post.identity.av" />
+            <q-icon
+              v-if="!post.identity.av"
+              :size="'xl'"
+              :name="'assignment_ind'"
+            />
           </q-avatar>
           <q-card-section />
           <div class="col">
             <div class="text-subtitle1">
               Time:
-              <router-link :to="{ name: 'Post', params: { post: post } }">{{ dt }}</router-link>
+              <router-link :to="{ name: 'Post', params: { post: post } }">{{
+                dt
+              }}</router-link>
             </div>
             <div class="text-subtitle1">
               From:
               <router-link
                 :identity="post.identity"
                 :to="{ name: 'Identity', params: { identity: post.identity } }"
-              >{{ post.identity.dn || post.identity.id }}</router-link>
+                >{{ post.identity.dn || post.identity.id }}</router-link
+              >
             </div>
           </div>
-
+          <!--  -->
           <div class="col-auto">
             <q-btn
               v-if="files.length"
@@ -32,20 +39,23 @@
               @click="getContent(filesRoot)"
             />
           </div>
-
-          <div v-if="post.identity.id == identity.id">
+          <!--  -->
+          <div v-if="post.identity.id == id.id">
             <div class="col-auto">
               <q-btn color="grey-7" round flat icon="more_vert">
                 <q-menu cover auto-close>
                   <q-list>
                     <q-item clickable>
-                      <q-item-section @click="deleteModal = true">Delete post</q-item-section>
+                      <q-item-section @click="deleteModal = true"
+                        >Delete post</q-item-section
+                      >
                     </q-item>
                   </q-list>
                 </q-menu>
               </q-btn>
             </div>
           </div>
+          <!--  -->
         </div>
       </q-card-section>
 
@@ -78,8 +88,15 @@
       </q-card-section>
 
       <q-card-actions class="q">
-        <q-btn class="col" color="primary" flat icon="comment" label="Comment" />
-        <div v-if="post.identity.id != identity.id">
+        <q-btn
+          class="col"
+          color="primary"
+          flat
+          icon="comment"
+          label="Comment"
+        />
+        <!--  -->
+        <div v-if="post.identity.id != id.id">
           <q-btn
             class="col"
             color="primary"
@@ -89,6 +106,7 @@
             @click="repost()"
           />
         </div>
+        <!--  -->
         <q-btn
           class="col"
           color="primary"
@@ -139,14 +157,20 @@
 
         <q-card-actions align="right">
           <q-btn v-close-popup flat label="Cancel" color="primary" />
-          <q-btn v-close-popup flat label="Delete" color="primary" @click="removePost()" />
+          <q-btn
+            v-close-popup
+            flat
+            label="Delete"
+            color="primary"
+            @click="removePost()"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
   </div>
 </template>
 <script>
-// import { ipcRenderer } from "electron";
+import { ipcRenderer } from "electron";
 const IpfsHttpClient = require("ipfs-http-client");
 const all = require("it-all");
 const FileType = require("file-type");
@@ -154,40 +178,35 @@ const FileType = require("file-type");
 export default {
   name: "PostCard",
   props: {
-    identity: {
-      type: Object,
-      required: true,
-    },
     post: {
       type: Object,
-      required: true,
+      required: true
     },
     index: {
       type: Number,
-      required: true,
-    },
+      required: true
+    }
   },
-  data: function () {
+  data: function() {
     return {
-      av: "",
       body: "",
       filesRoot: "",
-      dn: "",
       dt: "",
       files: [],
       fileObjs: [],
       carousel: false,
       slide: 0,
-      id: "",
+      id: {},
       magnet: "",
       meta: [],
       ts: "",
       shareModal: false,
       deleteModal: false,
-      shareLink: "",
+      shareLink: ""
     };
   },
-  mounted: function () {
+  mounted: function() {
+    this.id = this.$store.state.id;
     this.init();
   },
   methods: {
@@ -198,15 +217,6 @@ export default {
       }
     },
     getPost() {
-      console.log("this.post");
-      console.log(this.post);
-      console.log("this.post.identity");
-      console.log(this.post.identity);
-
-      this.av = this.post.identity.av;
-      this.dn = this.post.identity.dn;
-      this.id = this.post.identity.id;
-
       this.body = this.post.body;
       this.files = this.post.files;
       this.filesRoot = this.post.filesRoot;
@@ -218,35 +228,35 @@ export default {
       this.shareLink = "https://ipfs.io/ipfs/" + this.post.postCid;
     },
     async removePost() {
-      this.identity.removePost(this.post.postCid);
-      // ipcRenderer.send("repost", this.post.postCid);
+      // ipcRenderer.send("removePost", this.post.postCid);
+      ipcRenderer.invoke("removePost", this.post.postCid).then(result => {
+        console.log("removePost.then");
+        console.log(result);
+        ipcRenderer.send("getFeed");
+      });
     },
     async repost() {
-      this.identity.repost(this.post.postCid);
       // ipcRenderer.send("repost", this.post.postCid);
+      ipcRenderer.invoke("repost", this.post.postCid).then(result => {
+        console.log("repost.then");
+        console.log(result);
+        ipcRenderer.send("getFeed");
+      });
     },
     async getContent(filesRoot) {
-      console.log("getContent");
-      console.log("filesRoot");
-      console.log(filesRoot);
       const ipfs = await IpfsHttpClient({
         host: "localhost",
         port: "5001",
-        protocol: "http",
+        protocol: "http"
       });
-      console.log(ipfs);
       const files = await all(ipfs.ls(filesRoot));
       for await (const file of files) {
-        console.log("file");
-        console.log(file);
         // var buf = Buffer.concat(await all(ipfs.cat(file.path)));
         let bufs = [];
         for await (const buf of ipfs.cat(file.path)) {
           bufs.push(buf);
         }
         const buf = Buffer.concat(bufs);
-        console.log("buf");
-        console.log(buf);
         const fType = await FileType.fromBuffer(buf);
         var blob = new Blob([buf], { type: fType.mime });
         var urlCreator = window.URL || window.webkitURL;
@@ -254,12 +264,12 @@ export default {
         const fileObj = {
           ...file,
           ...fType,
-          blobUrl,
+          blobUrl
         };
         this.fileObjs.push(fileObj);
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

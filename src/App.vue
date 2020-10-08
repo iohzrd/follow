@@ -5,17 +5,23 @@
         <q-toolbar>
           <q-btn flat round dense icon="menu" @click="drawer = !drawer" />
           <q-toolbar-title>Follow</q-toolbar-title>
-          <div>ID: {{ ipfsId }}</div>
+          <div>ID: {{ id.id }}</div>
           <q-space />
         </q-toolbar>
 
         <q-btn unelevated icon="person_add" @click="addPrompt = true" />
       </q-header>
 
-      <q-drawer v-model="drawer" behavior="desktop" bordered show-if-above side="left">
+      <q-drawer
+        v-model="drawer"
+        behavior="desktop"
+        bordered
+        show-if-above
+        side="left"
+      >
         <q-scroll-area class="fit">
           <q-list v-for="(menuItem, index) in menuList" :key="index">
-            <q-item v-ripple clickable :to="{ name: menuItem.route }" :identity="identity">
+            <q-item v-ripple clickable :to="{ name: menuItem.route }">
               <q-item-section avatar>
                 <q-icon :name="menuItem.icon" />
               </q-item-section>
@@ -35,10 +41,12 @@
           </q-item>
         </q-scroll-area>
       </q-drawer>
+
+      <!-- router view -->
       <q-page-container>
         <q-page class="root-container">
-          <div v-if="identity">
-            <router-view :identity="identity" />
+          <div>
+            <router-view />
           </div>
         </q-page>
       </q-page-container>
@@ -51,12 +59,22 @@
           </q-card-section>
 
           <q-card-section class="q-pt-none">
-            <q-input v-model="idToFollow" dense autofocus @keyup.enter="addPrompt = false" />
+            <q-input
+              v-model="idToFollow"
+              dense
+              autofocus
+              @keyup.enter="addPrompt = false"
+            />
           </q-card-section>
 
           <q-card-actions align="right" class="text-primary">
             <q-btn v-close-popup flat label="Cancel" />
-            <q-btn v-close-popup flat label="Add ID" @click="addNewFollowing(idToFollow)" />
+            <q-btn
+              v-close-popup
+              flat
+              label="Add ID"
+              @click="addNewFollowing()"
+            />
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -65,40 +83,39 @@
 </template>
 
 <script>
-const IpfsHttpClient = require("ipfs-http-client");
-const { Identity } = require("./modules/identity");
+import { ipcRenderer } from "electron";
 
 const menuList = [
   {
     icon: "rss_feed",
     label: "Feed",
     route: "Feed",
-    separator: false,
+    separator: false
   },
   {
     icon: "featured_play_list",
     label: "Collections",
     route: "MetaList",
-    separator: false,
+    separator: false
   },
   {
     icon: "people",
     label: "Following",
     route: "IdentityList",
-    separator: false,
+    separator: false
   },
   {
     icon: "assignment_ind",
     label: "Profile",
     route: "Identity",
-    separator: false,
+    separator: false
   },
   {
     icon: "settings",
     label: "Settings",
     route: "Settings",
-    separator: false,
-  },
+    separator: false
+  }
 ];
 
 export default {
@@ -109,41 +126,52 @@ export default {
       dark: true,
       drawer: false,
       idToFollow: "",
-      identity: {},
-      ipfsId: "",
+      id: {},
       menuList,
+      publishInterval: null,
+      refreshInterval: null
     };
   },
+
   watch: {
     dark: {
-      handler: function (after) {
+      handler: function(after) {
         this.dark = after;
         this.$q.dark.set(this.dark);
-      },
-    },
+      }
+    }
   },
   created() {
     this.$q.dark.set(true);
   },
-  mounted: function () {
-    this.init();
+  beforeDestroy: function() {
+    clearInterval(this.publishInterval);
+    clearInterval(this.refreshInterval);
+  },
+  mounted: function() {
+    ipcRenderer.once("id", (event, id) => {
+      this.id = id;
+      this.$store.commit("setID", id);
+    });
+    ipcRenderer.send("getId");
+    ipcRenderer.send("publish");
+    // ipcRenderer.send("updateFollowing");
+
+    this.publishInterval = setInterval(async function() {
+      console.log("auto-publish...");
+      ipcRenderer.send("publish");
+    }, 60 * 60 * 1000);
+    this.refreshInterval = setInterval(async function() {
+      console.log("refreshing feed...");
+      ipcRenderer.send("updateFollowing");
+    }, 1 * 60 * 1000);
   },
   methods: {
-    async init() {
-      const ipfs = await IpfsHttpClient({
-        host: "localhost",
-        port: "5001",
-        protocol: "http",
-      });
-      const { id } = await ipfs.id();
-      this.ipfsId = id;
-      this.identity = new Identity(this.ipfsId);
-    },
-    async addNewFollowing(id) {
-      this.identity.addToFollowing(id);
+    async addNewFollowing() {
+      ipcRenderer.send("addNewFollowing", this.idToFollow);
       this.idToFollow = "";
-    },
-  },
+    }
+  }
 };
 </script>
 <style scoped>

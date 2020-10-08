@@ -20,14 +20,14 @@
           use-chips
           multiple
         >
-          <template v-slot:after>
+          <template #after>
             <q-btn
               color="primary"
               dense
               size="xl"
               icon="cloud_upload"
               :disable="!files.length && !body.length"
-              @click="publish"
+              @click="addPost"
             />
           </template>
         </q-file>
@@ -36,15 +36,12 @@
   </q-card>
 </template>
 <script>
+import { ipcRenderer } from "electron";
+
 export default {
   name: "NewPost",
   components: {},
-  props: {
-    identity: {
-      type: Object,
-      required: true
-    }
-  },
+  props: {},
   data: function() {
     return {
       body: "",
@@ -53,16 +50,22 @@ export default {
   },
   computed: {},
   methods: {
-    publish: async function() {
-      await this.identity.addPost(this.body, this.files);
-      this.body = "";
-      this.files = [];
+    addPost: async function() {
+      ipcRenderer
+        .invoke("addPost", { body: this.body, files: this.files })
+        .then(result => {
+          console.log("addPost.then");
+          console.log(result);
+          this.body = "";
+          this.files = [];
+          ipcRenderer.send("getFeed");
+        });
     }
   }
 };
 </script>
 <style scoped>
-.publish-button {
+.addPost-button {
   float: right;
   float: bottom;
 }
