@@ -16,7 +16,7 @@ const IDENTITY_TEMPLATE = {
   id: "",
   meta: [],
   posts: [],
-  ts: Math.floor(new Date().getTime())
+  ts: 0
 };
 
 module.exports = async function(ctx) {
@@ -71,23 +71,11 @@ module.exports = async function(ctx) {
     } else {
       // first run, initialize new identity...
       self = IDENTITY_TEMPLATE;
-      self.id = ipfs_id.id;
       self.following = [ipfs_id.id];
+      self.id = ipfs_id.id;
+      self.ts = Math.floor(new Date().getTime());
       await save();
     }
-    // await getFeed();
-    // await publish();
-
-    // const _this = this;
-    // setInterval(async function() {
-    //   logger.info("refreshing feed...");
-    //   await updateFollowing();
-    //   await getFeed();
-    // }, 1 * 60 * 1000);
-    // setInterval(async function() {
-    //   logger.info("auto-publish...");
-    //   await publish();
-    // }, 60 * 60 * 1000);
   };
 
   // get id
@@ -179,17 +167,10 @@ module.exports = async function(ctx) {
       logger.info(
         "inserting blank identity into DB. We'll grab the real one when we can..."
       );
-      idObj = {
-        aux: {},
-        av: "",
-        dn: "",
-        following: [id],
-        id: id,
-        meta: [],
-        posts: [],
-        ts: Math.floor(new Date().getTime())
-      };
-
+      idObj = IDENTITY_TEMPLATE;
+      idObj.following = [id];
+      idObj.id = id;
+      idObj.ts = Math.floor(new Date().getTime());
       if (id !== ipfs_id.id) {
         await level_db.put(id, idObj);
       }
