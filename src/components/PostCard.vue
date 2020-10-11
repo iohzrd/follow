@@ -22,8 +22,10 @@
             <div class="text-subtitle1">
               From:
               <router-link
-                :identity="post.identity"
-                :to="{ name: 'Identity', params: { identity: post.identity } }"
+                :to="{
+                  name: 'Identity',
+                  params: { identity: post.identity, id: post.identity.id },
+                }"
                 >{{ post.identity.dn || post.identity.id }}</router-link
               >
             </div>
@@ -40,20 +42,23 @@
             />
           </div>
           <!--  -->
-          <div v-if="post.identity.id == id.id">
-            <div class="col-auto">
-              <q-btn color="grey-7" round flat icon="more_vert">
-                <q-menu cover auto-close>
-                  <q-list>
-                    <q-item clickable>
-                      <q-item-section @click="deleteModal = true"
-                        >Delete post</q-item-section
-                      >
-                    </q-item>
-                  </q-list>
-                </q-menu>
-              </q-btn>
-            </div>
+          <div class="col-auto">
+            <q-btn color="grey-7" round flat icon="more_vert">
+              <q-menu cover auto-close>
+                <q-list>
+                  <q-item v-if="post.identity.id == id.id" clickable>
+                    <q-item-section @click="deleteModal = true"
+                      >Delete post</q-item-section
+                    >
+                  </q-item>
+                  <q-item v-if="post.identity.id != id.id" clickable>
+                    <q-item-section @click="unfollowModal = true"
+                      >Unfollow</q-item-section
+                    >
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-btn>
           </div>
           <!--  -->
         </div>
@@ -120,14 +125,14 @@
 
     <!-- media modal -->
     <q-dialog v-model="carousel">
-      <q-responsive style="height: 100%; width: 100%;  max-width: 100%;">
+      <q-responsive style="height: 100%; width: 100%; max-width: 100%">
         <q-carousel v-model="slide" animated infinite swipeable thumbnails>
           <q-carousel-slide
             v-for="(fileObj, idx) in fileObjs"
             :key="fileObj.name"
             :name="idx"
             :img-src="fileObj.blobUrl"
-            style="height: 100%; width: 100%;"
+            style="height: 100%; width: 100%"
           />
         </q-carousel>
       </q-responsive>
@@ -162,11 +167,31 @@
             flat
             label="Delete"
             color="primary"
-            @click="removePost()"
+            @click="removePost(post.identity.id)"
           />
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <!-- unfollow confirmation modal -->
+    <q-dialog v-model="unfollowModal">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Are you sure?</div>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn v-close-popup flat label="Cancel" color="primary" />
+          <q-btn
+            v-close-popup
+            flat
+            label="Delete"
+            color="primary"
+            @click="unfollow()"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <!--  -->
   </div>
 </template>
 <script>
@@ -180,14 +205,10 @@ export default {
   props: {
     post: {
       type: Object,
-      required: true
+      required: true,
     },
-    index: {
-      type: Number,
-      required: true
-    }
   },
-  data: function() {
+  data: function () {
     return {
       body: "",
       filesRoot: "",
@@ -202,10 +223,11 @@ export default {
       ts: "",
       shareModal: false,
       deleteModal: false,
-      shareLink: ""
+      unfollowModal: false,
+      shareLink: "",
     };
   },
-  mounted: function() {
+  mounted: function () {
     this.id = this.$store.state.id;
     this.init();
   },
@@ -229,15 +251,18 @@ export default {
     },
     async removePost() {
       // ipcRenderer.send("removePost", this.post.postCid);
-      ipcRenderer.invoke("removePost", this.post.postCid).then(result => {
+      ipcRenderer.invoke("removePost", this.post.postCid).then((result) => {
         console.log("removePost.then");
         console.log(result);
         ipcRenderer.send("getFeed");
       });
     },
+    async unfollow(id) {
+      ipcRenderer.send("unfollow", id);
+    },
     async repost() {
       // ipcRenderer.send("repost", this.post.postCid);
-      ipcRenderer.invoke("repost", this.post.postCid).then(result => {
+      ipcRenderer.invoke("repost", this.post.postCid).then((result) => {
         console.log("repost.then");
         console.log(result);
         ipcRenderer.send("getFeed");
@@ -247,7 +272,7 @@ export default {
       const ipfs = await IpfsHttpClient({
         host: "localhost",
         port: "5001",
-        protocol: "http"
+        protocol: "http",
       });
       const files = await all(ipfs.ls(filesRoot));
       for await (const file of files) {
@@ -264,12 +289,12 @@ export default {
         const fileObj = {
           ...file,
           ...fType,
-          blobUrl
+          blobUrl,
         };
         this.fileObjs.push(fileObj);
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

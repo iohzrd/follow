@@ -1,68 +1,47 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+// import Home from "../pages/Home.vue";
 import Feed from "../pages/Feed.vue";
-import PostList from "../pages/PostList.vue";
 import Post from "../pages/Post.vue";
-import IdentityList from "../pages/IdentityList.vue";
 import Identity from "../pages/Identity.vue";
-import MetaList from "../pages/MetaList.vue";
 import Meta from "../pages/Meta.vue";
 import Settings from "../pages/Settings.vue";
 
 const routes = [
+  // { path: "/", name: "home", component: Home, props: true },
   // {
-  //   path: "/",
-  //   component: () => import("layouts/MainLayout.vue"),
-  //   children: [{ path: "", component: () => import("pages/Index.vue") }]
+  //   path: "/feed/:id",
+  //   name: "Feed",
+  //   component: Feed,
+  //   props: true
   // },
-
   {
     path: "/",
     redirect: "/feed",
-    name: "home",
+    name: "Home",
     component: Feed,
-    // props: true,
     children: [
       {
         path: "feed" /* changed */,
-        name: "Feed"
-        // component: Feed
-        // props: true
+        name: "Feed",
+        props: true
       }
     ]
   },
   {
-    path: "/posts",
-    name: "PostList",
-    component: PostList,
-    props: true
-  },
-  {
-    path: "/post",
+    path: "/post/:id",
     name: "Post",
     component: Post,
     props: true
   },
   {
-    path: "/identities",
-    name: "IdentityList",
-    component: IdentityList,
-    props: true
-  },
-  {
-    path: "/identity",
+    path: "/identity/:id",
     name: "Identity",
     component: Identity,
     props: true
   },
   {
-    path: "/connections",
-    name: "MetaList",
-    component: MetaList,
-    props: true
-  },
-  {
-    path: "/collection",
+    path: "/collection/:id",
     name: "Meta",
     component: Meta,
     props: true

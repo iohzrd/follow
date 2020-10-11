@@ -159,25 +159,31 @@ module.exports = async function(ctx) {
 
   const getIdentity = async id => {
     logger.info(`getIdentity(${id})`);
-    let idObj;
+    let identityObj;
     if (await dbContainsKey(level_db, id)) {
       logger.info("loading identity from DB...");
-      idObj = await level_db.get(id);
+      identityObj = await level_db.get(id);
     } else {
       logger.info(
         "inserting blank identity into DB. We'll grab the real one when we can..."
       );
-      idObj = IDENTITY_TEMPLATE;
-      idObj.following = [id];
-      idObj.id = id;
-      idObj.ts = Math.floor(new Date().getTime());
+      identityObj = IDENTITY_TEMPLATE;
+      identityObj.following = [id];
+      identityObj.id = id;
+      identityObj.ts = Math.floor(new Date().getTime());
       if (id !== ipfs_id.id) {
-        await level_db.put(id, idObj);
+        await level_db.put(id, identityObj);
       }
     }
-    logger.info(idObj);
-    return idObj;
+    logger.info(identityObj);
+    console.log(identityObj);
+    return identityObj;
   };
+  ipcMain.on("getIdentity", async (event, id) => {
+    const identityObj = await getIdentity(id);
+    delete identityObj.posts_deep;
+    event.sender.send("identity", identityObj);
+  });
 
   // update followed identities
   const updateFollowing = async () => {
@@ -186,9 +192,9 @@ module.exports = async function(ctx) {
     for await (const id of self.following) {
       try {
         if (id !== ipfs_id.id) {
-          const idObj = await getIdentityIpfs(id);
-          following_deep.push(idObj);
-          await level_db.put(id, idObj);
+          const identityObj = await getIdentityIpfs(id);
+          following_deep.push(identityObj);
+          await level_db.put(id, identityObj);
         }
       } catch (error) {
         logger.info(`failed to fetch identity: ${id}`);
@@ -232,33 +238,52 @@ module.exports = async function(ctx) {
     return JSON.parse(post);
   };
 
-  const getPost = async (id, cid) => {
+  const getPost = async (identityObj, cid) => {
     logger.info("getPost");
     let postObj;
-    const idObj = await getIdentity(id);
-    if (!idObj.posts_deep) {
-      idObj.posts_deep = {};
+    if (!identityObj.posts_deep) {
+      identityObj.posts_deep = {};
     }
-    if (idObj.posts_deep && idObj.posts_deep[cid]) {
+    if (identityObj.posts_deep && identityObj.posts_deep[cid]) {
       logger.info("loading post from DB...");
-      postObj = idObj.posts_deep[cid];
+      postObj = identityObj.posts_deep[cid];
     } else {
       logger.info("loading post from IPFS...");
       postObj = await getPostIpfs(cid);
-      idObj.posts_deep[cid] = postObj;
-      await level_db.put(id, idObj);
+      identityObj.posts_deep[cid] = postObj;
+      await level_db.put(identityObj.id, identityObj);
     }
     return postObj;
   };
 
+  // get post
+  ipcMain.on("getPost", async (event, id, postCid) => {
+    const identityObj = await getIdentity(id);
+    const postObj = await getPost(identityObj, postCid);
+    postObj.postCid = postCid;
+    postObj.identity = identityObj;
+    event.sender.send("post", postObj);
+  });
+
+  // get posts
+  ipcMain.on("getPosts", async (event, id) => {
+    const identityObj = await getIdentity(id);
+    for await (const postCid of identityObj.posts) {
+      const postObj = await getPost(identityObj, postCid);
+      postObj.postCid = postCid;
+      postObj.identity = identityObj;
+      event.sender.send("post", postObj);
+    }
+  });
+
   // get feed
   ipcMain.on("getFeed", async event => {
     for await (const fid of self.following) {
-      const idObj = await getIdentity(fid);
-      for await (const postCid of idObj.posts) {
-        const postObj = await getPost(fid, postCid);
+      const identityObj = await getIdentity(fid);
+      for await (const postCid of identityObj.posts) {
+        const postObj = await getPost(identityObj, postCid);
         postObj.postCid = postCid;
-        postObj.identity = idObj;
+        postObj.identity = identityObj;
         event.sender.send("feedItem", postObj);
       }
     }
@@ -374,10 +399,10 @@ module.exports = async function(ctx) {
     if (postsIndex > -1) {
       self.posts.splice(postsIndex, 1);
     }
-    const idObj = await getIdentity(ipfs_id.id);
-    if (idObj.posts_deep && idObj.posts_deep[cid]) {
-      delete idObj.posts_deep[cid];
-      await level_db.put(ipfs_id.id, idObj);
+    const identityObj = await getIdentity(ipfs_id.id);
+    if (identityObj.posts_deep && identityObj.posts_deep[cid]) {
+      delete identityObj.posts_deep[cid];
+      await level_db.put(ipfs_id.id, identityObj);
     }
     save();
     // getFeed();

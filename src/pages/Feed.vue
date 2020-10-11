@@ -4,10 +4,9 @@
       <NewPost class="new-post" />
       <div v-if="feed">
         <PostCard
-          v-for="(post, index) in feed"
+          v-for="post in feed"
           :id="post.id"
           :key="post.ts"
-          :index="index"
           :post="post"
         />
       </div>
@@ -24,32 +23,41 @@ export default {
   name: "Feed",
   components: {
     NewPost,
-    PostCard
+    PostCard,
   },
-  props: {},
-  data: function() {
+  props: {
+    id: {
+      type: String,
+      required: true,
+    },
+  },
+  data: function () {
     return {
       feed: [],
-      refreshInterval: null
+      refreshInterval: null,
     };
   },
-  beforeDestroy: function() {
+  beforeDestroy: function () {
+    // ipcRenderer.removeListener("feedItem", this.onFeedItem);
+    ipcRenderer.removeAllListeners("feedItem");
     clearInterval(this.refreshInterval);
   },
-  mounted: function() {
-    ipcRenderer.on("feedItem", (event, postObj) => {
-      if (!this.feed.some(id => id.ts === postObj.ts)) {
-        this.feed.push(postObj);
-        this.feed.sort((a, b) => (a.ts > b.ts ? -1 : 1));
-      }
-    });
+  mounted: function () {
+    ipcRenderer.on("feedItem", this.onFeedItem);
     ipcRenderer.send("getFeed");
-    this.refreshInterval = setInterval(async function() {
+    this.refreshInterval = setInterval(async function () {
       console.log("refreshing feed...");
       // ipcRenderer.send("updateFollowing");
       ipcRenderer.send("getFeed");
     }, 1 * 60 * 1000);
   },
-  methods: {}
+  methods: {
+    onFeedItem(event, postObj) {
+      if (!this.feed.some((id) => id.ts === postObj.ts)) {
+        this.feed.push(postObj);
+        this.feed.sort((a, b) => (a.ts > b.ts ? -1 : 1));
+      }
+    },
+  },
 };
 </script>

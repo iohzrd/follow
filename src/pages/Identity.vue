@@ -25,13 +25,11 @@
     <br />
     <!-- following -->
     <h6>Following:</h6>
-    <div v-for="iden in identity.following_deep" :key="iden">
-      <router-link
-        :identity="iden"
-        :to="{ name: 'Identity', params: { identity: iden } }"
-        >{{ iden.id }} - {{ iden.dn }}</router-link
-      >
-    </div>
+    <IdentityCard
+      v-for="iden in identity.following"
+      :id="iden"
+      :key="iden"
+    ></IdentityCard>
     <br />
     <!-- meta  -->
     <h6>Collections:</h6>
@@ -43,13 +41,12 @@
     <br />
     <!-- posts  -->
     <h6>Posts:</h6>
-    <!-- <PostCard
-      v-for="post in identity.posts_deep"
+    <PostCard
+      v-for="post in posts_deep"
       :id="post.id"
       :key="post.ts"
-      class="post-card"
       :post="post"
-    ></PostCard>-->
+    ></PostCard>
 
     <!-- edit field modal -->
     <q-dialog v-model="editModal" persistent>
@@ -84,46 +81,55 @@
 </template>
 
 <script>
-// import PostCard from "../components/PostCard.vue";
+import { ipcRenderer } from "electron";
+import IdentityCard from "../components/IdentityCard.vue";
+import PostCard from "../components/PostCard.vue";
 export default {
   name: "Identity",
-  // components: { PostCard },
+  components: { IdentityCard, PostCard },
   props: {
-    identity: {
-      type: Object,
+    id: {
+      type: String,
       required: true,
     },
   },
   data: function () {
     return {
-      editModal: false,
       dt: "",
+      editModal: false,
+      following_deep: [],
+      identity: {},
+      ipfs_id: "",
+      meta_deep: [],
+      posts_deep: [],
     };
   },
-  watch: {
-    "identity.posts_deep": {
-      deep: true,
-      async handler(event) {
-        this.posts = event;
-      },
-    },
-    "identity.meta_deep": {
-      deep: true,
-      async handler(event) {
-        this.meta = event;
-      },
-    },
-    "identity.following_deep": {
-      deep: true,
-      async handler(event) {
-        this.following_deep = event;
-      },
-    },
+  beforeDestroy: function () {
+    ipcRenderer.removeAllListeners("post");
   },
+
   mounted: async function () {
-    console.log("IdentityObj.init()");
-    console.log(this.identity);
-    this.dt = new Date(Number(this.identity.ts));
+    const ipfs_id = this.$store.state.id;
+    this.ipfs_id = ipfs_id.id;
+    ipcRenderer.once("identity", (event, identityObj) => {
+      this.identity = identityObj;
+      this.dt = new Date(Number(this.identity.ts));
+      // for (const postCid in identityObj.posts_deep) {
+      //   const postObj = identityObj.posts_deep[postCid];
+      //   postObj.postCid = postCid;
+      //   postObj.identity = identityObj;
+      //   this.posts_deep.push(postObj);
+      //   this.posts_deep.sort((a, b) => (a.ts > b.ts ? -1 : 1));
+      // }
+    });
+    ipcRenderer.send("getIdentity", this.id);
+    ipcRenderer.on("post", (event, postObj) => {
+      if (!this.posts_deep.some((id) => id.ts === postObj.ts)) {
+        this.posts_deep.push(postObj);
+        this.posts_deep.sort((a, b) => (a.ts > b.ts ? -1 : 1));
+      }
+    });
+    ipcRenderer.send("getPosts", this.id);
   },
   methods: {
     editIdentityString(field, fieldName) {

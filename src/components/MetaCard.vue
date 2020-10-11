@@ -3,7 +3,7 @@
 </template>
 <script>
 export default {
-  name: "MetaList",
+  name: "BlankComponent",
   props: {},
   data: function() {
     return {};

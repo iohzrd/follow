@@ -5,7 +5,7 @@
         <q-toolbar>
           <q-btn flat round dense icon="menu" @click="drawer = !drawer" />
           <q-toolbar-title>Follow</q-toolbar-title>
-          <div>ID: {{ id.id }}</div>
+          <div>ID: {{ ipfs_id.id }}</div>
           <q-space />
         </q-toolbar>
 
@@ -21,14 +21,18 @@
       >
         <q-scroll-area class="fit">
           <q-list v-for="(menuItem, index) in menuList" :key="index">
-            <q-item v-ripple clickable :to="{ name: menuItem.route }">
+            <q-item
+              v-if="ipfs_id.id"
+              :id="ipfs_id.id"
+              v-ripple
+              clickable
+              :to="{ name: menuItem.route, params: { id: ipfs_id.id } }"
+            >
               <q-item-section avatar>
                 <q-icon :name="menuItem.icon" />
               </q-item-section>
               <q-item-section>{{ menuItem.label }}</q-item-section>
             </q-item>
-
-            <q-separator v-if="menuItem.separator" />
           </q-list>
 
           <q-item>
@@ -46,7 +50,11 @@
       <q-page-container>
         <q-page class="root-container">
           <div>
-            <router-view />
+            <router-view
+              v-if="ipfs_id.id"
+              :id="ipfs_id.id"
+              :key="$route.path"
+            />
           </div>
         </q-page>
       </q-page-container>
@@ -89,32 +97,17 @@ const menuList = [
   {
     icon: "rss_feed",
     label: "Feed",
-    route: "Feed",
-    separator: false
-  },
-  {
-    icon: "featured_play_list",
-    label: "Collections",
-    route: "MetaList",
-    separator: false
-  },
-  {
-    icon: "people",
-    label: "Following",
-    route: "IdentityList",
-    separator: false
+    route: "Feed"
   },
   {
     icon: "assignment_ind",
     label: "Profile",
-    route: "Identity",
-    separator: false
+    route: "Identity"
   },
   {
     icon: "settings",
     label: "Settings",
-    route: "Settings",
-    separator: false
+    route: "Settings"
   }
 ];
 
@@ -126,7 +119,7 @@ export default {
       dark: true,
       drawer: false,
       idToFollow: "",
-      id: {},
+      ipfs_id: {},
       menuList,
       publishInterval: null,
       refreshInterval: null
@@ -150,7 +143,7 @@ export default {
   },
   mounted: function() {
     ipcRenderer.once("id", (event, id) => {
-      this.id = id;
+      this.ipfs_id = id;
       this.$store.commit("setID", id);
     });
     ipcRenderer.send("getId");
