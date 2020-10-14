@@ -1,6 +1,6 @@
 <template>
   <div v-if="post">
-    <q-card flat bordered class="my-card">
+    <q-card flat bordered>
       <q-card-section v-for="(value, key) in post" :key="key">
         <div v-if="key != 'identity'">{{ key }}: "{{ value }}"</div>
       </q-card-section>
@@ -13,16 +13,16 @@ export default {
   props: {
     post: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
-  data: function () {
+  data: function() {
     return {};
   },
-  mounted: function () {
+  mounted: function() {
     console.log(this.post);
   },
-  methods: {},
+  methods: {}
 };
 </script>
 <style scoped></style>

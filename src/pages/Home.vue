@@ -2,21 +2,21 @@
   <Feed :id="id"></Feed>
 </template>
 
-<script >
+<script>
 import Feed from "../pages/Feed.vue";
 export default {
   name: "Home",
   components: {
-    Feed,
+    Feed
   },
   props: {
     id: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
-  data: function () {
+  data: function() {
     return {};
-  },
+  }
 };
 </script>

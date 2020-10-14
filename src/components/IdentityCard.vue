@@ -12,10 +12,11 @@
             <router-link
               :to="{
                 name: 'Identity',
-                params: { id: id },
+                params: { id: id }
               }"
-              >{{ (identity.dn, id) || id }}</router-link
             >
+              {{ identity.dn }} - {{ id }}
+            </router-link>
           </div>
           <!-- unfollow -->
           <div v-if="ipfs_id != id">
@@ -65,25 +66,31 @@ export default {
   props: {
     id: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
-  data: function () {
+  data: function() {
     return {
       unfollowModal: false,
       ipfs_id: "",
-      identity: {},
+      identity: {}
     };
   },
-  mounted: function () {
+  mounted: function() {
+    console.log(this.id);
     const ipfs_id = this.$store.state.id;
     this.ipfs_id = ipfs_id.id;
-    ipcRenderer.once("identity", (event, identityObj) => {
-      this.identity = identityObj;
+    // ipcRenderer.on("identity", (event, identityObj) => {
+    //   console.log(identityObj);
+    //   this.identity = identityObj;
+    // });
+    ipcRenderer.invoke("getIdentity", this.id).then(result => {
+      console.log("getIdentity.then");
+      console.log(result);
+      this.identity = result;
     });
-    ipcRenderer.send("getIdentity", this.id);
   },
-  methods: {},
+  methods: {}
 };
 </script>
 

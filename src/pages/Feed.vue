@@ -23,29 +23,29 @@ export default {
   name: "Feed",
   components: {
     NewPost,
-    PostCard,
+    PostCard
   },
   props: {
     id: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
-  data: function () {
+  data: function() {
     return {
       feed: [],
-      refreshInterval: null,
+      refreshInterval: null
     };
   },
-  beforeDestroy: function () {
+  beforeDestroy: function() {
     // ipcRenderer.removeListener("feedItem", this.onFeedItem);
     ipcRenderer.removeAllListeners("feedItem");
     clearInterval(this.refreshInterval);
   },
-  mounted: function () {
+  mounted: function() {
     ipcRenderer.on("feedItem", this.onFeedItem);
     ipcRenderer.send("getFeed");
-    this.refreshInterval = setInterval(async function () {
+    this.refreshInterval = setInterval(async function() {
       console.log("refreshing feed...");
       // ipcRenderer.send("updateFollowing");
       ipcRenderer.send("getFeed");
@@ -53,11 +53,11 @@ export default {
   },
   methods: {
     onFeedItem(event, postObj) {
-      if (!this.feed.some((id) => id.ts === postObj.ts)) {
+      if (!this.feed.some(id => id.ts === postObj.ts)) {
         this.feed.push(postObj);
         this.feed.sort((a, b) => (a.ts > b.ts ? -1 : 1));
       }
-    },
-  },
+    }
+  }
 };
 </script>

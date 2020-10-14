@@ -1,28 +1,99 @@
 <template>
   <div v-if="identity" class="identity-container">
-    <br />
-    <!-- avatar -->
-    <img :src="identity.av" />
-    <!-- display name -->
-    <h6>
-      {{ identity.dn }}
-      <q-btn
-        flat
-        round
-        color="primary"
-        icon="edit"
-        @click="editIdentityString(identity.dn)"
-      />
-    </h6>
-    <!-- identity -->
-    <h6>({{ identity.id }})</h6>
-    <!-- time of last publication -->
-    <div>Last update: {{ dt }}</div>
-    <br />
-    <!-- auxiliary fields -->
-    <h6>Info:</h6>
-    <div v-for="obj in identity.aux" :key="obj">placeholder</div>
-    <br />
+    <q-card flat bordered>
+      <!-- avatar -->
+      <q-card-section>
+        <div class="center">
+          <q-img v-if="identity.av" :src="identity.av" @click="temp" />
+          <q-icon v-else :size="'xl'" :name="'assignment_ind'" @click="temp" />
+        </div>
+      </q-card-section>
+      <!--  -->
+      <q-card-section>
+        <!-- display name -->
+        <div class="row items-center no-wrap">
+          <div class="col">
+            <q-input
+              v-model="identity.dn"
+              filled
+              label="Display name"
+              :disable="ipfs_id != identity.id"
+            />
+          </div>
+        </div>
+      </q-card-section>
+      <!--  -->
+      <q-card-section>
+        <q-input v-model="identity.id" filled label="ID" disable />
+      </q-card-section>
+      <!--  -->
+      <q-card-section>
+        <div v-for="(obj, index) in aux" :key="index">
+          <div class="row items-center no-wrap">
+            <div class="col-auto">
+              <q-input
+                v-model="obj.key"
+                filled
+                label="Custom key"
+                :disable="ipfs_id != identity.id"
+              />
+            </div>
+            <q-card-section />
+            <div class="col">
+              <q-input
+                v-model="obj.value"
+                filled
+                label="Custom value"
+                :disable="ipfs_id != identity.id"
+              />
+            </div>
+            <div class="col-auto">
+              <q-btn
+                v-if="ipfs_id == identity.id"
+                color="primary"
+                flat
+                size="xl"
+                icon="remove"
+                @click="removeAuxItem(index)"
+              />
+            </div>
+          </div>
+        </div>
+      </q-card-section>
+      <!--  -->
+      <q-card-section>
+        <div class="row items-center no-wrap">
+          <div class="col"></div>
+          <div class="col-auto">
+            <q-btn
+              v-if="ipfs_id == identity.id"
+              color="primary"
+              flat
+              size="xl"
+              icon="add"
+              @click="addAuxItem()"
+            />
+          </div>
+        </div>
+      </q-card-section>
+      <!--  -->
+      <q-card-section>
+        <div class="row items-center no-wrap">
+          <div class="col">Last update: {{ dt }}</div>
+          <div class="col-auto">
+            <q-btn
+              flat
+              color="primary"
+              size="xl"
+              label=""
+              icon="save"
+              @click="saveIdentityFields()"
+            />
+          </div>
+        </div>
+      </q-card-section>
+    </q-card>
+
     <!-- following -->
     <h6>Following:</h6>
     <IdentityCard
@@ -95,6 +166,7 @@ export default {
   },
   data: function () {
     return {
+      aux: [],
       dt: "",
       editModal: false,
       following_deep: [],
@@ -113,6 +185,12 @@ export default {
     this.ipfs_id = ipfs_id.id;
     ipcRenderer.once("identity", (event, identityObj) => {
       this.identity = identityObj;
+      if (!Array.isArray(this.identity.aux)) {
+        this.identity.aux = [];
+      }
+      this.aux = this.identity.aux;
+      console.log("this.aux");
+      console.log(this.aux);
       this.dt = new Date(Number(this.identity.ts));
       // for (const postCid in identityObj.posts_deep) {
       //   const postObj = identityObj.posts_deep[postCid];
@@ -131,14 +209,44 @@ export default {
     });
     ipcRenderer.send("getPosts", this.id);
   },
+
   methods: {
-    editIdentityString(field, fieldName) {
-      console.log(field);
-      console.log(fieldName);
-      this.editModal = true;
+    addAuxItem() {
+      console.log("addAuxItem");
+      // const len = this.aux.length;
+      const newKey = ``;
+      const newValue = ``;
+      const newObj = { key: newKey, value: newValue };
+      this.aux.push(newObj);
+      console.log(this.aux);
+    },
+    removeAuxItem(index) {
+      this.aux.splice(index, 1);
+    },
+    saveIdentityFields() {
+      console.log("editIdentityField");
+      ipcRenderer.send("editIdentityField", {
+        key: "dn",
+        value: this.identity.dn,
+      });
+      ipcRenderer.send("editIdentityField", {
+        key: "aux",
+        value: this.aux,
+      });
+      ipcRenderer.send("getIdentity", this.id);
+    },
+    temp() {
+      console.log("temp");
     },
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.center {
+  display: block;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>

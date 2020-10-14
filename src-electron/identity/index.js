@@ -85,9 +85,6 @@ module.exports = async function(ctx) {
     }
     event.sender.send("id", ipfs_id);
   });
-  ipcMain.on("getIdSync", event => {
-    event.returnValue = ipfs_id;
-  });
   ipcMain.handle("getId", async event => {
     console.log(event);
     if (!ipfs_id) {
@@ -110,9 +107,11 @@ module.exports = async function(ctx) {
   // publish identity
   const publish = async () => {
     logger.info("[Identity] publish()");
+    const temp_self = self;
+    delete temp_self.posts_deep;
     const obj = {
       path: "identity.json",
-      content: JSON.stringify(self)
+      content: JSON.stringify(temp_self)
     };
     const addOptions = {
       pin: true,
@@ -130,10 +129,6 @@ module.exports = async function(ctx) {
   ipcMain.on("publish", async event => {
     const result = await publish();
     event.sender.send("publish", result);
-  });
-  ipcMain.on("publishSync", async event => {
-    const result = await publish();
-    event.returnValue = result;
   });
   ipcMain.handle("publish", async () => {
     const result = await publish();
@@ -184,6 +179,24 @@ module.exports = async function(ctx) {
     delete identityObj.posts_deep;
     event.sender.send("identity", identityObj);
   });
+  ipcMain.handle("getIdentity", async (event, id) => {
+    const identityObj = await getIdentity(id);
+    delete identityObj.posts_deep;
+    return identityObj;
+  });
+
+  // edit identity field
+  const editIdentityField = async (event, kv) => {
+    logger.info("[Identity] editIdentityField()");
+    console.log(kv);
+    const key = kv.key;
+    const value = kv.value;
+    if (typeof self[key] === typeof value) {
+      self[key] = value;
+      await save();
+    }
+  };
+  ipcMain.on("editIdentityField", editIdentityField);
 
   // update followed identities
   const updateFollowing = async () => {
@@ -205,10 +218,6 @@ module.exports = async function(ctx) {
   ipcMain.on("updateFollowing", async event => {
     const result = await updateFollowing();
     event.sender.send("publish", result);
-  });
-  ipcMain.on("updateFollowingSync", async event => {
-    const result = await updateFollowing();
-    event.returnValue = result;
   });
   ipcMain.handle("updateFollowing", async () => {
     const result = await updateFollowing();
@@ -235,6 +244,7 @@ module.exports = async function(ctx) {
     } catch (error) {
       post = Buffer.concat(await all(ipfs.cat(cid)));
     }
+    console.log(post);
     return JSON.parse(post);
   };
 
@@ -253,6 +263,9 @@ module.exports = async function(ctx) {
       identityObj.posts_deep[cid] = postObj;
       await level_db.put(identityObj.id, identityObj);
     }
+    postObj.postCid = cid;
+    delete identityObj.posts_deep;
+    postObj.identity = identityObj;
     return postObj;
   };
 
@@ -260,8 +273,6 @@ module.exports = async function(ctx) {
   ipcMain.on("getPost", async (event, id, postCid) => {
     const identityObj = await getIdentity(id);
     const postObj = await getPost(identityObj, postCid);
-    postObj.postCid = postCid;
-    postObj.identity = identityObj;
     event.sender.send("post", postObj);
   });
 
@@ -270,8 +281,6 @@ module.exports = async function(ctx) {
     const identityObj = await getIdentity(id);
     for await (const postCid of identityObj.posts) {
       const postObj = await getPost(identityObj, postCid);
-      postObj.postCid = postCid;
-      postObj.identity = identityObj;
       event.sender.send("post", postObj);
     }
   });
@@ -282,10 +291,17 @@ module.exports = async function(ctx) {
       const identityObj = await getIdentity(fid);
       for await (const postCid of identityObj.posts) {
         const postObj = await getPost(identityObj, postCid);
-        postObj.postCid = postCid;
-        postObj.identity = identityObj;
         event.sender.send("feedItem", postObj);
       }
+    }
+  });
+
+  // get following deep
+  ipcMain.on("getFollowing", async event => {
+    for await (const fid of self.following) {
+      const identityObj = await getIdentity(fid);
+      delete identityObj.posts_deep;
+      event.sender.send("followingItem", identityObj);
     }
   });
 
@@ -350,7 +366,7 @@ module.exports = async function(ctx) {
     };
     logger.info("postObj");
     logger.info(postObj);
-    const indexHTML = await fs.readFile("src/modules/postStandalone.html");
+    const indexHTML = await fs.readFile("src/pages/postStandalone.html");
     const obj = [
       {
         path: "post.json",
@@ -422,10 +438,6 @@ module.exports = async function(ctx) {
   ipcMain.on("repost", async (event, postCid) => {
     await repost(postCid);
     event.sender.send();
-  });
-  ipcMain.on("repostSync", async (event, postCid) => {
-    const result = await repost(postCid);
-    event.returnValue = result;
   });
   ipcMain.handle("repost", async (event, postCid) => {
     console.log(event);

@@ -24,7 +24,7 @@
               <router-link
                 :to="{
                   name: 'Identity',
-                  params: { identity: post.identity, id: post.identity.id },
+                  params: { identity: post.identity, id: post.identity.id }
                 }"
                 >{{ post.identity.dn || post.identity.id }}</router-link
               >
@@ -205,10 +205,10 @@ export default {
   props: {
     post: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
-  data: function () {
+  data: function() {
     return {
       body: "",
       filesRoot: "",
@@ -224,10 +224,10 @@ export default {
       shareModal: false,
       deleteModal: false,
       unfollowModal: false,
-      shareLink: "",
+      shareLink: ""
     };
   },
-  mounted: function () {
+  mounted: function() {
     this.id = this.$store.state.id;
     this.init();
   },
@@ -251,7 +251,7 @@ export default {
     },
     async removePost() {
       // ipcRenderer.send("removePost", this.post.postCid);
-      ipcRenderer.invoke("removePost", this.post.postCid).then((result) => {
+      ipcRenderer.invoke("removePost", this.post.postCid).then(result => {
         console.log("removePost.then");
         console.log(result);
         ipcRenderer.send("getFeed");
@@ -262,7 +262,7 @@ export default {
     },
     async repost() {
       // ipcRenderer.send("repost", this.post.postCid);
-      ipcRenderer.invoke("repost", this.post.postCid).then((result) => {
+      ipcRenderer.invoke("repost", this.post.postCid).then(result => {
         console.log("repost.then");
         console.log(result);
         ipcRenderer.send("getFeed");
@@ -272,7 +272,7 @@ export default {
       const ipfs = await IpfsHttpClient({
         host: "localhost",
         port: "5001",
-        protocol: "http",
+        protocol: "http"
       });
       const files = await all(ipfs.ls(filesRoot));
       for await (const file of files) {
@@ -289,12 +289,12 @@ export default {
         const fileObj = {
           ...file,
           ...fType,
-          blobUrl,
+          blobUrl
         };
         this.fileObjs.push(fileObj);
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

@@ -142,11 +142,19 @@ export default {
     clearInterval(this.refreshInterval);
   },
   mounted: function() {
-    ipcRenderer.once("id", (event, id) => {
+    // ipcRenderer.once("id", (event, id) => {
+    //   this.ipfs_id = id;
+    //   this.$store.commit("setID", id);
+    // });
+    // ipcRenderer.send("getId");
+
+    ipcRenderer.invoke("getId", this.id).then(id => {
+      console.log("getIdentity.then");
+      console.log(id);
       this.ipfs_id = id;
       this.$store.commit("setID", id);
     });
-    ipcRenderer.send("getId");
+
     ipcRenderer.send("publish");
     // ipcRenderer.send("updateFollowing");
 
