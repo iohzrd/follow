@@ -142,12 +142,6 @@ export default {
     clearInterval(this.refreshInterval);
   },
   mounted: function() {
-    // ipcRenderer.once("id", (event, id) => {
-    //   this.ipfs_id = id;
-    //   this.$store.commit("setID", id);
-    // });
-    // ipcRenderer.send("getId");
-
     ipcRenderer.invoke("getId", this.id).then(id => {
       console.log("getIdentity.then");
       console.log(id);
@@ -156,14 +150,14 @@ export default {
     });
 
     ipcRenderer.send("publish");
-    // ipcRenderer.send("updateFollowing");
+    ipcRenderer.send("updateFollowing");
 
     this.publishInterval = setInterval(async function() {
       console.log("auto-publish...");
       ipcRenderer.send("publish");
     }, 60 * 60 * 1000);
     this.refreshInterval = setInterval(async function() {
-      console.log("refreshing feed...");
+      console.log("refreshing identities...");
       ipcRenderer.send("updateFollowing");
     }, 1 * 60 * 1000);
   },

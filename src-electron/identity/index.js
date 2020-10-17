@@ -1,4 +1,4 @@
-const { app, ipcMain } = require("electron");
+const { app, ipcMain, ipcRenderer } = require("electron");
 const IpfsHttpClient = require("ipfs-http-client");
 const all = require("it-all");
 const path = require("path");
@@ -244,7 +244,6 @@ module.exports = async function(ctx) {
     } catch (error) {
       post = Buffer.concat(await all(ipfs.cat(cid)));
     }
-    console.log(post);
     return JSON.parse(post);
   };
 
@@ -263,9 +262,15 @@ module.exports = async function(ctx) {
       identityObj.posts_deep[cid] = postObj;
       await level_db.put(identityObj.id, identityObj);
     }
+    if (!postObj.publisher) {
+      postObj.publisher = identityObj.id;
+    }
     postObj.postCid = cid;
-    delete identityObj.posts_deep;
-    postObj.identity = identityObj;
+    postObj.identity = {};
+    postObj.identity.av = identityObj.av;
+    postObj.identity.dn = identityObj.dn;
+    postObj.identity.id = identityObj.id;
+    postObj.identity.ts = identityObj.ts;
     return postObj;
   };
 
@@ -301,24 +306,9 @@ module.exports = async function(ctx) {
     for await (const fid of self.following) {
       const identityObj = await getIdentity(fid);
       delete identityObj.posts_deep;
-      event.sender.send("followingItem", identityObj);
+      event.sender.send("followingIdentity", identityObj);
     }
   });
-
-  const getPostList = async () => {
-    logger.info("[Identity] getPostList()");
-    const feed = [];
-    for await (const postCid of self.posts) {
-      const postObj = await getPostIpfs(postCid);
-      postObj.dn = self.dn;
-      postObj.publisher = ipfs_id.id;
-      postObj.dt = new Date(Number(postObj.ts));
-      feed.push(postObj);
-    }
-    feed.sort((a, b) => (a.ts > b.ts ? -1 : 1));
-
-    return feed;
-  };
 
   // add post
   const addPost = async post => {
@@ -406,11 +396,6 @@ module.exports = async function(ctx) {
   // remove post
   const removePost = async cid => {
     logger.info("[Identity] removePost()");
-    let feed = [];
-    // const feedIndex = feed.indexOf(cid);
-    // if (feedIndex > -1) {
-    //   feed.splice(feedIndex, 1);
-    // }
     const postsIndex = self.posts.indexOf(cid);
     if (postsIndex > -1) {
       self.posts.splice(postsIndex, 1);
@@ -421,10 +406,13 @@ module.exports = async function(ctx) {
       await level_db.put(ipfs_id.id, identityObj);
     }
     save();
-    // getFeed();
   };
   ipcMain.on("removePost", async (event, cid) => {
     await removePost(cid);
+  });
+  ipcMain.handle("removePost", async (event, cid) => {
+    const remRet = await removePost(cid);
+    return remRet;
   });
 
   // repost

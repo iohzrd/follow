@@ -161,26 +161,25 @@ export default {
   props: {
     id: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
-  data: function () {
+  data: function() {
     return {
       aux: [],
       dt: "",
       editModal: false,
-      following_deep: [],
       identity: {},
       ipfs_id: "",
       meta_deep: [],
-      posts_deep: [],
+      posts_deep: []
     };
   },
-  beforeDestroy: function () {
+  beforeDestroy: function() {
     ipcRenderer.removeAllListeners("post");
   },
 
-  mounted: async function () {
+  mounted: async function() {
     const ipfs_id = this.$store.state.id;
     this.ipfs_id = ipfs_id.id;
     ipcRenderer.once("identity", (event, identityObj) => {
@@ -192,17 +191,10 @@ export default {
       console.log("this.aux");
       console.log(this.aux);
       this.dt = new Date(Number(this.identity.ts));
-      // for (const postCid in identityObj.posts_deep) {
-      //   const postObj = identityObj.posts_deep[postCid];
-      //   postObj.postCid = postCid;
-      //   postObj.identity = identityObj;
-      //   this.posts_deep.push(postObj);
-      //   this.posts_deep.sort((a, b) => (a.ts > b.ts ? -1 : 1));
-      // }
     });
     ipcRenderer.send("getIdentity", this.id);
     ipcRenderer.on("post", (event, postObj) => {
-      if (!this.posts_deep.some((id) => id.ts === postObj.ts)) {
+      if (!this.posts_deep.some(id => id.ts === postObj.ts)) {
         this.posts_deep.push(postObj);
         this.posts_deep.sort((a, b) => (a.ts > b.ts ? -1 : 1));
       }
@@ -213,12 +205,10 @@ export default {
   methods: {
     addAuxItem() {
       console.log("addAuxItem");
-      // const len = this.aux.length;
       const newKey = ``;
       const newValue = ``;
       const newObj = { key: newKey, value: newValue };
       this.aux.push(newObj);
-      console.log(this.aux);
     },
     removeAuxItem(index) {
       this.aux.splice(index, 1);
@@ -227,18 +217,18 @@ export default {
       console.log("editIdentityField");
       ipcRenderer.send("editIdentityField", {
         key: "dn",
-        value: this.identity.dn,
+        value: this.identity.dn
       });
       ipcRenderer.send("editIdentityField", {
         key: "aux",
-        value: this.aux,
+        value: this.aux
       });
       ipcRenderer.send("getIdentity", this.id);
     },
     temp() {
       console.log("temp");
-    },
-  },
+    }
+  }
 };
 </script>
 

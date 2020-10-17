@@ -4,12 +4,8 @@
       <q-card-section>
         <div class="row items-center no-wrap">
           <q-avatar>
-            <img v-if="post.identity.av" :src="post.identity.av" />
-            <q-icon
-              v-if="!post.identity.av"
-              :size="'xl'"
-              :name="'assignment_ind'"
-            />
+            <img v-if="identity.av" :src="identity.av" />
+            <q-icon v-if="!identity.av" :size="'xl'" :name="'assignment_ind'" />
           </q-avatar>
           <q-card-section />
           <div class="col">
@@ -24,9 +20,9 @@
               <router-link
                 :to="{
                   name: 'Identity',
-                  params: { identity: post.identity, id: post.identity.id }
+                  params: { identity: identity, id: identity.id }
                 }"
-                >{{ post.identity.dn || post.identity.id }}</router-link
+                >{{ identity.dn || identity.id }}</router-link
               >
             </div>
           </div>
@@ -46,12 +42,12 @@
             <q-btn color="grey-7" round flat icon="more_vert">
               <q-menu cover auto-close>
                 <q-list>
-                  <q-item v-if="post.identity.id == id.id" clickable>
+                  <q-item v-if="identity.id == ipfs_id.id" clickable>
                     <q-item-section @click="deleteModal = true"
                       >Delete post</q-item-section
                     >
                   </q-item>
-                  <q-item v-if="post.identity.id != id.id" clickable>
+                  <q-item v-if="identity.id != ipfs_id.id" clickable>
                     <q-item-section @click="unfollowModal = true"
                       >Unfollow</q-item-section
                     >
@@ -101,7 +97,7 @@
           label="Comment"
         />
         <!--  -->
-        <div v-if="post.identity.id != id.id">
+        <div v-if="identity.id != ipfs_id.id">
           <q-btn
             class="col"
             color="primary"
@@ -167,7 +163,7 @@
             flat
             label="Delete"
             color="primary"
-            @click="removePost(post.identity.id)"
+            @click="removePost(identity.id)"
           />
         </q-card-actions>
       </q-card>
@@ -217,7 +213,8 @@ export default {
       fileObjs: [],
       carousel: false,
       slide: 0,
-      id: {},
+      ipfs_id: {},
+      identity: {},
       magnet: "",
       meta: [],
       ts: "",
@@ -228,7 +225,8 @@ export default {
     };
   },
   mounted: function() {
-    this.id = this.$store.state.id;
+    this.identity = this.post.identity;
+    this.ipfs_id = this.$store.state.id;
     this.init();
   },
   methods: {
@@ -246,17 +244,17 @@ export default {
       this.magnet = this.post.magnet;
       this.meta = this.post.meta;
       this.ts = this.post.ts;
-
       this.shareLink = "https://ipfs.io/ipfs/" + this.post.postCid;
     },
     async removePost() {
-      // ipcRenderer.send("removePost", this.post.postCid);
       ipcRenderer.invoke("removePost", this.post.postCid).then(result => {
         console.log("removePost.then");
         console.log(result);
-        ipcRenderer.send("getFeed");
       });
+      // ipcRenderer.send("removePost", this.post.postCid);
+      this.$emit("delete-post", this.post.postCid);
     },
+
     async unfollow(id) {
       ipcRenderer.send("unfollow", id);
     },
