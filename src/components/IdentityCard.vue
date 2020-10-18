@@ -84,7 +84,7 @@ export default {
     //   console.log(identityObj);
     //   this.identity = identityObj;
     // });
-    ipcRenderer.invoke("getIdentity", this.id).then(result => {
+    ipcRenderer.invoke("get-identity", this.id).then(result => {
       console.log("getIdentity.then");
       console.log(result);
       this.identity = result;

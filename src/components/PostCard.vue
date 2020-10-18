@@ -18,9 +18,10 @@
             <div class="text-subtitle1">
               From:
               <router-link
+                :id="identity.id"
                 :to="{
                   name: 'Identity',
-                  params: { identity: identity, id: identity.id }
+                  params: { id: identity.id }
                 }"
                 >{{ identity.dn || identity.id }}</router-link
               >
@@ -247,11 +248,11 @@ export default {
       this.shareLink = "https://ipfs.io/ipfs/" + this.post.postCid;
     },
     async removePost() {
-      ipcRenderer.invoke("removePost", this.post.postCid).then(result => {
-        console.log("removePost.then");
+      ipcRenderer.invoke("remove-post", this.post.postCid).then(result => {
+        console.log("remove-post.then");
         console.log(result);
       });
-      // ipcRenderer.send("removePost", this.post.postCid);
+      // ipcRenderer.send("remove-post", this.post.postCid);
       this.$emit("delete-post", this.post.postCid);
     },
 
@@ -263,7 +264,7 @@ export default {
       ipcRenderer.invoke("repost", this.post.postCid).then(result => {
         console.log("repost.then");
         console.log(result);
-        ipcRenderer.send("getFeed");
+        ipcRenderer.send("get-feed");
       });
     },
     async getContent(filesRoot) {

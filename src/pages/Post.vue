@@ -1,15 +1,19 @@
 <template>
   <div v-if="post">
-    <q-card flat bordered>
-      <q-card-section v-for="(value, key) in post" :key="key">
-        <div v-if="key != 'identity'">{{ key }}: "{{ value }}"</div>
-      </q-card-section>
-    </q-card>
+    <PostCard :key="post.ts" :post="post" @delete-post="deletePost" />
+    {{ post }}
+    <Comments :cid="post.postCid" />
   </div>
 </template>
 <script>
+import Comments from "../components/Comments.vue";
+import PostCard from "../components/PostCard.vue";
 export default {
   name: "Post",
+  components: {
+    Comments,
+    PostCard
+  },
   props: {
     post: {
       type: Object,
@@ -19,10 +23,14 @@ export default {
   data: function() {
     return {};
   },
-  mounted: function() {
-    console.log(this.post);
-  },
-  methods: {}
+  mounted: function() {},
+  methods: {
+    deletePost(cid) {
+      console.log("deletePost");
+      console.log(cid);
+      this.feed = this.feed.filter(post => post.postCid !== cid);
+    }
+  }
 };
 </script>
 <style scoped></style>

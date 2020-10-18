@@ -7,6 +7,7 @@ const { showDialog } = require("../dialogs");
 const logger = require("../common/logger");
 const {
   applyDefaults,
+  migrateConfig,
   checkCorsConfig,
   checkPorts,
   configExists,
@@ -36,7 +37,7 @@ function getIpfsBinPath() {
 
 function writeIpfsBinaryPath(path) {
   fs.outputFileSync(
-    join(app.getPath("home"), "./.config/follow/IPFS_EXEC").replace(
+    join(app.getPath("home"), "./.ipfs-desktop/IPFS_EXEC").replace(
       "app.asar",
       "app.asar.unpacked"
     ),
@@ -61,6 +62,7 @@ async function spawn({ flags, path, keysize }) {
   });
 
   if (configExists(ipfsd)) {
+    migrateConfig(ipfsd);
     checkCorsConfig(ipfsd);
     return { ipfsd, isRemote: false };
   }
@@ -71,9 +73,7 @@ async function spawn({ flags, path, keysize }) {
     return { ipfsd, isRemote: true };
   }
 
-  await ipfsd.init({
-    bits: keysize
-  });
+  await ipfsd.init();
 
   applyDefaults(ipfsd);
   return { ipfsd, isRemote: false };

@@ -142,7 +142,7 @@ export default {
     clearInterval(this.refreshInterval);
   },
   mounted: function() {
-    ipcRenderer.invoke("getId", this.id).then(id => {
+    ipcRenderer.invoke("get-id", this.id).then(id => {
       console.log("getIdentity.then");
       console.log(id);
       this.ipfs_id = id;
@@ -150,7 +150,7 @@ export default {
     });
 
     ipcRenderer.send("publish");
-    ipcRenderer.send("updateFollowing");
+    ipcRenderer.send("update-following");
 
     this.publishInterval = setInterval(async function() {
       console.log("auto-publish...");
@@ -158,12 +158,12 @@ export default {
     }, 60 * 60 * 1000);
     this.refreshInterval = setInterval(async function() {
       console.log("refreshing identities...");
-      ipcRenderer.send("updateFollowing");
+      ipcRenderer.send("update-following");
     }, 1 * 60 * 1000);
   },
   methods: {
     async addNewFollowing() {
-      ipcRenderer.send("addNewFollowing", this.idToFollow);
+      ipcRenderer.send("add-to-following", this.idToFollow);
       this.idToFollow = "";
     }
   }

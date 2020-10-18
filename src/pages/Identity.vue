@@ -192,14 +192,14 @@ export default {
       console.log(this.aux);
       this.dt = new Date(Number(this.identity.ts));
     });
-    ipcRenderer.send("getIdentity", this.id);
+    ipcRenderer.send("get-identity", this.id);
     ipcRenderer.on("post", (event, postObj) => {
       if (!this.posts_deep.some(id => id.ts === postObj.ts)) {
         this.posts_deep.push(postObj);
         this.posts_deep.sort((a, b) => (a.ts > b.ts ? -1 : 1));
       }
     });
-    ipcRenderer.send("getPosts", this.id);
+    ipcRenderer.send("get-posts", this.id);
   },
 
   methods: {
@@ -214,16 +214,20 @@ export default {
       this.aux.splice(index, 1);
     },
     saveIdentityFields() {
-      console.log("editIdentityField");
-      ipcRenderer.send("editIdentityField", {
+      console.log("edit-identity-field");
+      ipcRenderer.send("edit-identity-field", {
+        key: "av",
+        value: this.identity.av
+      });
+      ipcRenderer.send("edit-identity-field", {
         key: "dn",
         value: this.identity.dn
       });
-      ipcRenderer.send("editIdentityField", {
+      ipcRenderer.send("edit-identity-field", {
         key: "aux",
         value: this.aux
       });
-      ipcRenderer.send("getIdentity", this.id);
+      ipcRenderer.send("get-identity", this.id);
     },
     temp() {
       console.log("temp");

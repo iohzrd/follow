@@ -52,13 +52,13 @@ export default {
   methods: {
     addPost: async function() {
       ipcRenderer
-        .invoke("addPost", { body: this.body, files: this.files })
+        .invoke("add-post", { body: this.body, files: this.files })
         .then(result => {
-          console.log("addPost.then");
+          console.log("add-post.then");
           console.log(result);
           this.body = "";
           this.files = [];
-          ipcRenderer.send("getFeed");
+          ipcRenderer.send("get-feed");
         });
     }
   }

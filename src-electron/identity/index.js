@@ -1,4 +1,4 @@
-const { app, ipcMain, ipcRenderer } = require("electron");
+const { app, ipcMain } = require("electron");
 const IpfsHttpClient = require("ipfs-http-client");
 const all = require("it-all");
 const path = require("path");
@@ -79,13 +79,13 @@ module.exports = async function(ctx) {
   };
 
   // get id
-  ipcMain.on("getId", async event => {
+  ipcMain.on("get-id", async event => {
     if (!ipfs_id) {
       ipfs_id = await ipfs.id();
     }
     event.sender.send("id", ipfs_id);
   });
-  ipcMain.handle("getId", async event => {
+  ipcMain.handle("get-id", async event => {
     console.log(event);
     if (!ipfs_id) {
       ipfs_id = await ipfs.id();
@@ -113,76 +113,76 @@ module.exports = async function(ctx) {
       path: "identity.json",
       content: JSON.stringify(temp_self)
     };
-    const addOptions = {
+    const add_options = {
       pin: true,
       wrapWithDirectory: true,
       timeout: 10000
     };
-    const pubObj = await ipfs.add(obj, addOptions);
-    const pubRet = await ipfs.name.publish(pubObj.cid.string, {
+    const publish_object = await ipfs.add(obj, add_options);
+    const publish_result = await ipfs.name.publish(publish_object.cid.string, {
       lifetime: "8760h"
     });
     logger.info("publish complete");
-    logger.info(pubRet);
-    return pubRet;
+    logger.info(publish_result);
+    return publish_result;
   };
-  ipcMain.on("publish", async event => {
+  ipcMain.on("publish-identity", async event => {
     const result = await publish();
-    event.sender.send("publish", result);
+    event.sender.send("publish-identity-complete", result);
   });
-  ipcMain.handle("publish", async () => {
+  ipcMain.handle("publish-identity", async () => {
     const result = await publish();
     return result;
   });
 
   // const pinCID = async cid => {
   //   logger.info(`[Identity] pinCID(${cid})`);
-  //   const pinResult = await ipfs.pin.add(cid);
-  //   // logger.info("pinResult");
-  //   // logger.info(pinResult);
-  //   return pinResult;
+  //   const pin_result = await ipfs.pin.add(cid);
+  //   // logger.info("pin_result");
+  //   // logger.info(pin_result);
+  //   return pin_result;
   // };
 
   const getIdentityIpfs = async id => {
     logger.info(`[Identity] getIdentityIpfs(${id})`);
-    const identityFileCID = await all(ipfs.name.resolve(id));
-    const cid = `${identityFileCID[0]}/identity.json`;
+    const identity_file_cid = await all(ipfs.name.resolve(id));
+    const cid = `${identity_file_cid[0]}/identity.json`;
     // await pinCID(cid);
-    const identityJson = Buffer.concat(await all(ipfs.cat(cid)));
-    return JSON.parse(identityJson);
+    const identity_json = Buffer.concat(await all(ipfs.cat(cid)));
+    return JSON.parse(identity_json);
   };
 
   const getIdentity = async id => {
     logger.info(`getIdentity(${id})`);
-    let identityObj;
+    let identity_object;
     if (await dbContainsKey(level_db, id)) {
       logger.info("loading identity from DB...");
-      identityObj = await level_db.get(id);
+      identity_object = await level_db.get(id);
     } else {
       logger.info(
         "inserting blank identity into DB. We'll grab the real one when we can..."
       );
-      identityObj = IDENTITY_TEMPLATE;
-      identityObj.following = [id];
-      identityObj.id = id;
-      identityObj.ts = Math.floor(new Date().getTime());
+      identity_object = IDENTITY_TEMPLATE;
+      identity_object.following = [id];
+      identity_object.id = id;
+      identity_object.ts = Math.floor(new Date().getTime());
       if (id !== ipfs_id.id) {
-        await level_db.put(id, identityObj);
+        await level_db.put(id, identity_object);
       }
     }
-    logger.info(identityObj);
-    console.log(identityObj);
-    return identityObj;
+    logger.info(identity_object);
+    console.log(identity_object);
+    return identity_object;
   };
-  ipcMain.on("getIdentity", async (event, id) => {
-    const identityObj = await getIdentity(id);
-    delete identityObj.posts_deep;
-    event.sender.send("identity", identityObj);
+  ipcMain.on("get-identity", async (event, id) => {
+    const identity_object = await getIdentity(id);
+    delete identity_object.posts_deep;
+    event.sender.send("identity", identity_object);
   });
-  ipcMain.handle("getIdentity", async (event, id) => {
-    const identityObj = await getIdentity(id);
-    delete identityObj.posts_deep;
-    return identityObj;
+  ipcMain.handle("get-identity", async (event, id) => {
+    const identity_object = await getIdentity(id);
+    delete identity_object.posts_deep;
+    return identity_object;
   });
 
   // edit identity field
@@ -196,7 +196,7 @@ module.exports = async function(ctx) {
       await save();
     }
   };
-  ipcMain.on("editIdentityField", editIdentityField);
+  ipcMain.on("edit-identity-field", editIdentityField);
 
   // update followed identities
   const updateFollowing = async () => {
@@ -205,9 +205,9 @@ module.exports = async function(ctx) {
     for await (const id of self.following) {
       try {
         if (id !== ipfs_id.id) {
-          const identityObj = await getIdentityIpfs(id);
-          following_deep.push(identityObj);
-          await level_db.put(id, identityObj);
+          const identity_object = await getIdentityIpfs(id);
+          following_deep.push(identity_object);
+          await level_db.put(id, identity_object);
         }
       } catch (error) {
         logger.info(`failed to fetch identity: ${id}`);
@@ -215,11 +215,11 @@ module.exports = async function(ctx) {
       }
     }
   };
-  ipcMain.on("updateFollowing", async event => {
+  ipcMain.on("update-following", async event => {
     const result = await updateFollowing();
-    event.sender.send("publish", result);
+    event.sender.send("update-following-complete", result);
   });
-  ipcMain.handle("updateFollowing", async () => {
+  ipcMain.handle("update-following", async () => {
     const result = await updateFollowing();
     return result;
   });
@@ -231,82 +231,82 @@ module.exports = async function(ctx) {
       await save();
     }
   };
-  ipcMain.on("addToFollowing", async (event, id) => {
+  ipcMain.on("add-to-following", async (event, id) => {
     await addToFollowing(id);
   });
 
-  const getPostIpfs = async cid => {
+  const getPostIpfs = async post_cid => {
     logger.info("getPostIpfs");
     // await pinCID(cid);
-    let post;
+    let post_buffer;
     try {
-      post = Buffer.concat(await all(ipfs.cat(`${cid}/post.json`)));
+      post_buffer = Buffer.concat(await all(ipfs.cat(`${post_cid}/post.json`)));
     } catch (error) {
-      post = Buffer.concat(await all(ipfs.cat(cid)));
+      post_buffer = Buffer.concat(await all(ipfs.cat(post_cid)));
     }
-    return JSON.parse(post);
+    return JSON.parse(post_buffer);
   };
 
-  const getPost = async (identityObj, cid) => {
+  const getPost = async (identity_object, cid) => {
     logger.info("getPost");
-    let postObj;
-    if (!identityObj.posts_deep) {
-      identityObj.posts_deep = {};
+    let post_object;
+    if (!identity_object.posts_deep) {
+      identity_object.posts_deep = {};
     }
-    if (identityObj.posts_deep && identityObj.posts_deep[cid]) {
+    if (identity_object.posts_deep && identity_object.posts_deep[cid]) {
       logger.info("loading post from DB...");
-      postObj = identityObj.posts_deep[cid];
+      post_object = identity_object.posts_deep[cid];
     } else {
       logger.info("loading post from IPFS...");
-      postObj = await getPostIpfs(cid);
-      identityObj.posts_deep[cid] = postObj;
-      await level_db.put(identityObj.id, identityObj);
+      post_object = await getPostIpfs(cid);
+      identity_object.posts_deep[cid] = post_object;
+      await level_db.put(identity_object.id, identity_object);
     }
-    if (!postObj.publisher) {
-      postObj.publisher = identityObj.id;
+    if (!post_object.publisher) {
+      post_object.publisher = identity_object.id;
     }
-    postObj.postCid = cid;
-    postObj.identity = {};
-    postObj.identity.av = identityObj.av;
-    postObj.identity.dn = identityObj.dn;
-    postObj.identity.id = identityObj.id;
-    postObj.identity.ts = identityObj.ts;
-    return postObj;
+    post_object.postCid = cid;
+    post_object.identity = {};
+    post_object.identity.av = identity_object.av;
+    post_object.identity.dn = identity_object.dn;
+    post_object.identity.id = identity_object.id;
+    post_object.identity.ts = identity_object.ts;
+    return post_object;
   };
 
   // get post
-  ipcMain.on("getPost", async (event, id, postCid) => {
-    const identityObj = await getIdentity(id);
-    const postObj = await getPost(identityObj, postCid);
-    event.sender.send("post", postObj);
+  ipcMain.on("get-post", async (event, id, postCid) => {
+    const identity_object = await getIdentity(id);
+    const post_object = await getPost(identity_object, postCid);
+    event.sender.send("post", post_object);
   });
 
   // get posts
-  ipcMain.on("getPosts", async (event, id) => {
-    const identityObj = await getIdentity(id);
-    for await (const postCid of identityObj.posts) {
-      const postObj = await getPost(identityObj, postCid);
-      event.sender.send("post", postObj);
+  ipcMain.on("get-posts", async (event, id) => {
+    const identity_object = await getIdentity(id);
+    for await (const postCid of identity_object.posts) {
+      const post_object = await getPost(identity_object, postCid);
+      event.sender.send("post", post_object);
     }
   });
 
   // get feed
-  ipcMain.on("getFeed", async event => {
+  ipcMain.on("get-feed", async event => {
     for await (const fid of self.following) {
-      const identityObj = await getIdentity(fid);
-      for await (const postCid of identityObj.posts) {
-        const postObj = await getPost(identityObj, postCid);
-        event.sender.send("feedItem", postObj);
+      const identity_object = await getIdentity(fid);
+      for await (const postCid of identity_object.posts) {
+        const post_object = await getPost(identity_object, postCid);
+        event.sender.send("feedItem", post_object);
       }
     }
   });
 
   // get following deep
-  ipcMain.on("getFollowing", async event => {
+  ipcMain.on("get-following", async event => {
     for await (const fid of self.following) {
-      const identityObj = await getIdentity(fid);
-      delete identityObj.posts_deep;
-      event.sender.send("followingIdentity", identityObj);
+      const identity_object = await getIdentity(fid);
+      delete identity_object.posts_deep;
+      event.sender.send("followingIdentity", identity_object);
     }
   });
 
@@ -317,102 +317,102 @@ module.exports = async function(ctx) {
     console.log(files);
     console.log(body);
     let filesRoot = "";
-    let addedFiles = [];
-    let fileNames = [];
+    let file_list = [];
+    let file_names = [];
 
     let ts = Math.floor(new Date().getTime());
     if (files.length) {
       for await (const file of files) {
-        const fileObj = {
+        const file_object = {
           path: file.name,
           content: await fs.readFile(file.path)
         };
-        fileNames.push(file.name);
-        addedFiles.push(fileObj);
+        file_names.push(file.name);
+        file_list.push(file_object);
       }
 
-      logger.info(fileNames);
-      logger.info(addedFiles);
-      const addOptions = {
+      logger.info(file_names);
+      logger.info(file_list);
+      const add_options = {
         // pin: true,
         wrapWithDirectory: true,
         timeout: 10000
       };
-      const addRet = await ipfs.add(addedFiles, addOptions);
-      filesRoot = addRet.cid.string;
+      const add_result = await ipfs.add(file_list, add_options);
+      filesRoot = add_result.cid.string;
       logger.info("addRet1");
-      logger.info(addRet);
+      logger.info(add_result);
     }
 
-    const postObj = {
+    const post_object = {
       body: body,
       dn: self.dn,
-      files: fileNames,
+      files: file_names,
       filesRoot: filesRoot,
       magnet: "",
       meta: [],
       publisher: ipfs_id.id,
       ts: ts
     };
-    logger.info("postObj");
-    logger.info(postObj);
-    const indexHTML = await fs.readFile("src/pages/postStandalone.html");
+    logger.info("post_object");
+    logger.info(post_object);
+    const index_html = await fs.readFile("src/pages/postStandalone.html");
     const obj = [
       {
         path: "post.json",
-        content: JSON.stringify(postObj)
+        content: JSON.stringify(post_object)
       },
       {
         path: "index.html",
-        content: indexHTML
+        content: index_html
       }
     ];
-    const addOptions = {
+    const add_options = {
       // pin: true,
       wrapWithDirectory: true,
       timeout: 10000
     };
-    const addRet = await ipfs.add(obj, addOptions);
+    const add_result = await ipfs.add(obj, add_options);
     logger.info("addRet2");
-    logger.info(addRet);
-    const cid = addRet.cid.string;
+    logger.info(add_result);
+    const cid = add_result.cid.string;
     if (typeof cid === "string" && cid.length == 46) {
       self.posts.unshift(cid);
       save();
       // getFeed();
     }
-    return addRet;
+    return add_result;
   };
-  ipcMain.on("addPost", async (event, postObj) => {
-    console.log(postObj);
-    await addPost(postObj);
+  ipcMain.on("add-post", async (event, post_object) => {
+    console.log(post_object);
+    await addPost(post_object);
   });
-  ipcMain.handle("addPost", async (event, postObj) => {
-    console.log(postObj);
-    const addRet = await addPost(postObj);
-    return addRet;
+  ipcMain.handle("add-post", async (event, post_object) => {
+    console.log(post_object);
+    const add_result = await addPost(post_object);
+    return add_result;
   });
 
   // remove post
   const removePost = async cid => {
     logger.info("[Identity] removePost()");
-    const postsIndex = self.posts.indexOf(cid);
-    if (postsIndex > -1) {
-      self.posts.splice(postsIndex, 1);
+    const post_index = self.posts.indexOf(cid);
+    if (post_index > -1) {
+      self.posts.splice(post_index, 1);
     }
-    const identityObj = await getIdentity(ipfs_id.id);
-    if (identityObj.posts_deep && identityObj.posts_deep[cid]) {
-      delete identityObj.posts_deep[cid];
-      await level_db.put(ipfs_id.id, identityObj);
+    const identity_object = await getIdentity(ipfs_id.id);
+    if (identity_object.posts_deep && identity_object.posts_deep[cid]) {
+      delete identity_object.posts_deep[cid];
+      await level_db.put(ipfs_id.id, identity_object);
     }
     save();
   };
-  ipcMain.on("removePost", async (event, cid) => {
+  ipcMain.on("remove-post", async (event, cid) => {
     await removePost(cid);
   });
-  ipcMain.handle("removePost", async (event, cid) => {
-    const remRet = await removePost(cid);
-    return remRet;
+  ipcMain.handle("remove-post", async (event, cid) => {
+    const remove_result = await removePost(cid);
+    return remove_result;
   });
 
   // repost

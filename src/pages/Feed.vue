@@ -44,10 +44,10 @@ export default {
   },
   mounted: function() {
     ipcRenderer.on("feedItem", this.onFeedItem);
-    ipcRenderer.send("getFeed");
+    ipcRenderer.send("get-feed");
     this.refreshInterval = setInterval(async function() {
       console.log("refreshing feed...");
-      ipcRenderer.send("getFeed");
+      ipcRenderer.send("get-feed");
     }, 1 * 60 * 1000);
   },
   methods: {
