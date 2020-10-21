@@ -43,14 +43,12 @@ module.exports = async function(ctx) {
 
         channel.on("ready", async () => {
           console.log(`${channelName} ready`);
-          // const feed = orbit.channels[channelName].feed;
-          const feed = channel.feed;
-          const all = feed
+          ctx.mainWindow.webContents.send("comments-ready");
+          const all = channel.feed
             .iterator({ limit: -1 })
             .collect()
             .map(e => e.payload.value);
           all.forEach(comment => {
-            // event.sender.send("comment", comment);
             ctx.mainWindow.webContents.send("comment", comment);
 
             console.log(comment);
@@ -73,51 +71,6 @@ module.exports = async function(ctx) {
       channel.removeAllListeners("entry");
       orbit.leave(channelName);
     });
-
-    // ipcMain.on("join-comment-channel", (event, channelName) => {
-    //   console.log(orbit.channels);
-    //   if (!(channelName in orbit.channels)) {
-    //     orbit.join(channelName).then((channel) => {
-    //       console.log("joined")
-    //       // console.log(channel)
-
-    //       channel.on('entry', entry => {
-    //         // messages = [...messages, entry.payload.value].sort((a, b) => a.meta.ts - b.meta.ts)
-    //         console.log("entry")
-    //         // console.log(entry.payload.value)
-    //         ctx.mainWindow.webContents.send("comment", entry.payload.value)
-    //       })
-
-    //       channel.on('ready', async () => {
-    //         console.log(`${channelName} ready`)
-    //         // const feed = orbit.channels[channelName].feed
-    //         // const all = feed.iterator({ limit: -1 })
-    //         // .collect()
-    //         // .map((e) => e.payload.value)
-    //         // console.log("all")
-    //         // console.log(all)
-    //         // try {
-    //         //   all.forEach(comment => {
-    //         //     // event.sender.send("comment", comment);
-    //         //     ctx.mainWindow.webContents.send("comment", comment)
-
-    //         //     console.log(comment)
-    //         //   });
-    //         // } catch (error) {
-    //         //   console.log(error)
-    //         // }
-    //         // feed.forEach(comment => {
-    //         //   event.sender.send("comment", comment);
-    //         // });
-    //         // event.sender.send("comment", feed);
-    //       })
-
-    //       // channel.load(-1)
-
-    //     })
-    //   }
-
-    // });
 
     // Connect to Orbit network
     orbit.connect(id).catch(e => console.error(e));

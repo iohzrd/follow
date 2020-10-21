@@ -1,29 +1,37 @@
 <template>
   <q-card flat bordered>
-    <q-card-section>
-      <q-input
-        v-model="newComment"
-        autogrow
-        filled
-        label="Add a comment"
-        type="textarea"
-      >
-        <template #after>
-          <q-btn
-            color="primary"
-            dense
-            size="xl"
-            icon="comment"
-            :disable="!newComment.length"
-            @click="addComment"
-          />
-        </template>
-      </q-input>
-    </q-card-section>
+    <div v-if="ready">
+      <q-card-section>
+        <q-input
+          v-model="newComment"
+          autogrow
+          filled
+          label="Add a comment"
+          type="textarea"
+        >
+          <template #after>
+            <q-btn
+              color="primary"
+              dense
+              size="xl"
+              icon="comment"
+              :disable="!newComment.length"
+              @click="addComment"
+            />
+          </template>
+        </q-input>
+      </q-card-section>
 
-    <q-card-section v-for="comment in comments" :key="comment.meta.ts">
-      {{ comment.content }}
-    </q-card-section>
+      <q-card-section v-for="comment in comments" :key="comment.meta.ts">
+        {{ comment.content }}
+      </q-card-section>
+    </div>
+
+    <div v-else>
+      <q-card-section>
+        <q-spinner class="spinner" color="primary" size="3em" :thickness="10" />
+      </q-card-section>
+    </div>
   </q-card>
 </template>
 <script>
@@ -38,6 +46,7 @@ export default {
   },
   data: function() {
     return {
+      ready: false,
       newComment: "",
       comments: []
     };
@@ -50,6 +59,9 @@ export default {
   mounted: function() {
     console.log(this.cid);
     ipcRenderer.on("comment", this.onComment);
+    ipcRenderer.on("comments-ready", () => {
+      this.ready = true;
+    });
     ipcRenderer.send("join-comment-channel", `${this.cid}:comments`);
   },
   methods: {
@@ -60,13 +72,19 @@ export default {
     },
     onComment(event, comment) {
       console.log(event);
+      console.log(comment);
       if (!this.comments.some(c => c.meta.ts === comment.meta.ts)) {
         this.comments.push(comment);
         this.comments.sort((a, b) => (a.meta.ts > b.meta.ts ? -1 : 1));
-        console.log(comment);
       }
     }
   }
 };
 </script>
-<style scoped></style>
+<style scoped>
+.spinner {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
