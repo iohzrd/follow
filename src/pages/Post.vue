@@ -1,7 +1,6 @@
 <template>
   <div v-if="post">
     <PostCard :key="post.ts" :post="post" @delete-post="deletePost" />
-    {{ post }}
     <Comments :cid="post.postCid" />
   </div>
 </template>
