@@ -12,7 +12,7 @@ const setupTray = require("../tray");
 const setupDownloadCid = require("../download-cid");
 // const setupAnalytics = require("../analytics");
 const setupIdentity = require("../identity");
-// const setupOrbit = require("../orbit");
+const setupOrbit = require("../orbit");
 
 // Hide Dock
 if (app.dock) app.dock.hide();
@@ -69,7 +69,7 @@ if (process.env.PROD) {
   global.__statics = __dirname;
 }
 
-async function createWindow() {
+async function createWindow(ctx) {
   /**
    * Initial window options
    */
@@ -88,6 +88,8 @@ async function createWindow() {
       // preload: path.resolve(__dirname, 'electron-preload.js')
     }
   });
+
+  ctx.mainWindow = mainWindow;
 
   console.log(process.env.APP_URL);
   mainWindow.loadURL(process.env.APP_URL);
@@ -135,11 +137,10 @@ async function main() {
 
     // // Setup identity
     await setupIdentity(ctx);
-    // // Setup orbit
-    // await setupOrbit(ctx);
-
     // open electron
-    await createWindow();
+    await createWindow(ctx);
+    // // Setup orbit
+    await setupOrbit(ctx);
   } catch (e) {
     handleError(e);
   }
