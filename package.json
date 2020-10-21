@@ -49,12 +49,12 @@
     "sudo-prompt": "^9.2.1",
     "untildify": "^4.0.0",
     "vue-i18n": "^8.22.1",
-    "webtorrent": "^0.108.6",
+    "webtorrent": "^0.109.0",
     "webtorrent-hybrid": "^4.0.2",
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@quasar/app": "^2.1.4",
+    "@quasar/app": "^2.1.5",
     "babel-eslint": "^10.1.0",
     "devtron": "^1.4.0",
     "electron": "^10.1.4",
@@ -62,7 +62,7 @@
     "electron-debug": "^3.1.0",
     "electron-devtools-installer": "^3.1.1",
     "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.13.0",
+    "eslint-config-prettier": "^6.14.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-vue": "^7.1.0"
   },
