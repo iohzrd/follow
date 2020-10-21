@@ -29,7 +29,7 @@
 
     <div v-else>
       <q-card-section>
-        <q-spinner class="spinner" color="primary" size="3em" :thickness="10" />
+        <q-spinner class="spinner" color="primary" size="3em" />
       </q-card-section>
     </div>
   </q-card>
