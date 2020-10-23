@@ -22,9 +22,16 @@
         </q-input>
       </q-card-section>
 
-      <q-card-section v-for="comment in comments" :key="comment.meta.ts">
-        {{ comment.content }}
-      </q-card-section>
+      <q-separator dark inset />
+
+      <div v-for="comment in comments" :key="comment.meta.ts">
+        <q-card-section>
+          <div class="text-caption">From: {{ comment.meta.from.name }}</div>
+          <br />
+          <div class="text-body1">{{ comment.content }}</div>
+        </q-card-section>
+        <q-separator dark inset />
+      </div>
     </div>
 
     <div v-else>

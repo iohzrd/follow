@@ -62,7 +62,7 @@
 <script>
 import { ipcRenderer } from "electron";
 export default {
-  name: "PostCard",
+  name: "IdentityCard",
   props: {
     id: {
       type: String,

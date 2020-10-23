@@ -3,7 +3,7 @@
 </template>
 <script>
 export default {
-  name: "BlankComponent",
+  name: "MetaCard",
   props: {},
   data: function() {
     return {};
