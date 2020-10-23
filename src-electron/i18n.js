@@ -31,6 +31,7 @@ const nl = require("i18next-icu/locale-data/nl");
 const no = require("i18next-icu/locale-data/no");
 const pl = require("i18next-icu/locale-data/pl");
 const pt = require("i18next-icu/locale-data/pt");
+const ro = require("i18next-icu/locale-data/ro");
 const ru = require("i18next-icu/locale-data/ru");
 const sk = require("i18next-icu/locale-data/sk");
 const sl = require("i18next-icu/locale-data/sl");
@@ -68,6 +69,7 @@ const localeData = [
   no,
   pl,
   pt,
+  ro,
   ru,
   sk,
   sl,

@@ -7,11 +7,10 @@ const { globSource } = require("ipfs-http-client");
 
 async function copyFile(ipfs, cid, name) {
   let i = 0;
-  const True = true;
   const ext = extname(name);
   const base = basename(name, ext);
 
-  while (True) {
+  while (true) {
     const newName = (i === 0 ? base : `${base} (${i})`) + ext;
 
     try {
@@ -33,7 +32,7 @@ async function makeShareableObject(ipfs, results) {
     return results[0];
   }
 
-  let baseCID = await ipfs.object.new("unixfs-dir");
+  let baseCID = await ipfs.object.new({ template: "unixfs-dir" });
 
   for (const { cid, path, size } of results) {
     baseCID = await ipfs.object.patch.addLink(baseCID, {
@@ -93,13 +92,9 @@ module.exports = async function({ getIpfsd }, files) {
   await Promise.all(
     files.map(async file => {
       try {
-        let result = null;
-        for await (const res of ipfsd.api.add(
+        const result = await ipfsd.api.add(
           globSource(file, { recursive: true })
-        )) {
-          result = res;
-        }
-
+        );
         await copyFile(ipfsd.api, result.cid, result.path);
         successes.push(result);
       } catch (e) {
@@ -120,7 +115,9 @@ module.exports = async function({ getIpfsd }, files) {
 
   const { cid, path } = await makeShareableObject(ipfsd.api, successes);
   sendNotification(failures, successes, path);
-
-  const url = `https://ipfs.io/ipfs/${cid.toString()}`;
+  const filename = path
+    ? `?filename=${encodeURIComponent(path.split("/").pop())}`
+    : "";
+  const url = `https://dweb.link/ipfs/${cid.toString()}${filename}`;
   clipboard.writeText(url);
 };

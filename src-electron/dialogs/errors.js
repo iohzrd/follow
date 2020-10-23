@@ -1,4 +1,5 @@
 const { app, shell } = require("electron");
+const path = require("path");
 const i18n = require("i18next");
 const dialog = require("./dialog");
 
@@ -7,7 +8,7 @@ const issueTemplate = e => `Please describe what you were doing when this error 
 **Specifications**
 
 - **OS**: ${process.platform}
-- **IPFS Desktop Version**: ${app.getVersion()}
+- **Follow Version**: ${app.getVersion()}
 - **Electron Version**: ${process.versions.electron}
 - **Chrome Version**: ${process.versions.chrome}
 
@@ -19,6 +20,11 @@ ${e.stack}
 `;
 
 let hasErrored = false;
+
+const newIssueUrl = e =>
+  `https://github.com/iohzrd/follow/issues/new?body=${encodeURI(
+    issueTemplate(e)
+  )}`.substring(0, 1999);
 
 function criticalErrorDialog(e) {
   if (hasErrored) return;
@@ -38,11 +44,7 @@ function criticalErrorDialog(e) {
   if (option === 0) {
     app.relaunch();
   } else if (option === 2) {
-    shell.openExternal(
-      `https://github.com/iohzrd/follow/issues/new?body=${encodeURI(
-        issueTemplate(e)
-      )}`
-    );
+    shell.openExternal(newIssueUrl(e));
   }
 
   app.exit(1);
@@ -72,13 +74,9 @@ function recoverableErrorDialog(e, options) {
   const option = dialog(cfg);
 
   if (option === 1) {
-    shell.openExternal(
-      `https://github.com/iohzrd/follow/issues/new?body=${encodeURI(
-        issueTemplate(e)
-      )}`
-    );
+    shell.openExternal(newIssueUrl(e));
   } else if (option === 2) {
-    shell.openItem(app.getPath("userData"));
+    shell.openPath(path.join(app.getPath("userData"), "combined.log"));
   }
 }
 

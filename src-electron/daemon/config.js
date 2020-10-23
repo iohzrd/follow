@@ -80,7 +80,7 @@ function migrateConfig(ipfsd) {
     return;
   }
 
-  // Cleanup https://github.com/ipfs-shipyard/ipfs-desktop/issues/1631
+  // Cleanup https://github.com/iohzrd/follow/issues/1631
   if (
     config.Discovery &&
     config.Discovery.MDNS &&
