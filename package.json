@@ -1,9 +1,9 @@
 {
   "name": "follow",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "Decentralized, censorship resistant social media and bulletin board on IPFS",
   "productName": "follow",
-  "author": "Adam Alexander Stohl <iohzrd@gmail.com>",
+  "author": "iohzrd <iohzrd@gmail.com>",
   "license": "ISC",
   "private": true,
   "scripts": {
@@ -23,7 +23,7 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@quasar/extras": "^1.9.9",
+    "@quasar/extras": "^1.9.10",
     "core-js": "^3.6.5",
     "cors": "^2.8.5",
     "countly-sdk-nodejs": "^20.4.0",

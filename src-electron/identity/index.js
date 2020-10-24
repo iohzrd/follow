@@ -356,7 +356,9 @@ module.exports = async function(ctx) {
     };
     logger.info("post_object");
     logger.info(post_object);
-    const index_html = await fs.readFile("src/pages/postStandalone.html");
+    const index_html = await fs.readFile(
+      path.join(__statics, "/postStandalone.html")
+    );
     const obj = [
       {
         path: "post.json",

@@ -3,7 +3,7 @@
     "baseUrl": ".",
     "paths": {
       "app/*": ["*"],
-      "assets/*": ["assets/*"],
+      "assets/*": ["src/assets/*"],
       "boot/*": ["src/boot/*"],
       "components/*": ["src/components/*"],
       "layouts/*": ["src/layouts/*"],
