@@ -81,7 +81,7 @@ const localeData = [
   zh
 ];
 
-module.exports = async function() {
+module.exports = async function () {
   await i18n
     .use(new ICU({ localeData: localeData }))
     .use(Backend)
@@ -91,7 +91,7 @@ module.exports = async function() {
         default: ["en"]
       },
       backend: {
-        loadPath: join(__dirname, "../assets/locales/{{lng}}.json")
+        loadPath: join(__statics, "/locales/{{lng}}.json")
       }
     });
 

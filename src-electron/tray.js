@@ -55,9 +55,7 @@ function buildMenu(ctx) {
       label: i18n.t(status),
       visible: false,
       enabled: false,
-      icon: path.resolve(
-        path.join(__dirname, `../assets/icons/status/${color}.png`)
-      )
+      icon: path.join(__statics, `${color}.png`)
     })),
     {
       id: "restartIpfs",
@@ -224,16 +222,14 @@ const on = "on";
 const off = "off";
 
 function icon(color) {
-  const dir = path.resolve(path.join(__dirname, "../assets/icons/tray"));
-
   if (!IS_MAC) {
-    return path.join(dir, `${color}-big.png`);
+    return path.join(__statics, `${color}-big.png`);
   }
 
-  return path.join(dir, `${color}-22Template.png`);
+  return path.join(__statics, `${color}-22Template.png`);
 }
 
-module.exports = function(ctx) {
+module.exports = function (ctx) {
   logger.info("[tray] starting");
   const tray = new Tray(icon(off));
   let menu = null;
