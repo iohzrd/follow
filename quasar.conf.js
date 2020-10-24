@@ -170,7 +170,7 @@ module.exports = function(/* ctx */) {
 
       builder: {
         // https://www.electron.build/configuration/configuration
-        appId: "com.follow.follow",
+        appId: "com.electron.follow",
         win: {
           target: "nsis"
         },
