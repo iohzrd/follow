@@ -1,6 +1,11 @@
 <template>
   <div v-if="post">
-    <PostCard :key="post.ts" :post="post" @delete-post="deletePost" />
+    <PostCard
+      :key="post.ts"
+      :post="post"
+      @delete-post="deletePost"
+      @show-unfollow-prompt="unfollow"
+    />
     <Comments :cid="post.postCid" />
   </div>
 </template>
@@ -24,6 +29,11 @@ export default {
   },
   mounted: function() {},
   methods: {
+    unfollow(id) {
+      console.log("on show-unfollow-prompt");
+      console.log(id);
+      // this.$emit("show-unfollow-prompt", id);
+    },
     deletePost(cid) {
       console.log("deletePost");
       console.log(cid);

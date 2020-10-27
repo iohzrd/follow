@@ -50,9 +50,19 @@ export default {
   },
   computed: {},
   methods: {
-    addPost: async function() {
+    async addPost() {
+      console.log("NewPost.addPost");
+      const files = [];
+      this.files.forEach(file => {
+        const file_object = {};
+        file_object.name = file.name;
+        file_object.path = file.path;
+        file_object.type = file.type;
+        file_object.size = file.size;
+        files.push(file_object);
+      });
       ipcRenderer
-        .invoke("add-post", { body: this.body, files: this.files })
+        .invoke("add-post", { body: this.body, files: files })
         .then(result => {
           console.log("add-post.then");
           console.log(result);

@@ -2,55 +2,27 @@ const IpfsHttpClient = require("ipfs-http-client");
 const ipfs = IpfsHttpClient();
 const Orbit = require("orbit_");
 
-
-
-
 async function main() {
   try {
     const { id } = await ipfs.id();
     const orbit = new Orbit(ipfs);
 
     orbit.events.on("connected", () => {
-      const channelName = 'channel1'
-
-      orbit.join(channelName).then((channel) => {
-        console.log("joined")
-        // console.log(channel)
-        channel.on('ready', async () => {
-          console.log(`${channelName} ready`)
-          const feed = orbit.channels[channelName].feed
-          const all = feed.iterator({ limit: -1 })
-          .collect()
-          .map((e) => e.payload.value)
-          console.log(all)
-        })
-
-        channel.load(-1)
-
-      })
-
+      for (let index = 0; index < 62; index++) {
+        const channelName = `test-channel-${index}`;
+        orbit.join(channelName);
+      }
     });
 
-    // const onJoinedChannel = async (channelName, channel) => {
-    //   channel.on('ready', async () => {
-    //     console.log(`${channelName} ready`)
-    //     const feed = orbit.channels[channelName].feed
-    //     const all = feed.iterator({ limit: -1 })
-    //     .collect()
-    //     .map((e) => e.payload.value.content)
-    //     console.log(all)
-    //   })
-    
-    //   // channel.on('entry', entry => {
-    //   //   // messages = [...messages, entry.payload.value].sort((a, b) => a.meta.ts - b.meta.ts)
-    //   //   console.log("entry")
-    //   //   // console.log(entry.payload.value)
-    //   // })
-    
-    //   channel.load(-1)
-    // };
+    orbit.events.on("joined", channelName => {
+      orbit.send(channelName, "ping");
+      console.log(`Joined: ${channelName}`);
+    });
 
-    // orbit.events.on('joined', onJoinedChannel)
+    orbit.events.on("entry", (entry, channelName) => {
+      const post = entry.payload.value;
+      console.log(`[${post.meta.ts}] - ${channelName} - ${post.content}`);
+    });
 
     // Connect to Orbit network
     orbit.connect(id).catch(e => console.error(e));

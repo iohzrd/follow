@@ -9,7 +9,7 @@
           <q-space />
         </q-toolbar>
 
-        <q-btn unelevated icon="person_add" @click="addPrompt = true" />
+        <q-btn unelevated icon="person_add" @click="followPrompt = true" />
       </q-header>
 
       <q-drawer
@@ -54,13 +54,30 @@
               v-if="ipfs_id.id"
               :id="ipfs_id.id"
               :key="$route.path"
+              @show-unfollow-prompt="showUnfollowPrompt"
+              @show-link-prompt="showLinkPrompt"
             />
           </div>
         </q-page>
       </q-page-container>
 
+      <!-- share link modal -->
+      <q-dialog v-model="shareLinkPrompt">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">Link</div>
+          </q-card-section>
+
+          <q-card-section class="text-body2">{{ shareLink }}</q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn v-close-popup flat label="OK" color="primary" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+
       <!-- follow new id modal -->
-      <q-dialog v-model="addPrompt" persistent>
+      <q-dialog v-model="followPrompt" persistent>
         <q-card style="min-width: 350px">
           <q-card-section>
             <div class="text-h6">Enter an ID to follow</div>
@@ -71,21 +88,36 @@
               v-model="idToFollow"
               dense
               autofocus
-              @keyup.enter="addPrompt = false"
+              @keyup.enter="followPrompt = false"
             />
           </q-card-section>
 
           <q-card-actions align="right" class="text-primary">
             <q-btn v-close-popup flat label="Cancel" />
+            <q-btn v-close-popup flat label="Add ID" @click="addFollowing()" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+      <!-- unfollow confirmation modal -->
+      <q-dialog v-model="unfollowPrompt">
+        <q-card>
+          <q-card-section>
+            <div class="text-body">Unfollow {{ idToUnollow }}?</div>
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn v-close-popup flat label="Cancel" color="primary" />
             <q-btn
               v-close-popup
               flat
-              label="Add ID"
-              @click="addNewFollowing()"
+              label="Unfollow"
+              color="primary"
+              @click="removeFollowing()"
             />
           </q-card-actions>
         </q-card>
       </q-dialog>
+      <!--  -->
     </q-layout>
   </div>
 </template>
@@ -115,14 +147,18 @@ export default {
   name: "App",
   data() {
     return {
-      addPrompt: false,
       dark: true,
       drawer: false,
+      followPrompt: false,
       idToFollow: "",
+      idToUnollow: "",
       ipfs_id: {},
       menuList,
       publishInterval: null,
-      refreshInterval: null
+      refreshInterval: null,
+      unfollowPrompt: false,
+      shareLinkPrompt: false,
+      shareLink: ""
     };
   },
 
@@ -162,9 +198,23 @@ export default {
     }, 1 * 60 * 1000);
   },
   methods: {
-    async addNewFollowing() {
-      ipcRenderer.send("add-to-following", this.idToFollow);
+    showUnfollowPrompt(id) {
+      console.log(`App: showUnfollowPrompt(${id})`);
+      this.idToUnollow = id;
+      this.unfollowPrompt = true;
+    },
+    showLinkPrompt(link) {
+      console.log(`App: showLinkPrompt(${link})`);
+      this.shareLink = link;
+      this.shareLinkPrompt = true;
+    },
+    async addFollowing() {
+      ipcRenderer.send("follow", this.idToFollow);
       this.idToFollow = "";
+    },
+    async removeFollowing() {
+      ipcRenderer.send("unfollow", this.idToUnollow);
+      this.idToUnollow = "";
     }
   }
 };

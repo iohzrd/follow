@@ -82,6 +82,7 @@
           <div class="col">Last update: {{ dt }}</div>
           <div class="col-auto">
             <q-btn
+              v-if="ipfs_id == identity.id"
               flat
               color="primary"
               size="xl"
@@ -177,6 +178,14 @@ export default {
   },
   beforeDestroy: function() {
     ipcRenderer.removeAllListeners("post");
+    // try {
+    //   ipcRenderer.removeAllListeners("post");
+    // } catch (error) {
+    //   console.log(
+    //     "error trying to remove event listeners for 'post', listens must not have been listening"
+    //   );
+    //   console.log(error);
+    // }
   },
 
   mounted: async function() {

@@ -99,7 +99,9 @@ module.exports = async function(ctx) {
   };
 
   const save = async () => {
-    logger.info("save");
+    logger.info("saving identity...");
+    console.log(self);
+    self.id = ipfs_id.id;
     await level_db.put(ipfs_id.id, self);
     await publish();
   };
@@ -206,6 +208,11 @@ module.exports = async function(ctx) {
       try {
         if (id !== ipfs_id.id) {
           const identity_object = await getIdentityIpfs(id);
+          if (identity_object.id != id) {
+            console.log("Id in identity fraudulent, correcting....");
+            console.log(`expected: ${id}, got: ${identity_object["id"]}`);
+            identity_object["id"] = id;
+          }
           following_deep.push(identity_object);
           await level_db.put(id, identity_object);
         }
@@ -224,15 +231,29 @@ module.exports = async function(ctx) {
     return result;
   });
 
-  const addToFollowing = async id => {
-    logger.info("[Identity] addToFollowing()");
+  const followId = async id => {
+    logger.info("[Identity] followId()");
     if (!self.following.includes(id)) {
       self.following.push(id);
       await save();
     }
   };
-  ipcMain.on("add-to-following", async (event, id) => {
-    await addToFollowing(id);
+  ipcMain.on("follow", async (event, id) => {
+    await followId(id);
+  });
+
+  const unfollowId = async id => {
+    logger.info("[Identity] unfollowId()");
+    if (self.following.includes(id)) {
+      const id_index = self.following.indexOf(id);
+      if (id_index > -1) {
+        self.following.splice(id_index, 1);
+      }
+      await save();
+    }
+  };
+  ipcMain.on("unfollow", async (event, id) => {
+    await unfollowId(id);
   });
 
   const getPostIpfs = async post_cid => {
@@ -334,7 +355,7 @@ module.exports = async function(ctx) {
       logger.info(file_names);
       logger.info(file_list);
       const add_options = {
-        // pin: true,
+        pin: true,
         wrapWithDirectory: true,
         timeout: 10000
       };

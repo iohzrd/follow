@@ -8,7 +8,9 @@
           :id="post.id"
           :key="post.ts"
           :post="post"
-          @delete-post="deletePost"
+          @remove-post="removePost"
+          @show-unfollow-prompt="showUnfollowPrompt"
+          @show-link-prompt="showLinkPrompt"
         />
       </div>
     </div>
@@ -51,8 +53,16 @@ export default {
     }, 1 * 60 * 1000);
   },
   methods: {
-    deletePost(cid) {
-      console.log("deletePost");
+    showUnfollowPrompt(id) {
+      console.log(`Feed: showUnfollowPrompt(${id})`);
+      this.$emit("show-unfollow-prompt", id);
+    },
+    showLinkPrompt(link) {
+      console.log(`Feed: showLinkPrompt(${link})`);
+      this.$emit("show-link-prompt", link);
+    },
+    removePost(cid) {
+      console.log("removePost");
       console.log(cid);
       this.feed = this.feed.filter(post => post.postCid !== cid);
     },

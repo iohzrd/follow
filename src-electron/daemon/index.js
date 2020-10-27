@@ -55,6 +55,12 @@ module.exports = async function(ctx) {
     try {
       ipfsd = await createDaemon(config);
 
+      // make sure config has pubsub
+      if (!config.flags.includes("--enable-pubsub-experiment")) {
+        config.flags.push("--enable-pubsub-experiment");
+        store.set("ipfsConfig", config);
+      }
+
       // Update the path if it was blank previously.
       // This way we use the default path when it is
       // not set.

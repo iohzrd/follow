@@ -9,13 +9,13 @@
           </q-avatar>
           <q-card-section />
           <div class="col">
-            <div class="text-subtitle1">
+            <div class="text-caption">
               Time:
               <router-link :to="{ name: 'Post', params: { post: post } }">{{
                 dt
               }}</router-link>
             </div>
-            <div class="text-subtitle1">
+            <div class="text-caption">
               From:
               <router-link
                 :id="identity.id"
@@ -44,14 +44,14 @@
               <q-menu cover auto-close>
                 <q-list>
                   <q-item v-if="identity.id == ipfs_id.id" clickable>
-                    <q-item-section @click="deleteModal = true"
-                      >Delete post</q-item-section
-                    >
+                    <q-item-section @click="removePost">
+                      Delete post
+                    </q-item-section>
                   </q-item>
                   <q-item v-if="identity.id != ipfs_id.id" clickable>
-                    <q-item-section @click="unfollowModal = true"
-                      >Unfollow</q-item-section
-                    >
+                    <q-item-section @click="showUnfollowPrompt(identity.id)">
+                      Unfollow
+                    </q-item-section>
                   </q-item>
                 </q-list>
               </q-menu>
@@ -61,7 +61,11 @@
         </div>
       </q-card-section>
 
-      <q-card-section v-if="body">{{ body }}</q-card-section>
+      <q-card-section v-if="body">
+        <div class="text-body1">
+          {{ body }}
+        </div>
+      </q-card-section>
 
       <q-card-section v-if="filesRoot && fileObjs.length" class="q-pa-md">
         <div class="q-gutter-sm row items-start">
@@ -96,6 +100,7 @@
           flat
           icon="comment"
           label="Comment"
+          @click="console.log('')"
         />
         <!--  -->
         <div v-if="identity.id != ipfs_id.id">
@@ -115,7 +120,7 @@
           flat
           icon="share"
           label="Share"
-          @click="shareModal = true"
+          @click="showPostLinkPrompt()"
         />
       </q-card-actions>
     </q-card>
@@ -135,23 +140,8 @@
       </q-responsive>
     </q-dialog>
 
-    <!-- share link modal -->
-    <q-dialog v-model="shareModal">
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">Link</div>
-        </q-card-section>
-
-        <q-card-section>{{ shareLink }}</q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn v-close-popup flat label="OK" color="primary" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
     <!-- delete post confirmation modal -->
-    <q-dialog v-model="deleteModal">
+    <q-dialog v-model="removePostModal">
       <q-card>
         <q-card-section>
           <div class="text-h6">Are you sure?</div>
@@ -164,30 +154,12 @@
             flat
             label="Delete"
             color="primary"
-            @click="removePost(identity.id)"
+            @click="removePost()"
           />
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <!-- unfollow confirmation modal -->
-    <q-dialog v-model="unfollowModal">
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">Are you sure?</div>
-        </q-card-section>
 
-        <q-card-actions align="right">
-          <q-btn v-close-popup flat label="Cancel" color="primary" />
-          <q-btn
-            v-close-popup
-            flat
-            label="Delete"
-            color="primary"
-            @click="unfollow()"
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
     <!--  -->
   </div>
 </template>
@@ -219,9 +191,7 @@ export default {
       magnet: "",
       meta: [],
       ts: "",
-      shareModal: false,
-      deleteModal: false,
-      unfollowModal: false,
+      removePostModal: false,
       shareLink: ""
     };
   },
@@ -245,21 +215,17 @@ export default {
       this.magnet = this.post.magnet;
       this.meta = this.post.meta;
       this.ts = this.post.ts;
-      this.shareLink = "https://ipfs.io/ipfs/" + this.post.postCid;
+      this.shareLink = "https://dweb.link/ipfs/" + this.post.postCid;
     },
-    async removePost() {
+    removePost() {
       ipcRenderer.invoke("remove-post", this.post.postCid).then(result => {
         console.log("remove-post.then");
         console.log(result);
       });
       // ipcRenderer.send("remove-post", this.post.postCid);
-      this.$emit("delete-post", this.post.postCid);
+      this.$emit("remove-post", this.post.postCid);
     },
-
-    async unfollow(id) {
-      ipcRenderer.send("unfollow", id);
-    },
-    async repost() {
+    repost() {
       // ipcRenderer.send("repost", this.post.postCid);
       ipcRenderer.invoke("repost", this.post.postCid).then(result => {
         console.log("repost.then");
@@ -292,6 +258,14 @@ export default {
         };
         this.fileObjs.push(fileObj);
       }
+    },
+    showUnfollowPrompt() {
+      console.log(`PostCard: showUnfollowPrompt(${this.identity.id})`);
+      this.$emit("show-unfollow-prompt", this.identity.id);
+    },
+    showPostLinkPrompt() {
+      console.log(`PostCard: showPostLinkPrompt(${this.shareLink})`);
+      this.$emit("show-link-prompt", this.shareLink);
     }
   }
 };
@@ -303,5 +277,10 @@ export default {
 }
 :any-link {
   color: $primary;
+}
+.spinner {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>
