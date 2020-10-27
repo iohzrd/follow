@@ -31,8 +31,10 @@ function criticalErrorDialog(e) {
   hasErrored = true;
 
   const option = dialog({
-    title: i18n.t("ipfsDesktopHasShutdownDialog.title"),
-    message: i18n.t("ipfsDesktopHasShutdownDialog.message"),
+    // title: i18n.t("ipfsDesktopHasShutdownDialog.title"),
+    // message: i18n.t("ipfsDesktopHasShutdownDialog.message"),
+    title: "criticalErrorDialog",
+    message: String(e),
     type: "error",
     buttons: [
       i18n.t("restartIpfsDesktop"),
