@@ -4,8 +4,17 @@
       <!-- avatar -->
       <q-card-section>
         <div class="center">
-          <q-img v-if="identity.av" :src="identity.av" @click="temp" />
-          <q-icon v-else :size="'xl'" :name="'assignment_ind'" @click="temp" />
+          <q-img
+            v-if="identity.av"
+            :src="identity.av"
+            @click="console.log('not yet implemented...')"
+          />
+          <q-icon
+            v-else
+            :size="'xl'"
+            :name="'assignment_ind'"
+            @click="console.log('not yet implemented...')"
+          />
         </div>
       </q-card-section>
       <!--  -->
@@ -101,6 +110,7 @@
       v-for="iden in identity.following"
       :id="iden"
       :key="iden"
+      @show-unfollow-prompt="showUnfollowPrompt"
     ></IdentityCard>
     <br />
     <!-- meta  -->
@@ -238,8 +248,9 @@ export default {
       });
       ipcRenderer.send("get-identity", this.id);
     },
-    temp() {
-      console.log("temp");
+    showUnfollowPrompt(id) {
+      console.log(`Identity: showUnfollowPrompt(${id})`);
+      this.$emit("show-unfollow-prompt", id);
     }
   }
 };

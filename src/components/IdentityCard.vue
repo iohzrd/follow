@@ -19,20 +19,18 @@
             </router-link>
           </div>
           <!-- unfollow -->
-          <div v-if="ipfs_id != id">
-            <div class="col-auto">
-              <q-btn color="grey-7" round flat icon="more_vert">
-                <q-menu cover auto-close>
-                  <q-list>
-                    <q-item v-if="id != identity.id" clickable>
-                      <q-item-section @click="unfollowModal = true"
-                        >Unfollow</q-item-section
-                      >
-                    </q-item>
-                  </q-list>
-                </q-menu>
-              </q-btn>
-            </div>
+          <div v-if="ipfs_id.id != id" class="col-auto">
+            <q-btn color="grey-7" round flat icon="more_vert">
+              <q-menu cover auto-close>
+                <q-list>
+                  <q-item v-if="id != ipfs_id.id" clickable>
+                    <q-item-section @click="showUnfollowPrompt(identity.id)">
+                      Unfollow
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-btn>
           </div>
           <!--  -->
         </div>
@@ -72,14 +70,14 @@ export default {
   data: function() {
     return {
       unfollowModal: false,
-      ipfs_id: "",
+      ipfs_id: {},
       identity: {}
     };
   },
   mounted: function() {
     console.log(this.id);
-    const ipfs_id = this.$store.state.id;
-    this.ipfs_id = ipfs_id.id;
+    this.ipfs_id = this.$store.state.id;
+
     // ipcRenderer.on("identity", (event, identityObj) => {
     //   console.log(identityObj);
     //   this.identity = identityObj;
@@ -90,7 +88,12 @@ export default {
       this.identity = result;
     });
   },
-  methods: {}
+  methods: {
+    showUnfollowPrompt() {
+      console.log(`IdentityCard: showUnfollowPrompt(${this.id})`);
+      this.$emit("show-unfollow-prompt", this.id);
+    }
+  }
 };
 </script>
 

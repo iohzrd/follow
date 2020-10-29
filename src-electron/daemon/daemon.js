@@ -84,6 +84,7 @@ module.exports = async function(opts) {
   if (!isRemote) await checkPorts(ipfsd);
 
   try {
+    logger.info("ipfs-http-client v48.0.0 crashs here!");
     await ipfsd.start();
     const { id } = await ipfsd.api.id();
     logger.info(`[daemon] PeerID is ${id}`);

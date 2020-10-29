@@ -137,13 +137,13 @@ module.exports = async function(ctx) {
     return result;
   });
 
-  // const pinCID = async cid => {
-  //   logger.info(`[Identity] pinCID(${cid})`);
-  //   const pin_result = await ipfs.pin.add(cid);
-  //   // logger.info("pin_result");
-  //   // logger.info(pin_result);
-  //   return pin_result;
-  // };
+  const pinCID = async cid => {
+    logger.info(`[Identity] pinCID(${cid})`);
+    const pin_result = await ipfs.pin.add(cid);
+    // logger.info("pin_result");
+    // logger.info(pin_result);
+    return pin_result;
+  };
 
   const getIdentityIpfs = async id => {
     logger.info(`[Identity] getIdentityIpfs(${id})`);
@@ -203,7 +203,6 @@ module.exports = async function(ctx) {
   // update followed identities
   const updateFollowing = async () => {
     logger.info("updateFollowing()");
-    const following_deep = [];
     for await (const id of self.following) {
       try {
         if (id !== ipfs_id.id) {
@@ -213,8 +212,8 @@ module.exports = async function(ctx) {
             console.log(`expected: ${id}, got: ${identity_object["id"]}`);
             identity_object["id"] = id;
           }
-          following_deep.push(identity_object);
           await level_db.put(id, identity_object);
+          // ctx.mainWindow.webContents.send("new-content-available");
         }
       } catch (error) {
         logger.info(`failed to fetch identity: ${id}`);
@@ -250,6 +249,7 @@ module.exports = async function(ctx) {
         self.following.splice(id_index, 1);
       }
       await save();
+      // level_db.del(id)
     }
   };
   ipcMain.on("unfollow", async (event, id) => {
@@ -258,7 +258,7 @@ module.exports = async function(ctx) {
 
   const getPostIpfs = async post_cid => {
     logger.info("getPostIpfs");
-    // await pinCID(cid);
+    await pinCID(post_cid);
     let post_buffer;
     try {
       post_buffer = Buffer.concat(await all(ipfs.cat(`${post_cid}/post.json`)));
@@ -282,6 +282,7 @@ module.exports = async function(ctx) {
       post_object = await getPostIpfs(cid);
       identity_object.posts_deep[cid] = post_object;
       await level_db.put(identity_object.id, identity_object);
+      // ctx.mainWindow.webContents.send("new-content-available");
     }
     if (!post_object.publisher) {
       post_object.publisher = identity_object.id;
