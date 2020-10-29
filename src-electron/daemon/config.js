@@ -41,7 +41,11 @@ function applyDefaults(ipfsd) {
 
   // Ensure strict CORS checking
   // See: https://github.com/ipfs/js-ipfsd-ctl/issues/333
-  config.API = { HTTPHeaders: {} };
+  config.API = {
+    HTTPHeaders: {
+      "Access-Control-Allow-Origin": ["http://localhost:1589"]
+    }
+  };
 
   config.Swarm = config.Swarm || {};
   config.Swarm.DisableNatPortMap = false;
@@ -116,10 +120,10 @@ function migrateConfig(ipfsd) {
 // runs then we leave them in, under the assumption that you really want it.
 // TODO: show warning in UI when wildcard is in the allowed origins.
 function checkCorsConfig(ipfsd) {
-  if (store.get("checkedCorsConfig")) {
-    // We've already checked so skip it.
-    return;
-  }
+  // if (store.get("checkedCorsConfig")) {
+  //   // We've already checked so skip it.
+  //   return;
+  // }
 
   let config = null;
 
@@ -134,12 +138,7 @@ function checkCorsConfig(ipfsd) {
     );
     return;
   }
-
-  if (
-    config.API &&
-    config.API.HTTPHeaders &&
-    config.API.HTTPHeaders["Access-Control-Allow-Origin"]
-  ) {
+  if (config.API && config.API.HTTPHeaders) {
     const allowedOrigins =
       config.API.HTTPHeaders["Access-Control-Allow-Origin"];
     const originsToRemove = ["*", "webui://-"];
@@ -163,6 +162,21 @@ function checkCorsConfig(ipfsd) {
           // don't skip setting checkedCorsConfig so we try again next time time.
           return;
         }
+      }
+    } else {
+      config.API.HTTPHeaders["Access-Control-Allow-Origin"] = [
+        "http://localhost:1589"
+      ];
+      try {
+        writeConfigFile(ipfsd, config);
+        store.set("updatedCorsConfig", Date.now());
+      } catch (err) {
+        logger.error(
+          `[daemon] checkCorsConfig: error writing config file: ${err.message ||
+            err}`
+        );
+        // don't skip setting checkedCorsConfig so we try again next time time.
+        return;
       }
     }
   }
