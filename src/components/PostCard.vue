@@ -165,7 +165,7 @@
 </template>
 <script>
 import { ipcRenderer } from "electron";
-const IpfsHttpClient = require("ipfs-http-client");
+const ipfsClient = require("ipfs-http-client");
 const all = require("it-all");
 const FileType = require("file-type");
 
@@ -234,7 +234,7 @@ export default {
       });
     },
     async getContent(filesRoot) {
-      const ipfs = await IpfsHttpClient("/ip4/127.0.0.1/tcp/5001");
+      const ipfs = await ipfsClient("/ip4/127.0.0.1/tcp/5001");
       const files = await all(ipfs.ls(filesRoot));
       for await (const file of files) {
         // var buf = Buffer.concat(await all(ipfs.cat(file.path)));
