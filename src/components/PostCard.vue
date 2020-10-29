@@ -234,11 +234,7 @@ export default {
       });
     },
     async getContent(filesRoot) {
-      const ipfs = await IpfsHttpClient({
-        host: "localhost",
-        port: "5001",
-        protocol: "http"
-      });
+      const ipfs = await IpfsHttpClient("/ip4/127.0.0.1/tcp/5001");
       const files = await all(ipfs.ls(filesRoot));
       for await (const file of files) {
         // var buf = Buffer.concat(await all(ipfs.cat(file.path)));
