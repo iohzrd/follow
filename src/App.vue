@@ -48,17 +48,14 @@
 
       <!-- router view -->
       <q-page-container>
-        <q-page class="root-container">
-          <div>
-            <router-view
-              v-if="ipfs_id.id"
-              :id="ipfs_id.id"
-              :key="$route.path"
-              @show-unfollow-prompt="showUnfollowPrompt"
-              @show-link-prompt="showLinkPrompt"
-            />
-          </div>
-        </q-page>
+        <router-view
+          v-if="ipfs_id.id"
+          :id="ipfs_id.id"
+          :key="$route.path"
+          class="root-container"
+          @show-unfollow-prompt="showUnfollowPrompt"
+          @show-link-prompt="showLinkPrompt"
+        />
       </q-page-container>
 
       <!-- share link modal -->

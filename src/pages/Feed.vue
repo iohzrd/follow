@@ -1,19 +1,15 @@
 <template>
-  <q-page class="flex flex-center">
-    <div class="feed-container">
-      <NewPost class="new-post" />
-      <div v-if="feed">
-        <PostCard
-          v-for="post in feed"
-          :id="post.id"
-          :key="post.ts"
-          :post="post"
-          @remove-post="removePost"
-          @show-unfollow-prompt="showUnfollowPrompt"
-          @show-link-prompt="showLinkPrompt"
-        />
-      </div>
-    </div>
+  <q-page>
+    <NewPost class="new-post" />
+    <PostCard
+      v-for="post in feed"
+      :id="post.id"
+      :key="post.ts"
+      :post="post"
+      @remove-post="removePost"
+      @show-unfollow-prompt="showUnfollowPrompt"
+      @show-link-prompt="showLinkPrompt"
+    />
   </q-page>
 </template>
 
@@ -75,3 +71,4 @@ export default {
   }
 };
 </script>
+<style scoped></style>

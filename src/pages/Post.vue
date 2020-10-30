@@ -1,5 +1,5 @@
 <template>
-  <div v-if="post">
+  <q-page v-if="post">
     <PostCard
       :key="post.ts"
       :post="post"
@@ -7,7 +7,7 @@
       @show-unfollow-prompt="unfollow"
     />
     <Comments :cid="post.postCid" />
-  </div>
+  </q-page>
 </template>
 <script>
 import Comments from "../components/Comments.vue";

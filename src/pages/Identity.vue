@@ -1,5 +1,5 @@
 <template>
-  <div v-if="identity" class="identity-container">
+  <q-page v-if="identity">
     <q-card flat bordered>
       <!-- avatar -->
       <q-card-section>
@@ -159,7 +159,7 @@
       </q-card>
     </q-dialog>
     <!-- end -->
-  </div>
+  </q-page>
 </template>
 
 <script>
