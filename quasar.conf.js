@@ -7,7 +7,7 @@
 // https://quasar.dev/quasar-cli/quasar-conf-js
 /* eslint-env node */
 
-module.exports = function (/* ctx */) {
+module.exports = function(/* ctx */) {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
@@ -170,7 +170,7 @@ module.exports = function (/* ctx */) {
 
       builder: {
         // https://www.electron.build/configuration/configuration
-        appId: "com.electron.follow",
+        appId: "com.iohzrd.follow",
         win: {
           target: "nsis"
         },
