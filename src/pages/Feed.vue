@@ -73,7 +73,7 @@ export default {
     },
     onFeedItem(event, postObj) {
       if (!this.feed.some(id => id.ts === postObj.ts)) {
-        this.feed.push(postObj);
+        this.feed.unshift(postObj);
       }
     },
     onFeedAll(event, feedAll) {

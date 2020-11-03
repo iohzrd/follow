@@ -342,13 +342,13 @@ module.exports = async function(ctx) {
         const post_object = await getPost(identity_object, postCid);
         if (post_object) {
           if (!feed.some(id => id.ts === post_object.ts)) {
-            feed.push(post_object);
+            feed.unshift(post_object);
             // feed.sort((a, b) => (a.ts > b.ts ? -1 : 1));
           }
         }
       }
     }
-    feed.sort((a, b) => (a.ts > b.ts ? -1 : 1));
+    feed.sort((a, b) => (a.ts > b.ts ? 1 : -1));
     await level_db.put("feed", feed);
   };
   ipcMain.on("update-feed", async event => {
@@ -441,6 +441,13 @@ module.exports = async function(ctx) {
       self.posts.unshift(cid);
       save();
     }
+    // post_object.postCid = cid;
+    // post_object.identity = {};
+    // post_object.identity.av = self.av;
+    // post_object.identity.dn = self.dn;
+    // post_object.identity.id = self.id;
+    // post_object.identity.ts = self.ts;
+    // ctx.mainWindow.webContents.send("feedItem", post_object);
     return add_result;
   };
   ipcMain.on("add-post", async (event, post_object) => {
