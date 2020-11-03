@@ -33,18 +33,27 @@ export default {
   data: function() {
     return {
       feed: [],
-      refreshInterval: null
+      requestFeedInterval: null,
+      updateFeedInterval: null
     };
   },
   beforeDestroy: function() {
-    clearInterval(this.refreshInterval);
+    clearInterval(this.requestFeedInterval);
+    clearInterval(this.updateFeedInterval);
     ipcRenderer.removeAllListeners("feedItem");
+    ipcRenderer.removeAllListeners("feedAll");
   },
   mounted: function() {
     ipcRenderer.on("feedItem", this.onFeedItem);
+    ipcRenderer.on("feedAll", this.onFeedAll);
     ipcRenderer.send("get-feed");
-    this.refreshInterval = setInterval(async function() {
-      console.log("refreshing feed...");
+    // ipcRenderer.send("get-feed-all");
+    this.updateFeedInterval = setInterval(async function() {
+      console.log("updating feed...");
+      ipcRenderer.send("update-feed");
+    }, 1 * 60 * 1000);
+    this.requestFeedInterval = setInterval(async function() {
+      console.log("requesting feed...");
       ipcRenderer.send("get-feed");
     }, 1 * 60 * 1000);
   },
@@ -65,8 +74,10 @@ export default {
     onFeedItem(event, postObj) {
       if (!this.feed.some(id => id.ts === postObj.ts)) {
         this.feed.push(postObj);
-        this.feed.sort((a, b) => (a.ts > b.ts ? -1 : 1));
       }
+    },
+    onFeedAll(event, feedAll) {
+      this.feed = feedAll;
     }
   }
 };

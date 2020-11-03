@@ -28,6 +28,7 @@ module.exports = async function(ctx) {
   let ipfs_id = null;
   let level_db = null;
   let self = null;
+  let feed = null;
 
   const dbContainsKey = (db, key) => {
     return new Promise(resolve => {
@@ -65,6 +66,10 @@ module.exports = async function(ctx) {
         valueEncoding: "json"
       })
     );
+
+    if (!(await dbContainsKey(level_db, "feed"))) {
+      await level_db.put("feed", []);
+    }
 
     if (await dbContainsKey(level_db, ipfs_id.id)) {
       await load();
@@ -314,13 +319,45 @@ module.exports = async function(ctx) {
 
   // get feed
   ipcMain.on("get-feed", async event => {
+    logger.info("get-feed");
+    feed = await level_db.get("feed");
+    feed.forEach(post_object => {
+      event.sender.send("feedItem", post_object);
+    });
+  });
+
+  // get feed all
+  ipcMain.on("get-feed-all", async event => {
+    feed = await level_db.get("feed");
+    event.sender.send("feedAll", feed);
+  });
+
+  // update feed
+  const updateFeed = async () => {
+    logger.info("updateFeed()");
+    feed = await level_db.get("feed");
     for await (const fid of self.following) {
       const identity_object = await getIdentity(fid);
       for await (const postCid of identity_object.posts) {
         const post_object = await getPost(identity_object, postCid);
-        event.sender.send("feedItem", post_object);
+        if (post_object) {
+          if (!feed.some(id => id.ts === post_object.ts)) {
+            feed.push(post_object);
+            // feed.sort((a, b) => (a.ts > b.ts ? -1 : 1));
+          }
+        }
       }
     }
+    feed.sort((a, b) => (a.ts > b.ts ? -1 : 1));
+    await level_db.put("feed", feed);
+  };
+  ipcMain.on("update-feed", async event => {
+    const result = await updateFeed();
+    event.sender.send("update-feed-complete", result);
+  });
+  ipcMain.handle("update-feed", async () => {
+    const result = await updateFeed();
+    return result;
   });
 
   // get following deep
@@ -403,7 +440,6 @@ module.exports = async function(ctx) {
     if (typeof cid === "string" && cid.length == 46) {
       self.posts.unshift(cid);
       save();
-      // getFeed();
     }
     return add_result;
   };
