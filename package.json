@@ -1,6 +1,6 @@
 {
   "name": "follow",
-  "version": "0.2.18",
+  "version": "0.2.19",
   "description": "Decentralized, censorship resistant social media and bulletin board on IPFS",
   "productName": "follow",
   "author": "iohzrd <iohzrd@gmail.com>",
@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.9.10",
-    "core-js": "^3.6.5",
+    "core-js": "^3.7.0",
     "cors": "^2.8.5",
     "countly-sdk-nodejs": "^20.4.0",
     "electron-store": "^6.0.1",
@@ -48,7 +48,7 @@
     "sudo-prompt": "^9.2.1",
     "untildify": "^4.0.0",
     "vue-i18n": "^8.22.1",
-    "webtorrent": "^0.109.2",
+    "webtorrent": "^0.110.1",
     "webtorrent-hybrid": "^4.0.2",
     "winston": "^3.3.3"
   },
@@ -64,7 +64,7 @@
     "eslint-config-prettier": "^6.15.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-vue": "^7.1.0",
-    "npm-check-updates": "^9.2.3"
+    "npm-check-updates": "^9.2.4"
   },
   "browserslist": [
     "last 10 Chrome versions",
