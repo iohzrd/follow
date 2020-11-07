@@ -1,6 +1,6 @@
 {
   "name": "follow",
-  "version": "0.2.21",
+  "version": "0.2.22",
   "description": "Decentralized, censorship resistant social media and bulletin board on IPFS",
   "productName": "follow",
   "author": "iohzrd <iohzrd@gmail.com>",
@@ -20,10 +20,11 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
+    "@deadcanaries/granax": "^3.2.5",
     "@quasar/extras": "^1.9.10",
     "core-js": "^3.7.0",
     "cors": "^2.8.5",
-    "countly-sdk-nodejs": "^20.4.0",
+    "countly-sdk-nodejs": "^20.11.0",
     "electron-store": "^6.0.1",
     "encoding-down": "^6.3.0",
     "file-type": "^16.0.1",

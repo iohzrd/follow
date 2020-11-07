@@ -151,4 +151,4 @@ https://www.patreon.com/iohzrd
 
 ## License
 
-[MIT](LICENSE)
+[GPLv3](LICENSE)
