@@ -81,7 +81,7 @@ const localeData = [
   zh
 ];
 
-module.exports = async function () {
+module.exports = async function() {
   await i18n
     .use(new ICU({ localeData: localeData }))
     .use(Backend)
