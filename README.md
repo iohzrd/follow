@@ -142,7 +142,7 @@ and
 btc
 
 ```
-bc1q8ggm58rue6ssw26cxpmlez55scdvawh9kas2m7
+1T8mM7TDWBcxKF5ZZy7B58adMsBgxivr1
 ```
 
 or
