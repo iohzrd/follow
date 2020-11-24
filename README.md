@@ -114,7 +114,7 @@ npm start
 - [x] implement tray.
 - [x] Migrate core logic to use IPC...
 - [x] progress events for spinners and such
-- [x] TOR integration
+- [x] TOR integration (server identity. TODO retrieve content)
 - [ ] Distribute binaries / Auto-update
 - [ ] meta view ("playlists" / arbitrary user defined categorization)
 - [ ] meta comment system (topic based bulletin board)
