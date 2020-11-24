@@ -114,6 +114,7 @@ npm start
 - [x] implement tray.
 - [x] Migrate core logic to use IPC...
 - [x] progress events for spinners and such
+- [x] TOR integration
 - [ ] Distribute binaries / Auto-update
 - [ ] meta view ("playlists" / arbitrary user defined categorization)
 - [ ] meta comment system (topic based bulletin board)
@@ -123,7 +124,6 @@ npm start
 - [ ] seed posts as web torrents (for redundancy)
 - [ ] sign posts (probably the list of CIDs or maybe body)
 - [ ] use IPLD
-- [ ] TOR integration
 
 ## Follow me
 
