@@ -385,7 +385,6 @@ module.exports = async function(ctx) {
       post_object = await getPostIpfs(cid);
       posts_deep[id][cid] = post_object;
       await level_db.put("posts_deep", posts_deep);
-      // ctx.mainWindow.webContents.send("new-content-available");
     }
     if (!post_object.publisher) {
       post_object.publisher = identity_object.id;
@@ -438,7 +437,12 @@ module.exports = async function(ctx) {
     posts_deep = await level_db.get("posts_deep");
     for await (const fid of self.following) {
       const identity_object = await getIdentity(fid);
-      const include_deleted = posts_deep[fid]["include_deleted"];
+      let include_deleted;
+      if (typeof posts_deep[fid].include_deleted === "boolean") {
+        include_deleted = posts_deep[fid].include_deleted;
+      } else {
+        posts_deep[fid].include_deleted = true;
+      }
       // update posts_deep
       for await (const postCid of identity_object.posts) {
         console.log("postCid");
@@ -451,9 +455,6 @@ module.exports = async function(ctx) {
           console.log(`adding ${fid} to posts_deep`);
           posts_deep[fid][postCid] = post_object;
         }
-        // if (!feed.some(id => id.postCid === post_object.postCid)) {
-        //   feed.unshift(post_object);
-        // }
       }
       if (include_deleted) {
         // get posts, including deleted ones
