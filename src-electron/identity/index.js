@@ -35,7 +35,7 @@ module.exports = async function(ctx) {
   let feed = null;
   let posts_deep = null;
   let tor = null;
-  let tor_id = null;
+  let tor_id = {};
 
   const dbContainsKey = (db, key) => {
     return new Promise(resolve => {
@@ -101,7 +101,6 @@ module.exports = async function(ctx) {
       // first run, initialize new identity...
       self = IDENTITY_TEMPLATE;
       self.following = [ipfs_id.id];
-      await save();
     }
 
     const server = http.createServer((req, res) => {
@@ -120,36 +119,35 @@ module.exports = async function(ctx) {
     server.listen(0, "127.0.0.1");
     tor = await granax();
 
-    tor_id = {};
     if (await dbContainsKey(level_db, "tor_id")) {
       tor_id = await level_db.get("tor_id");
     }
 
-    const data = await tor.createHiddenServicePromise(
+    const tor_hs = await tor.createHiddenServicePromise(
       `127.0.0.1:${server.address().port}`,
       tor_id
     );
     logger.info("serving identity via tor hidden service:");
-    console.log(data);
+    console.log(tor_hs);
 
-    if (self && data && data.serviceId) {
+    if (self && tor_hs && tor_hs.serviceId) {
       console.log("self && data && data.serviceId");
-      self.hs = data.serviceId;
+      self.hs = tor_hs.serviceId;
     }
 
     if (!(await dbContainsKey(level_db, "tor_id"))) {
-      if (data && data.privateKey && data.serviceId) {
-        const pk = data.privateKey.split(":");
+      if (tor_hs && tor_hs.privateKey && tor_hs.serviceId) {
+        const pk = tor_hs.privateKey.split(":");
         tor_id = {
           keyType: pk[0],
           keyBlob: pk[1],
-          serviceId: data.serviceId
+          serviceId: tor_hs.serviceId
         };
         await level_db.put("tor_id", tor_id);
       }
     }
 
-    publish();
+    save();
   };
 
   // get id
@@ -437,15 +435,15 @@ module.exports = async function(ctx) {
     posts_deep = await level_db.get("posts_deep");
     for await (const fid of self.following) {
       let include_deleted;
+      if (!posts_deep[fid] || typeof posts_deep[fid] !== "object") {
+        posts_deep[fid] = {};
+      }
       const identity_object = await getIdentity(fid);
       // update posts_deep
       for await (const postCid of identity_object.posts) {
         console.log("postCid");
         console.log(postCid);
         const post_object = await getPost(identity_object, postCid);
-        if (!posts_deep[fid] || !typeof posts_deep[fid] === "object") {
-          posts_deep[fid] = {};
-        }
         if (!posts_deep[fid][postCid]) {
           console.log(`adding ${fid} to posts_deep`);
           posts_deep[fid][postCid] = post_object;
@@ -460,8 +458,10 @@ module.exports = async function(ctx) {
         // get posts, including deleted ones
         for (const key in posts_deep[fid]) {
           const post_object = posts_deep[fid][key];
-          if (!feed.some(id => id.postCid === post_object.postCid)) {
-            feed.unshift(post_object);
+          if (typeof post_object === "object") {
+            if (!feed.some(id => id.postCid === post_object.postCid)) {
+              feed.unshift(post_object);
+            }
           }
         }
       } else {

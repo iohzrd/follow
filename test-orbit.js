@@ -8,21 +8,52 @@ async function main() {
     const orbit = new Orbit(ipfs);
 
     orbit.events.on("connected", () => {
-      for (let index = 0; index < 62; index++) {
-        const channelName = `test-channel-${index}`;
-        orbit.join(channelName);
-      }
+      const channelName = "channel1";
+
+      orbit.join(channelName).then(channel => {
+        console.log("joined");
+        // console.log(channel)
+
+        channel.on("entry", entry => {
+          // messages = [...messages, entry.payload.value].sort((a, b) => a.meta.ts - b.meta.ts)
+          console.log("entry");
+          // console.log(entry);
+        });
+
+        channel.on("ready", async () => {
+          console.log(`${channelName} ready`);
+          // const feed = orbit.channels[channelName].feed;
+          // const all = feed
+          //   .iterator({ limit: -1 })
+          //   .collect()
+          //   .map(e => e.payload.value);
+          // console.log(all);
+        });
+
+        channel.load(-1);
+      });
     });
 
-    orbit.events.on("joined", channelName => {
-      orbit.send(channelName, "ping");
-      console.log(`Joined: ${channelName}`);
-    });
+    // const onJoinedChannel = async (channelName, channel) => {
+    //   channel.on('ready', async () => {
+    //     console.log(`${channelName} ready`)
+    //     const feed = orbit.channels[channelName].feed
+    //     const all = feed.iterator({ limit: -1 })
+    //     .collect()
+    //     .map((e) => e.payload.value.content)
+    //     console.log(all)
+    //   })
 
-    orbit.events.on("entry", (entry, channelName) => {
-      const post = entry.payload.value;
-      console.log(`[${post.meta.ts}] - ${channelName} - ${post.content}`);
-    });
+    //   // channel.on('entry', entry => {
+    //   //   // messages = [...messages, entry.payload.value].sort((a, b) => a.meta.ts - b.meta.ts)
+    //   //   console.log("entry")
+    //   //   // console.log(entry.payload.value)
+    //   // })
+
+    //   channel.load(-1)
+    // };
+
+    // orbit.events.on('joined', onJoinedChannel)
 
     // Connect to Orbit network
     orbit.connect(id).catch(e => console.error(e));
