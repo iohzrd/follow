@@ -436,13 +436,8 @@ module.exports = async function(ctx) {
     console.log("loading posts_deep");
     posts_deep = await level_db.get("posts_deep");
     for await (const fid of self.following) {
-      const identity_object = await getIdentity(fid);
       let include_deleted;
-      if (typeof posts_deep[fid].include_deleted === "boolean") {
-        include_deleted = posts_deep[fid].include_deleted;
-      } else {
-        posts_deep[fid].include_deleted = true;
-      }
+      const identity_object = await getIdentity(fid);
       // update posts_deep
       for await (const postCid of identity_object.posts) {
         console.log("postCid");
@@ -455,6 +450,11 @@ module.exports = async function(ctx) {
           console.log(`adding ${fid} to posts_deep`);
           posts_deep[fid][postCid] = post_object;
         }
+      }
+      if (typeof posts_deep[fid].include_deleted === "boolean") {
+        include_deleted = posts_deep[fid].include_deleted;
+      } else {
+        posts_deep[fid].include_deleted = include_deleted = true;
       }
       if (include_deleted) {
         // get posts, including deleted ones
