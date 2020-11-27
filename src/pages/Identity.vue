@@ -37,6 +37,10 @@
       </q-card-section>
       <!--  -->
       <q-card-section>
+        <q-input v-model="onion" filled label="HS" disable />
+      </q-card-section>
+      <!--  -->
+      <q-card-section>
         <div v-for="(obj, index) in aux" :key="index">
           <div class="row items-center no-wrap">
             <div class="col-auto">
@@ -181,6 +185,7 @@ export default {
       dt: "",
       editModal: false,
       identity: {},
+      onion: "",
       ipfs_id: "",
       meta_deep: [],
       posts_deep: []
@@ -207,6 +212,7 @@ export default {
         this.identity.aux = [];
       }
       this.aux = this.identity.aux;
+      this.onion = this.identity.hs + ".onion";
       console.log("this.aux");
       console.log(this.aux);
       this.dt = new Date(Number(this.identity.ts));

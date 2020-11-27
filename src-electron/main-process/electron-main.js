@@ -78,7 +78,6 @@ async function createWindow(ctx) {
     height: 1080,
     useContentSize: true,
     webPreferences: {
-      enableRemoteModule: true,
       // Change from /quasar.conf.js > electron > nodeIntegration;
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
       nodeIntegration: process.env.QUASAR_NODE_INTEGRATION,
@@ -91,7 +90,6 @@ async function createWindow(ctx) {
 
   ctx.mainWindow = mainWindow;
 
-  console.log(process.env.APP_URL);
   mainWindow.loadURL(process.env.APP_URL);
 
   mainWindow.on("closed", () => {

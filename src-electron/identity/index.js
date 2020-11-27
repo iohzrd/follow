@@ -33,6 +33,7 @@ module.exports = async function(ctx) {
   let level_db = null;
   let self = null;
   let feed = null;
+  let posts_deep = null;
   let tor = null;
   let tor_id = null;
 
@@ -48,7 +49,7 @@ module.exports = async function(ctx) {
   const torRequestPromise = onion => {
     return new Promise((resolve, reject) => {
       tr.request(onion, function(err, res, body) {
-        if (err) reject(false);
+        if (err) reject();
         if (!err && res.statusCode == 200) {
           resolve(body);
         }
@@ -87,6 +88,12 @@ module.exports = async function(ctx) {
     if (!(await dbContainsKey(level_db, "feed"))) {
       await level_db.put("feed", []);
     }
+    feed = await level_db.get("feed");
+
+    if (!(await dbContainsKey(level_db, "posts_deep"))) {
+      await level_db.put("posts_deep", {});
+    }
+    posts_deep = await level_db.get("posts_deep");
 
     if (await dbContainsKey(level_db, ipfs_id.id)) {
       await load();
@@ -180,11 +187,9 @@ module.exports = async function(ctx) {
   const publish = async () => {
     logger.info("[Identity] publish()");
     console.log(self);
-    const temp_self = self;
-    delete temp_self.posts_deep;
     const obj = {
       path: "identity.json",
-      content: JSON.stringify(temp_self)
+      content: JSON.stringify(self)
     };
     const add_options = {
       pin: true,
@@ -196,7 +201,7 @@ module.exports = async function(ctx) {
       lifetime: "8760h"
     });
     logger.info("publish complete");
-    logger.info(publish_result);
+    console.log(publish_result);
     return publish_result;
   };
   ipcMain.on("publish-identity", async event => {
@@ -227,15 +232,13 @@ module.exports = async function(ctx) {
 
   const getIdentityTor = async id => {
     logger.info(`[Identity] getIdentityTor(${id})`);
-    let identity_json;
-    let identity_object;
+    let identity_json, identity_object;
     if (await dbContainsKey(level_db, id)) {
       identity_object = await level_db.get(id);
     }
-
-    if (identity_object && identity_object.hs) {
-      let tor_id = `${identity_object.hs}.onion/identity.json`;
-      identity_json = await torRequestPromise(tor_id);
+    if (identity_object.hs) {
+      const tor_url = `http://${identity_object.hs}.onion/identity.json`;
+      identity_json = await torRequestPromise(tor_url);
     }
 
     return JSON.parse(identity_json);
@@ -264,12 +267,10 @@ module.exports = async function(ctx) {
   };
   ipcMain.on("get-identity", async (event, id) => {
     const identity_object = await getIdentity(id);
-    delete identity_object.posts_deep;
     event.sender.send("identity", identity_object);
   });
   ipcMain.handle("get-identity", async (event, id) => {
     const identity_object = await getIdentity(id);
-    delete identity_object.posts_deep;
     return identity_object;
   });
 
@@ -292,23 +293,25 @@ module.exports = async function(ctx) {
     for await (const id of self.following) {
       let identity_object = null;
       if (id !== ipfs_id.id) {
-        try {
-          identity_object = await getIdentityTor(id);
-          if (!identity_object) {
-            identity_object = await getIdentityIpfs(id);
+        // try retreiving identity from tor
+        identity_object = await getIdentityTor(id).catch(() => {
+          logger.info(`failed to fetch identity from tor: ${id}`);
+        });
+        // if tor fails, try retreiving identity from IPFS
+        if (!identity_object) {
+          identity_object = await getIdentityIpfs(id).catch(() => {
+            logger.info("failed to fetch identity from ipfs");
+          });
+        }
+        // if retreived, save it...
+        if (identity_object) {
+          logger.info("Identity retreived, saving DB...");
+          if (identity_object.id != id) {
+            console.log("Id in identity fraudulent, correcting....");
+            console.log(`expected: ${id}, got: ${identity_object["id"]}`);
+            identity_object["id"] = id;
           }
-          if (identity_object) {
-            if (identity_object.id != id) {
-              console.log("Id in identity fraudulent, correcting....");
-              console.log(`expected: ${id}, got: ${identity_object["id"]}`);
-              identity_object["id"] = id;
-            }
-            await level_db.put(id, identity_object);
-          }
-          // ctx.mainWindow.webContents.send("new-content-available");
-        } catch (error) {
-          logger.info(`failed to fetch identity: ${id}`);
-          logger.info(error);
+          await level_db.put(id, identity_object);
         }
       }
     }
@@ -367,18 +370,21 @@ module.exports = async function(ctx) {
 
   const getPost = async (identity_object, cid) => {
     logger.info("getPost");
+    const id = identity_object.id;
     let post_object;
-    if (!identity_object.posts_deep) {
-      identity_object.posts_deep = {};
+
+    posts_deep = await level_db.get("posts_deep");
+    if (!posts_deep[id]) {
+      posts_deep[id] = {};
     }
-    if (identity_object.posts_deep && identity_object.posts_deep[cid]) {
+    if (posts_deep[id] && posts_deep[id][cid]) {
       logger.info("loading post from DB...");
-      post_object = identity_object.posts_deep[cid];
+      post_object = posts_deep[id][cid];
     } else {
       logger.info("loading post from IPFS...");
       post_object = await getPostIpfs(cid);
-      identity_object.posts_deep[cid] = post_object;
-      await level_db.put(identity_object.id, identity_object);
+      posts_deep[id][cid] = post_object;
+      await level_db.put("posts_deep", posts_deep);
       // ctx.mainWindow.webContents.send("new-content-available");
     }
     if (!post_object.publisher) {
@@ -428,30 +434,50 @@ module.exports = async function(ctx) {
   const updateFeed = async () => {
     logger.info("updateFeed()");
     feed = await level_db.get("feed");
+    console.log("loading posts_deep");
+    posts_deep = await level_db.get("posts_deep");
     for await (const fid of self.following) {
       const identity_object = await getIdentity(fid);
-      const include_deleted = identity_object.include_deleted;
-      // get posts from identity_object.posts_deep
+      const include_deleted = posts_deep[fid]["include_deleted"];
+      // update posts_deep
+      for await (const postCid of identity_object.posts) {
+        console.log("postCid");
+        console.log(postCid);
+        const post_object = await getPost(identity_object, postCid);
+        if (!posts_deep[fid] || !typeof posts_deep[fid] === "object") {
+          posts_deep[fid] = {};
+        }
+        if (!posts_deep[fid][postCid]) {
+          console.log(`adding ${fid} to posts_deep`);
+          posts_deep[fid][postCid] = post_object;
+        }
+        // if (!feed.some(id => id.postCid === post_object.postCid)) {
+        //   feed.unshift(post_object);
+        // }
+      }
       if (include_deleted) {
-        for (const key in identity_object.posts_deep) {
-          const post_object = identity_object.posts_deep[key];
+        // get posts, including deleted ones
+        for (const key in posts_deep[fid]) {
+          const post_object = posts_deep[fid][key];
+          if (!feed.some(id => id.postCid === post_object.postCid)) {
+            feed.unshift(post_object);
+          }
+        }
+      } else {
+        // get posts, excluding deleted ones
+        for await (const postCid of identity_object.posts) {
+          const post_object = await getPost(identity_object, postCid);
           if (!feed.some(id => id.postCid === post_object.postCid)) {
             feed.unshift(post_object);
           }
         }
       }
-      // get posts from identity_object.posts
-      for await (const postCid of identity_object.posts) {
-        // console.log(postCid);
-        const post_object = await getPost(identity_object, postCid);
-        // console.log(post_object);
-        if (!feed.some(id => id.postCid === post_object.postCid)) {
-          feed.unshift(post_object);
-        }
-      }
+      //
     }
     feed.sort((a, b) => (a.ts > b.ts ? 1 : -1));
     await level_db.put("feed", feed);
+    console.log("saving posts_deep");
+    await level_db.put("posts_deep", posts_deep);
   };
   ipcMain.on("update-feed", async event => {
     const result = await updateFeed();
@@ -466,7 +492,6 @@ module.exports = async function(ctx) {
   ipcMain.on("get-following", async event => {
     for await (const fid of self.following) {
       const identity_object = await getIdentity(fid);
-      delete identity_object.posts_deep;
       event.sender.send("followingIdentity", identity_object);
     }
   });
@@ -543,13 +568,27 @@ module.exports = async function(ctx) {
       self.posts.unshift(cid);
       save();
     }
-    // post_object.postCid = cid;
-    // post_object.identity = {};
-    // post_object.identity.av = self.av;
-    // post_object.identity.dn = self.dn;
-    // post_object.identity.id = self.id;
-    // post_object.identity.ts = self.ts;
+    post_object.postCid = cid;
+    post_object.identity = {};
+    post_object.identity.av = self.av;
+    post_object.identity.dn = self.dn;
+    post_object.identity.id = self.id;
+    post_object.identity.ts = self.ts;
     // ctx.mainWindow.webContents.send("feedItem", post_object);
+
+    posts_deep = await level_db.get("posts_deep");
+    if (!posts_deep[self.id][cid]) {
+      console.log(`adding ${cid} to posts_deep`);
+      posts_deep[self.id][cid] = post_object;
+    }
+    await level_db.put("posts_deep", posts_deep);
+
+    feed = await level_db.get("feed");
+    if (!feed.some(id => id.postCid === post_object.postCid)) {
+      feed.unshift(post_object);
+    }
+    await level_db.put("feed", feed);
+
     return add_result;
   };
   ipcMain.on("add-post", async (event, post_object) => {

@@ -10,7 +10,7 @@
 module.exports = function(/* ctx */) {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
-    supportTS: false,
+    supportTS: true,
 
     // https://quasar.dev/quasar-cli/prefetch-feature
     // preFetch: true,
@@ -170,7 +170,7 @@ module.exports = function(/* ctx */) {
 
       builder: {
         // https://www.electron.build/configuration/configuration
-        appId: "com.iohzrd.follow",
+        appId: "follow",
         win: {
           target: "nsis"
         },
