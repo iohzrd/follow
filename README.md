@@ -25,7 +25,7 @@ An identity object is the fundamental unit that we'll use to create a distribute
 
 First, we connect to IPFS and retrieve our ID.
 
-On first boot, we instantiate a new "Identity" object, which is ultimately saved to disk as a json file.
+On first boot, we instantiate a new "Identity" object, which is ultimately saved to disk.
 
 Most of the identity logic is contained in the Identity class:
 `src/modules/identity.js`
@@ -61,11 +61,13 @@ post object:
 
 ```
 {
+    "aux": [{key: "", value: ""}], // an array for arbitrary, user-defined data. Ex.
     "body": "", // the text body of the post
-    "publisher": "", // original publisher, will be used for "re-post" functionality
-    "magnet": "", // a webtorrent magnet link for redundancy
     "cid": "", // IPFS CID of the root directory of the post
-    "files": [], // a list of file paths, relative to the user data directory
+    "files": [], // a list of file paths, relative to the post root
+    "magnet": "", // a webtorrent magnet link for redundancy
+    "meta": [""], // list of CIDs that represent meta objects
+    "publisher": "", // original publisher, will be used for "re-post" functionality
     "ts": 0 // UTC adjusted UNIX timestamp of the post
 }
 ```
@@ -117,6 +119,7 @@ npm start
 - [x] progress events for spinners and such
 - [x] TOR integration (serve identity. TODO retrieve content)
 - [ ] Distribute binaries / Auto-update
+- [ ] Paginate feed
 - [ ] serve web-frendly html with identity + TOR
 - [ ] more progress spinners
 - [ ] meta view ("playlists" / arbitrary user defined categorization)
@@ -126,7 +129,7 @@ npm start
 - [ ] "remix"(clone and modify) other users "playlists"...
 - [ ] seed posts as web torrents (for redundancy)
 - [ ] sign posts (probably the list of CIDs or maybe body)
-- [ ] become keybase alternative...
+- [ ] keybase-like functionality...
 - [ ] use IPLD
 
 ## Follow me
