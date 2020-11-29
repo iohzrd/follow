@@ -27,12 +27,15 @@ module.exports = async function(ctx) {
   logger.info("[identity] starting");
   logger.info(ctx);
   let app_data_path = null;
-  let follow_storage_path = null;
+  let identity_storage_path = null;
+  let post_storage_path = null;
+  let feed_storage_path = null;
   let ipfs = null;
   let ipfs_id = null;
-  let level_db = null;
+  let identity_db = null;
+  let post_db = null;
+  let feed_db = null;
   let self = null;
-  let feed = null;
   let tor = null;
   let tor_id = {};
 
@@ -72,24 +75,45 @@ module.exports = async function(ctx) {
     if (!fs.existsSync(app_data_path)) {
       fs.mkdirSync(app_data_path);
     }
-    follow_storage_path = path.join(app_data_path, "Follow Storage");
-    if (!fs.existsSync(follow_storage_path)) {
-      fs.mkdirSync(follow_storage_path);
+    identity_storage_path = path.join(app_data_path, "Identity Storage");
+    if (!fs.existsSync(identity_storage_path)) {
+      fs.mkdirSync(identity_storage_path);
+    }
+    post_storage_path = path.join(app_data_path, "Post Storage");
+    if (!fs.existsSync(post_storage_path)) {
+      fs.mkdirSync(post_storage_path);
+    }
+    feed_storage_path = path.join(app_data_path, "Feed Storage");
+    if (!fs.existsSync(feed_storage_path)) {
+      fs.mkdirSync(feed_storage_path);
     }
 
-    // ensure db
-    level_db = levelup(
-      encode(leveldown(follow_storage_path), {
+    // ensure db's
+    identity_db = levelup(
+      encode(leveldown(identity_storage_path), {
+        valueEncoding: "json"
+      })
+    );
+    post_db = levelup(
+      encode(leveldown(post_storage_path), {
+        valueEncoding: "json"
+      })
+    );
+    feed_db = levelup(
+      encode(leveldown(feed_storage_path), {
         valueEncoding: "json"
       })
     );
 
-    if (!(await dbContainsKey(level_db, "feed"))) {
-      await level_db.put("feed", []);
+    if (!(await dbContainsKey(post_db, ipfs_id.id))) {
+      await post_db.put(ipfs_id.id, {});
     }
-    feed = await level_db.get("feed");
 
-    if (await dbContainsKey(level_db, ipfs_id.id)) {
+    if (!(await dbContainsKey(feed_db, "feed"))) {
+      await feed_db.put("feed", []);
+    }
+
+    if (await dbContainsKey(identity_db, ipfs_id.id)) {
       await load();
     } else {
       // first run, initialize new identity...
@@ -113,8 +137,8 @@ module.exports = async function(ctx) {
     server.listen(0, "127.0.0.1");
     tor = await granax();
 
-    if (await dbContainsKey(level_db, "tor_id")) {
-      tor_id = await level_db.get("tor_id");
+    if (await dbContainsKey(identity_db, "tor_id")) {
+      tor_id = await identity_db.get("tor_id");
     }
 
     const tor_hs = await tor.createHiddenServicePromise(
@@ -129,7 +153,7 @@ module.exports = async function(ctx) {
       self.hs = tor_hs.serviceId;
     }
 
-    if (!(await dbContainsKey(level_db, "tor_id"))) {
+    if (!(await dbContainsKey(identity_db, "tor_id"))) {
       if (tor_hs && tor_hs.privateKey && tor_hs.serviceId) {
         const pk = tor_hs.privateKey.split(":");
         tor_id = {
@@ -137,7 +161,7 @@ module.exports = async function(ctx) {
           keyBlob: pk[1],
           serviceId: tor_hs.serviceId
         };
-        await level_db.put("tor_id", tor_id);
+        await identity_db.put("tor_id", tor_id);
       }
     }
 
@@ -161,7 +185,7 @@ module.exports = async function(ctx) {
 
   const load = async () => {
     logger.info("load");
-    self = await level_db.get(ipfs_id.id);
+    self = await identity_db.get(ipfs_id.id);
     console.log(self);
   };
 
@@ -171,7 +195,7 @@ module.exports = async function(ctx) {
     self.hs = tor_id.serviceId || "";
     self.ts = Math.floor(new Date().getTime());
     console.log(self);
-    await level_db.put(ipfs_id.id, self);
+    await identity_db.put(ipfs_id.id, self);
     await publish();
   };
 
@@ -225,8 +249,8 @@ module.exports = async function(ctx) {
   const getIdentityTor = async id => {
     logger.info(`[Identity] getIdentityTor(${id})`);
     let identity_json, identity_object;
-    if (await dbContainsKey(level_db, id)) {
-      identity_object = await level_db.get(id);
+    if (await dbContainsKey(identity_db, id)) {
+      identity_object = await identity_db.get(id);
     }
     if (identity_object.hs) {
       const tor_url = `http://${identity_object.hs}.onion/identity.json`;
@@ -238,9 +262,9 @@ module.exports = async function(ctx) {
   const getIdentity = async id => {
     logger.info(`getIdentity(${id})`);
     let identity_object;
-    if (await dbContainsKey(level_db, id)) {
+    if (await dbContainsKey(identity_db, id)) {
       logger.info("loading identity from DB...");
-      identity_object = await level_db.get(id);
+      identity_object = await identity_db.get(id);
     } else {
       logger.info(
         "inserting blank identity into DB. We'll grab the real one when we can..."
@@ -250,7 +274,7 @@ module.exports = async function(ctx) {
       identity_object.id = id;
       identity_object.ts = Math.floor(new Date().getTime());
       if (id !== ipfs_id.id) {
-        await level_db.put(id, identity_object);
+        await identity_db.put(id, identity_object);
       }
     }
     // console.log(identity_object);
@@ -302,7 +326,7 @@ module.exports = async function(ctx) {
             console.log(`expected: ${id}, got: ${identity_object["id"]}`);
             identity_object["id"] = id;
           }
-          await level_db.put(id, identity_object);
+          await identity_db.put(id, identity_object);
         }
       }
     }
@@ -335,11 +359,11 @@ module.exports = async function(ctx) {
         self.following.splice(id_index, 1);
       }
       await save();
-      feed = await level_db.get("feed");
+      let feed = await feed_db.get("feed");
       feed = feed.filter(post_object => post_object.publisher != id);
-      level_db.put("feed", feed);
+      feed_db.put("feed", feed);
       if (purge) {
-        level_db.del(id);
+        feed_db.del(id);
       }
     }
   };
@@ -364,10 +388,10 @@ module.exports = async function(ctx) {
     const fid = identity_object.id;
     let post_object;
 
-    if (!(await dbContainsKey(level_db, `${fid}.posts_deep`))) {
-      await level_db.put(`${fid}.posts_deep`, {});
+    if (!(await dbContainsKey(post_db, fid))) {
+      await post_db.put(fid, {});
     }
-    let posts_deep = await level_db.get(`${fid}.posts_deep`);
+    let posts_deep = await post_db.get(fid);
     if (posts_deep[cid]) {
       logger.info("loading post from DB...");
       post_object = posts_deep[cid];
@@ -375,7 +399,7 @@ module.exports = async function(ctx) {
       logger.info("loading post from IPFS...");
       post_object = await getPostIpfs(cid);
       posts_deep[cid] = post_object;
-      await level_db.put(`${fid}.posts_deep`, posts_deep);
+      await post_db.put(fid, posts_deep);
     }
     if (!post_object.publisher) {
       post_object.publisher = identity_object.id;
@@ -408,7 +432,7 @@ module.exports = async function(ctx) {
   // get feed
   ipcMain.on("get-feed", async event => {
     logger.info("get-feed");
-    feed = await level_db.get("feed");
+    let feed = await feed_db.get("feed");
     feed.forEach(post_object => {
       event.sender.send("feedItem", post_object);
     });
@@ -416,25 +440,26 @@ module.exports = async function(ctx) {
 
   // get feed all
   ipcMain.on("get-feed-all", async event => {
-    feed = await level_db.get("feed");
+    let feed = await feed_db.get("feed");
     event.sender.send("feedAll", feed);
   });
 
   // update feed
   const updateFeed = async rerender => {
     logger.info("updateFeed()");
+    let feed;
     if (rerender) {
       feed = [];
     } else {
-      feed = await level_db.get("feed");
+      feed = await feed_db.get("feed");
     }
     console.log("loading posts_deep");
     for await (const fid of self.following) {
       let include_deleted;
-      if (!(await dbContainsKey(level_db, `${fid}.posts_deep`))) {
-        await level_db.put(`${fid}.posts_deep`, {});
+      if (!(await dbContainsKey(post_db, fid))) {
+        await post_db.put(fid, {});
       }
-      let posts_deep = await level_db.get(`${fid}.posts_deep`);
+      let posts_deep = await post_db.get(fid);
       const identity_object = await getIdentity(fid);
       // update posts_deep
       for await (const postCid of identity_object.posts) {
@@ -446,7 +471,7 @@ module.exports = async function(ctx) {
           posts_deep[postCid] = post_object;
         }
       }
-      await level_db.put(`${fid}.posts_deep`, posts_deep);
+      await post_db.put(fid, posts_deep);
 
       if (typeof posts_deep.include_deleted === "boolean") {
         include_deleted = posts_deep.include_deleted;
@@ -482,7 +507,7 @@ module.exports = async function(ctx) {
       //
     }
     feed.sort((a, b) => (a.ts > b.ts ? 1 : -1));
-    await level_db.put("feed", feed);
+    await feed_db.put("feed", feed);
   };
   ipcMain.on("update-feed", async event => {
     const result = await updateFeed();
@@ -581,21 +606,21 @@ module.exports = async function(ctx) {
     post_object.identity.ts = self.ts;
     // ctx.mainWindow.webContents.send("feedItem", post_object);
 
-    if (!(await dbContainsKey(level_db, `${ipfs_id.id}.posts_deep`))) {
-      await level_db.put(`${ipfs_id.id}.posts_deep`, {});
+    if (!(await dbContainsKey(post_db, ipfs_id.id))) {
+      await post_db.put(ipfs_id.id, {});
     }
-    let posts_deep = await level_db.get(`${ipfs_id.id}.posts_deep`);
+    let posts_deep = await post_db.get(ipfs_id.id);
     if (!posts_deep[cid]) {
       console.log(`adding ${cid} to posts_deep`);
       posts_deep[cid] = post_object;
-      await level_db.put(`${ipfs_id.id}.posts_deep`, posts_deep);
+      await post_db.put(ipfs_id.id, posts_deep);
     }
 
-    feed = await level_db.get("feed");
+    let feed = await feed_db.get("feed");
     if (!feed.some(id => id.postCid === post_object.postCid)) {
       feed.unshift(post_object);
     }
-    await level_db.put("feed", feed);
+    await feed_db.put("feed", feed);
 
     return add_result;
   };
@@ -615,18 +640,18 @@ module.exports = async function(ctx) {
       self.posts.splice(post_index, 1);
     }
 
-    if (!(await dbContainsKey(level_db, `${ipfs_id.id}.posts_deep`))) {
-      await level_db.put(`${ipfs_id.id}.posts_deep`, {});
+    if (!(await dbContainsKey(post_db, ipfs_id.id))) {
+      await post_db.put(ipfs_id.id, {});
     }
-    let posts_deep = await level_db.get(`${ipfs_id.id}.posts_deep`);
+    let posts_deep = await post_db.get(ipfs_id.id);
     if (posts_deep && posts_deep[cid]) {
       delete posts_deep[cid];
-      await level_db.put(`${ipfs_id.id}.posts_deep`, posts_deep);
+      await post_db.put(ipfs_id.id, posts_deep);
     }
     save();
-    feed = await level_db.get("feed");
+    let feed = await feed_db.get("feed");
     feed = feed.filter(post_object => post_object.postCid != cid);
-    level_db.put("feed", feed);
+    feed_db.put("feed", feed);
   };
   ipcMain.on("remove-post", async (event, cid) => {
     await removePost(cid);

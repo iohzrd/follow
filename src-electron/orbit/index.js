@@ -18,7 +18,7 @@ module.exports = async function(ctx) {
     if (!fs.existsSync(appDataPath)) {
       fs.mkdirSync(appDataPath);
     }
-    const orbitPath = path.join(appDataPath, "Orbit Storage");
+    const orbitPath = path.join(appDataPath, "Comment Storage");
     if (!fs.existsSync(orbitPath)) {
       fs.mkdirSync(orbitPath);
     }
