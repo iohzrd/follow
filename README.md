@@ -36,13 +36,14 @@ root level keys:
 
 ```
 {
+    "aux": [{key: "", value: ""}], // an array for arbitrary, user-defined data. Ex.
     "av": "", // base64 encoded image data for "avatar"
-    "aux": {}, // an object for arbitrary, user-defined data. Ex.
     "dn": "", // user-defined display name
-    "id": "", // users IPFS ID
+    "following": [""], // a list of ID's the user follows
+    "hs": "", // users TOR HIDDEN SERVICE address
+    "id": "", // users IPNS ID
     "meta": [""], // list of CIDs that represent meta objects
     "posts": [""], // a list of CIDs that represent post objects
-    "following": [""], // a list of ID's the user follows
     "ts": 10000, // UTC adjusted UNIX timestamp of the identities last edit
 }
 ```
@@ -116,6 +117,8 @@ npm start
 - [x] progress events for spinners and such
 - [x] TOR integration (serve identity. TODO retrieve content)
 - [ ] Distribute binaries / Auto-update
+- [ ] serve web-frendly html with identity + TOR
+- [ ] more progress spinners
 - [ ] meta view ("playlists" / arbitrary user defined categorization)
 - [ ] meta comment system (topic based bulletin board)
 - [ ] settings view
@@ -123,6 +126,7 @@ npm start
 - [ ] "remix"(clone and modify) other users "playlists"...
 - [ ] seed posts as web torrents (for redundancy)
 - [ ] sign posts (probably the list of CIDs or maybe body)
+- [ ] become keybase alternative...
 - [ ] use IPLD
 
 ## Follow me
