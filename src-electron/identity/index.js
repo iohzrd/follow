@@ -279,7 +279,11 @@ module.exports = async function(ctx) {
     logger.info(`[Identity] getIdentityIpfs(${id})`);
     const identity_root_cid = await all(ipfs.name.resolve(id));
     const identity_json_cid = `${identity_root_cid[0]}/identity.json`;
-    await pinIdentity(id, identity_root_cid);
+    try {
+      await pinIdentity(id, identity_root_cid);
+    } catch (error) {
+      logger.info("failed to pin identity");
+    }
     const identity_json = Buffer.concat(await all(ipfs.cat(identity_json_cid)));
     return JSON.parse(identity_json);
   };
@@ -347,14 +351,18 @@ module.exports = async function(ctx) {
       let identity_object = null;
       if (id !== ipfs_id.id) {
         // try retreiving identity from tor
-        identity_object = await getIdentityIpfs(id).catch(() => {
+        try {
+          identity_object = await getIdentityIpfs(id);
+        } catch (error) {
           logger.info("failed to fetch identity from ipfs");
-        });
+        }
         // if tor fails, try retreiving identity from IPFS
         if (!identity_object) {
-          identity_object = await getIdentityTor(id).catch(() => {
+          try {
+            identity_object = await getIdentityTor(id);
+          } catch (error) {
             logger.info(`failed to fetch identity from tor: ${id}`);
-          });
+          }
         }
         // if retreived, save it...
         if (identity_object) {
