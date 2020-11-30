@@ -134,6 +134,7 @@ module.exports = async function(ctx) {
       // first run, initialize new identity...
       self = IDENTITY_TEMPLATE;
       self.following = [ipfs_id.id];
+      await save();
     }
 
     const server = http.createServer((req, res) => {
@@ -180,7 +181,7 @@ module.exports = async function(ctx) {
       }
     }
 
-    save();
+    publish();
   };
 
   // get id
@@ -223,11 +224,12 @@ module.exports = async function(ctx) {
       content: JSON.stringify(self)
     };
     const add_options = {
-      pin: true,
+      pin: false,
       wrapWithDirectory: true,
       timeout: 10000
     };
     const publish_object = await ipfs.add(obj, add_options);
+    await pinIdentity(ipfs_id.id, publish_object.cid.string);
     const publish_result = await ipfs.name.publish(publish_object.cid.string, {
       lifetime: "8760h"
     });
@@ -253,24 +255,19 @@ module.exports = async function(ctx) {
   };
 
   const pinIdentity = async (id, cid) => {
-    logger.info(`[Identity] pinIdentity(${cid})`);
-
+    logger.info(`[Identity] pinIdentity(${id}, ${cid})`);
     if (!(await dbContainsKey(pin_db, id))) {
       await pin_db.put(id, []);
     }
     let pins = await pin_db.get(id);
     for await (const pin of pins) {
       logger.info("unpinning old identity CID");
-      const unpin_result = await ipfs.pin.rm(pin);
-      logger.info("unpin_result");
-      logger.info(unpin_result);
+      await ipfs.pin.rm(pin);
     }
     pins = [];
     logger.info("pinning new identity CID");
     const pin_result = await ipfs.pin.add(cid);
-    pins.push(pin_result);
-    logger.info(pin_result);
-    logger.info("pin_result");
+    pins.push(pin_result.string);
     await pin_db.put(id, pins);
     return pin_result;
   };
