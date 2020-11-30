@@ -85,13 +85,13 @@ module.exports = async function(ctx) {
     if (!fs.existsSync(post_storage_path)) {
       fs.mkdirSync(post_storage_path);
     }
-    feed_storage_path = path.join(app_data_path, "Feed Storage");
-    if (!fs.existsSync(feed_storage_path)) {
-      fs.mkdirSync(feed_storage_path);
-    }
     pin_storage_path = path.join(app_data_path, "Pin Storage");
     if (!fs.existsSync(pin_storage_path)) {
       fs.mkdirSync(pin_storage_path);
+    }
+    feed_storage_path = path.join(app_data_path, "Feed Storage");
+    if (!fs.existsSync(feed_storage_path)) {
+      fs.mkdirSync(feed_storage_path);
     }
 
     // ensure db's
@@ -279,8 +279,7 @@ module.exports = async function(ctx) {
     logger.info(`[Identity] getIdentityIpfs(${id})`);
     const identity_root_cid = await all(ipfs.name.resolve(id));
     const identity_json_cid = `${identity_root_cid[0]}/identity.json`;
-    // pin identity.json directly
-    await pinIdentity(id, identity_json_cid);
+    await pinIdentity(id, identity_root_cid);
     const identity_json = Buffer.concat(await all(ipfs.cat(identity_json_cid)));
     return JSON.parse(identity_json);
   };
@@ -348,13 +347,13 @@ module.exports = async function(ctx) {
       let identity_object = null;
       if (id !== ipfs_id.id) {
         // try retreiving identity from tor
-        identity_object = await getIdentityTor(id).catch(() => {
-          logger.info(`failed to fetch identity from tor: ${id}`);
+        identity_object = await getIdentityIpfs(id).catch(() => {
+          logger.info("failed to fetch identity from ipfs");
         });
         // if tor fails, try retreiving identity from IPFS
         if (!identity_object) {
-          identity_object = await getIdentityIpfs(id).catch(() => {
-            logger.info("failed to fetch identity from ipfs");
+          identity_object = await getIdentityTor(id).catch(() => {
+            logger.info(`failed to fetch identity from tor: ${id}`);
           });
         }
         // if retreived, save it...
