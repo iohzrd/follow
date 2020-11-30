@@ -30,11 +30,13 @@ module.exports = async function(ctx) {
   let identity_storage_path = null;
   let post_storage_path = null;
   let feed_storage_path = null;
+  let pin_storage_path = null;
   let ipfs = null;
   let ipfs_id = null;
   let identity_db = null;
   let post_db = null;
   let feed_db = null;
+  let pin_db = null;
   let self = null;
   let tor = null;
   let tor_id = {};
@@ -87,6 +89,10 @@ module.exports = async function(ctx) {
     if (!fs.existsSync(feed_storage_path)) {
       fs.mkdirSync(feed_storage_path);
     }
+    pin_storage_path = path.join(app_data_path, "Pin Storage");
+    if (!fs.existsSync(pin_storage_path)) {
+      fs.mkdirSync(pin_storage_path);
+    }
 
     // ensure db's
     identity_db = levelup(
@@ -99,6 +105,11 @@ module.exports = async function(ctx) {
         valueEncoding: "json"
       })
     );
+    pin_db = levelup(
+      encode(leveldown(pin_storage_path), {
+        valueEncoding: "json"
+      })
+    );
     feed_db = levelup(
       encode(leveldown(feed_storage_path), {
         valueEncoding: "json"
@@ -107,6 +118,10 @@ module.exports = async function(ctx) {
 
     if (!(await dbContainsKey(post_db, ipfs_id.id))) {
       await post_db.put(ipfs_id.id, {});
+    }
+
+    if (!(await dbContainsKey(pin_db, ipfs_id.id))) {
+      await pin_db.put(ipfs_id.id, []);
     }
 
     if (!(await dbContainsKey(feed_db, "feed"))) {
@@ -237,12 +252,36 @@ module.exports = async function(ctx) {
     return pin_result;
   };
 
+  const pinIdentity = async (id, cid) => {
+    logger.info(`[Identity] pinIdentity(${cid})`);
+
+    if (!(await dbContainsKey(pin_db, id))) {
+      await pin_db.put(id, []);
+    }
+    let pins = await post_db.get(id);
+    for await (const pin of pins) {
+      logger.info("unpinning old identity CID");
+      const unpin_result = await ipfs.pin.rm(pin);
+      logger.info("unpin_result");
+      logger.info(unpin_result);
+    }
+    pins = [];
+    logger.info("pinning new identity CID");
+    const pin_result = await ipfs.pin.add(cid);
+    pins.push(pin_result);
+    logger.info(pin_result);
+    logger.info("pin_result");
+    await pin_db.put(id, pins);
+    return pin_result;
+  };
+
   const getIdentityIpfs = async id => {
     logger.info(`[Identity] getIdentityIpfs(${id})`);
-    const identity_file_cid = await all(ipfs.name.resolve(id));
-    const cid = `${identity_file_cid[0]}/identity.json`;
-    await pinCID(cid);
-    const identity_json = Buffer.concat(await all(ipfs.cat(cid)));
+    const identity_root_cid = await all(ipfs.name.resolve(id));
+    const identity_json_cid = `${identity_root_cid[0]}/identity.json`;
+    // pin identity.json directly
+    await pinIdentity(id, identity_json_cid);
+    const identity_json = Buffer.concat(await all(ipfs.cat(identity_json_cid)));
     return JSON.parse(identity_json);
   };
 
@@ -373,7 +412,7 @@ module.exports = async function(ctx) {
 
   const getPostIpfs = async post_cid => {
     logger.info("getPostIpfs");
-    // await pinCID(post_cid);
+    await pinCID(post_cid);
     let post_buffer;
     try {
       post_buffer = Buffer.concat(await all(ipfs.cat(`${post_cid}/post.json`)));
