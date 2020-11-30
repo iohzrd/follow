@@ -232,8 +232,8 @@ module.exports = async function(ctx) {
   const pinCID = async cid => {
     logger.info(`[Identity] pinCID(${cid})`);
     const pin_result = await ipfs.pin.add(cid);
-    // logger.info("pin_result");
-    // logger.info(pin_result);
+    logger.info("pin_result");
+    logger.info(pin_result);
     return pin_result;
   };
 
@@ -241,7 +241,7 @@ module.exports = async function(ctx) {
     logger.info(`[Identity] getIdentityIpfs(${id})`);
     const identity_file_cid = await all(ipfs.name.resolve(id));
     const cid = `${identity_file_cid[0]}/identity.json`;
-    // await pinCID(cid);
+    await pinCID(cid);
     const identity_json = Buffer.concat(await all(ipfs.cat(cid)));
     return JSON.parse(identity_json);
   };
@@ -373,7 +373,7 @@ module.exports = async function(ctx) {
 
   const getPostIpfs = async post_cid => {
     logger.info("getPostIpfs");
-    await pinCID(post_cid);
+    // await pinCID(post_cid);
     let post_buffer;
     try {
       post_buffer = Buffer.concat(await all(ipfs.cat(`${post_cid}/post.json`)));
