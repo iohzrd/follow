@@ -191,8 +191,7 @@ module.exports = async function(ctx) {
     }
     event.sender.send("id", ipfs_id);
   });
-  ipcMain.handle("get-id", async event => {
-    console.log(event);
+  ipcMain.handle("get-id", async () => {
     if (!ipfs_id) {
       ipfs_id = await ipfs.id();
     }
@@ -262,7 +261,12 @@ module.exports = async function(ctx) {
     let pins = await pin_db.get(id);
     for await (const pin of pins) {
       logger.info("unpinning old identity CID");
-      await ipfs.pin.rm(pin);
+      try {
+        await ipfs.pin.rm(pin);
+      } catch (error) {
+        logger.info("failed to unpin from pin_db");
+        console.log(error);
+      }
     }
     pins = [];
     logger.info("pinning new identity CID");
@@ -387,19 +391,42 @@ module.exports = async function(ctx) {
   });
 
   const unfollowId = async (id, purge) => {
-    logger.info("[Identity] unfollowId()");
+    logger.info(`[Identity] unfollowId(${id}, ${purge})`);
     if (self.following.includes(id)) {
+      // remove id from following
       const id_index = self.following.indexOf(id);
       if (id_index > -1) {
         self.following.splice(id_index, 1);
       }
-      await save();
+      // remove identity pins
+      let pins = await pin_db.get(id);
+      for await (const pin of pins) {
+        logger.info("unpinning old identity CID");
+        try {
+          await ipfs.pin.rm(pin);
+        } catch (error) {
+          logger.info("failed to remove some pins from pin_dv");
+          console.log(error);
+        }
+      }
+      await pin_db.del(id);
+      // remove post pins
+      let posts_deep = await post_db.get(id);
+      for (const postCid in posts_deep) {
+        try {
+          ipfs.pin.rm(postCid);
+        } catch (error) {
+          logger.info("failed to remove some pins from post_db");
+          console.log(error);
+        }
+      }
+      await post_db.del(id);
+      // remove posts from feed
       let feed = await feed_db.get("feed");
       feed = feed.filter(post_object => post_object.publisher != id);
       feed_db.put("feed", feed);
-      if (purge) {
-        feed_db.del(id);
-      }
+      // save
+      await save();
     }
   };
   ipcMain.on("unfollow", async (event, id, purge) => {
@@ -709,7 +736,6 @@ module.exports = async function(ctx) {
     event.sender.send();
   });
   ipcMain.handle("repost", async (event, postCid) => {
-    // console.log(event);
     const result = await repost(postCid);
     return result;
   });

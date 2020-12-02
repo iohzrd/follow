@@ -4,6 +4,7 @@ const { app, ipcMain } = require("electron");
 const APP_DATA_PATH = app.getPath("appData");
 const IpfsHttpClient = require("ipfs-http-client");
 const Orbit = require("orbit_");
+const logger = require("../common/logger");
 
 module.exports = async function(ctx) {
   try {
@@ -29,20 +30,20 @@ module.exports = async function(ctx) {
     orbit.connect(id).catch(e => console.error(e));
 
     orbit.events.on("connected", () => {
-      console.log(`[Orbit] connected`);
+      logger.info(`[Orbit] connected`);
     });
 
     ipcMain.on("join-comment-channel", (event, channelName) => {
       orbit.join(channelName).then(channel => {
-        console.log("joined");
+        logger.info("joined");
 
         channel.on("entry", entry => {
-          console.log("entry");
+          logger.info("entry");
           ctx.mainWindow.webContents.send("comment", entry.payload.value);
         });
 
         channel.on("ready", async () => {
-          console.log(`${channelName} ready`);
+          logger.info(`${channelName} ready`);
           ctx.mainWindow.webContents.send("comments-ready");
           const all = channel.feed
             .iterator({ limit: -1 })
@@ -51,7 +52,7 @@ module.exports = async function(ctx) {
           all.forEach(comment => {
             ctx.mainWindow.webContents.send("comment", comment);
 
-            console.log(comment);
+            logger.info(comment);
           });
         });
 
@@ -61,7 +62,7 @@ module.exports = async function(ctx) {
 
     ipcMain.on("add-comment", (event, channelName, newComment) => {
       if (channelName in orbit.channels) {
-        console.log(`add-comment: ${channelName}, ${newComment}`);
+        logger.info(`add-comment: ${channelName}, ${newComment}`);
         orbit.send(channelName, newComment);
       }
     });
@@ -75,6 +76,6 @@ module.exports = async function(ctx) {
     // Connect to Orbit network
     orbit.connect(id).catch(e => console.error(e));
   } catch (error) {
-    console.log(error);
+    logger.info(error);
   }
 };
