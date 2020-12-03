@@ -101,7 +101,6 @@
           icon="comment"
           label="Comment"
           :to="{ name: 'Post', params: { post: post } }"
-          @click="console.log('')"
         />
         <!--  -->
         <div v-if="identity.id != ipfs_id.id">

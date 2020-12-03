@@ -7,33 +7,32 @@ const Orbit = require("orbit_");
 const logger = require("../common/logger");
 
 module.exports = async function(ctx) {
-  try {
-    const ipfs = await IpfsHttpClient({
-      host: "localhost",
-      port: "5001",
-      protocol: "http"
-    });
-    const { id } = await ipfs.id();
+  const ipfs = await IpfsHttpClient({
+    host: "localhost",
+    port: "5001",
+    protocol: "http"
+  });
+  const { id } = await ipfs.id();
 
-    const appDataPath = path.join(APP_DATA_PATH, "follow");
-    if (!fs.existsSync(appDataPath)) {
-      fs.mkdirSync(appDataPath);
-    }
-    const orbitPath = path.join(appDataPath, "Comment Storage");
-    if (!fs.existsSync(orbitPath)) {
-      fs.mkdirSync(orbitPath);
-    }
-    const orbitOptions = {
-      directory: orbitPath
-    };
-    const orbit = new Orbit(ipfs, orbitOptions);
-    orbit.connect(id).catch(e => console.error(e));
+  const appDataPath = path.join(APP_DATA_PATH, "follow");
+  if (!fs.existsSync(appDataPath)) {
+    fs.mkdirSync(appDataPath);
+  }
+  const orbitPath = path.join(appDataPath, "Comment Storage");
+  if (!fs.existsSync(orbitPath)) {
+    fs.mkdirSync(orbitPath);
+  }
+  const orbitOptions = {
+    directory: orbitPath
+  };
+  const orbit = new Orbit(ipfs, orbitOptions);
 
-    orbit.events.on("connected", () => {
-      logger.info(`[Orbit] connected`);
-    });
+  orbit.events.on("connected", () => {
+    logger.info(`[Orbit] connected`);
+  });
 
-    ipcMain.on("join-comment-channel", (event, channelName) => {
+  ipcMain.on("join-comment-channel", (event, channelName) => {
+    try {
       orbit.join(channelName).then(channel => {
         logger.info("joined");
 
@@ -58,24 +57,40 @@ module.exports = async function(ctx) {
 
         channel.load(-1);
       });
-    });
+    } catch (error) {
+      logger.info(`failed to join comment channel: ${channelName}`);
+      logger.info(error);
+    }
+  });
 
-    ipcMain.on("add-comment", (event, channelName, newComment) => {
+  ipcMain.on("add-comment", (event, channelName, newComment) => {
+    try {
       if (channelName in orbit.channels) {
         logger.info(`add-comment: ${channelName}, ${newComment}`);
         orbit.send(channelName, newComment);
       }
-    });
+    } catch (error) {
+      logger.info(`failed to add comment: ${channelName}, ${newComment}`);
+      logger.info(error);
+    }
+  });
 
-    ipcMain.on("leave-comment-channel", (event, channelName) => {
+  ipcMain.on("leave-comment-channel", (event, channelName) => {
+    try {
       const channel = orbit.channels[channelName];
       channel.removeAllListeners("entry");
       orbit.leave(channelName);
-    });
+    } catch (error) {
+      logger.info(`failed to leave comment channel: ${channelName}`);
+      logger.info(error);
+    }
+  });
 
-    // Connect to Orbit network
-    orbit.connect(id).catch(e => console.error(e));
+  // Connect to Orbit network
+  try {
+    orbit.connect(id);
   } catch (error) {
+    logger.info("failed to connect to orbit");
     logger.info(error);
   }
 };
