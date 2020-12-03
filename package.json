@@ -37,13 +37,13 @@
     "ipfs": "^0.52.2",
     "ipfs-http-client": "^47.0.1",
     "ipfs-utils": "5.0.1",
-    "ipfsd-ctl": "^7.1.0",
+    "ipfsd-ctl": "^7.1.1",
     "is-ipfs": "^2.0.0",
     "it-all": "^1.0.4",
     "leveldown": "^5.6.0",
     "levelup": "^4.4.0",
     "orbit_": "git://github.com/iohzrd/orbit-core.git",
-    "quasar": "^1.14.5",
+    "quasar": "^1.14.6",
     "sudo-prompt": "^9.2.1",
     "tor-request": "^3.1.0",
     "untildify": "^4.0.0",
@@ -52,7 +52,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@quasar/app": "^2.1.8",
+    "@quasar/app": "^2.1.9",
     "@types/node": "^14.14.10",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
@@ -64,11 +64,10 @@
     "electron-devtools-installer": "^3.1.1",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.15.0",
-    "eslint-config-standard": "^16.0.2",
     "eslint-loader": "^4.0.2",
+    "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.1.0",
     "eslint-plugin-vue": "^7.1.0"
   },
   "browserslist": [

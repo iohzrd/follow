@@ -100,6 +100,7 @@
           flat
           icon="comment"
           label="Comment"
+          :to="{ name: 'Post', params: { post: post } }"
           @click="console.log('')"
         />
         <!--  -->
@@ -215,7 +216,7 @@ export default {
       this.magnet = this.post.magnet;
       this.meta = this.post.meta;
       this.ts = this.post.ts;
-      this.shareLink = "https://dweb.link/ipfs/" + this.post.postCid;
+      this.shareLink = "https://ipfs.io/ipfs/" + this.post.postCid;
     },
     removePost() {
       ipcRenderer.invoke("remove-post", this.post.postCid).then(result => {
