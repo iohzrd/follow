@@ -14,16 +14,11 @@ const { STATUS } = require("./daemon");
 const { IS_MAC, IS_WIN, VERSION, GO_IPFS_VERSION } = require("./common/consts");
 
 const {
-  CONFIG_KEY: DOWNLOAD_KEY,
-  SHORTCUT: DOWNLOAD_SHORTCUT,
-  downloadCid
-} = require("./download-cid");
-const {
   CONFIG_KEY: AUTO_LAUNCH_KEY,
   isSupported: supportsLaunchAtLogin
 } = require("./auto-launch");
 
-const CONFIG_KEYS = [AUTO_LAUNCH_KEY, DOWNLOAD_KEY];
+const CONFIG_KEYS = [AUTO_LAUNCH_KEY];
 
 function buildCheckbox(key, label) {
   return {
@@ -83,17 +78,6 @@ function buildMenu(ctx) {
       visible: false
     },
     { type: "separator" },
-
-    {
-      id: "downloadCid",
-      label: i18n.t("downloadCid"),
-      click: () => {
-        downloadCid(ctx);
-      },
-      accelerator: IS_MAC ? DOWNLOAD_SHORTCUT : null,
-      enabled: false
-    },
-    { type: "separator" },
     {
       label: IS_MAC
         ? i18n.t("settings.preferences")
@@ -103,8 +87,7 @@ function buildMenu(ctx) {
           label: i18n.t("settings.appPreferences"),
           enabled: false
         },
-        buildCheckbox(AUTO_LAUNCH_KEY, "settings.launchOnStartup"),
-        buildCheckbox(DOWNLOAD_KEY, "settings.downloadHashShortcut")
+        buildCheckbox(AUTO_LAUNCH_KEY, "settings.launchOnStartup")
       ]
     },
     {
@@ -229,7 +212,7 @@ function icon(color) {
   return path.join(__statics, `${color}-22Template.png`);
 }
 
-module.exports = function (ctx) {
+module.exports = function(ctx) {
   logger.info("[tray] starting");
   const tray = new Tray(icon(off));
   let menu = null;
@@ -292,8 +275,6 @@ module.exports = function (ctx) {
     menu.getMenuItemById("restartIpfs").enabled = !gcRunning;
 
     menu.getMenuItemById(AUTO_LAUNCH_KEY).enabled = supportsLaunchAtLogin();
-    menu.getMenuItemById("downloadCid").enabled =
-      status === STATUS.STARTING_FINISHED;
 
     menu.getMenuItemById("moveRepositoryLocation").enabled =
       !gcRunning && status !== STATUS.STOPPING_STARTED;

@@ -255,32 +255,49 @@ module.exports = async function(ctx) {
 
   const pinIdentity = async (id, cid) => {
     logger.info(`[Identity] pinIdentity(${id}, ${cid})`);
+    if (typeof cid === "string" && cid.includes("/ipfs/")) {
+      cid = cid.replace("/ipfs/", "");
+    }
     if (!(await dbContainsKey(pin_db, id))) {
       await pin_db.put(id, []);
     }
     let pins = await pin_db.get(id);
-    for await (const pin of pins) {
-      logger.info("unpinning old identity CID");
+    let ipfs_pins = await all(ipfs.pin.ls());
+    if (ipfs_pins.some(pin => pin.cid.string === cid)) {
+      console.log(`${cid} already pinned, skipping...`);
+      if (!pins.some(pin => pin === cid)) {
+        pins.push(cid);
+        await pin_db.put(id, pins);
+      }
+    } else {
+      for await (const pin of pins) {
+        logger.info(`unpinning old identity CIDs: ${pin}`);
+        try {
+          await ipfs.pin.rm(pin);
+        } catch (error) {
+          logger.info("failed to unpin from pin_db");
+          console.log(error);
+        }
+      }
+      pins = [];
+      logger.info(`pinning new identity CID: ${cid}`);
       try {
-        await ipfs.pin.rm(pin);
+        const pin_result = await ipfs.pin.add(cid);
+        pins.push(pin_result.string);
+        await pin_db.put(id, pins);
+        return pin_result;
       } catch (error) {
-        logger.info("failed to unpin from pin_db");
+        logger.info(`failed to pin CID: ${cid}`);
         console.log(error);
       }
     }
-    pins = [];
-    logger.info("pinning new identity CID");
-    const pin_result = await ipfs.pin.add(cid);
-    pins.push(pin_result.string);
-    await pin_db.put(id, pins);
-    return pin_result;
   };
 
   const getIdentityIpfs = async id => {
     logger.info(`[Identity] getIdentityIpfs(${id})`);
     const identity_root_cid = await all(ipfs.name.resolve(id));
     const identity_json_cid = `${identity_root_cid[0]}/identity.json`;
-    await pinIdentity(id, identity_root_cid);
+    await pinIdentity(id, identity_root_cid[0]);
     const identity_json = Buffer.concat(await all(ipfs.cat(identity_json_cid)));
     return JSON.parse(identity_json);
   };
