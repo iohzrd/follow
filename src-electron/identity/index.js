@@ -7,9 +7,28 @@ const fs = require("fs-extra");
 const levelup = require("levelup");
 const leveldown = require("leveldown");
 const encode = require("encoding-down");
-const granax = require("@iohzrd/granax");
 const tr = require("tor-request");
 const logger = require("../common/logger");
+
+const granax = require("granax");
+// // HACKY, required in electron v11.0.3
+// // isn't looking for granax in app.asar.unpacked,
+// // even though it's there.
+// // https://github.com/electron-userland/electron-builder/issues/5360
+// // https://github.com/electron/electron/issues/26819
+// // https://github.com/electron/electron/pull/26749
+// let granax = null;
+// try {
+//   granax = require("granax");
+// } catch (error) {
+//   module.paths.push(
+//     path.join(
+//       __dirname.replace("app.asar", "app.asar.unpacked"),
+//       "node_modules"
+//     )
+//   );
+//   granax = require("granax");
+// }
 
 const IDENTITY_TEMPLATE = {
   aux: [],
@@ -254,23 +273,23 @@ module.exports = async function(ctx) {
   };
 
   const pinIdentity = async (id, cid) => {
-    logger.info(`[Identity] pinIdentity(${id}, ${cid})`);
     if (typeof cid === "string" && cid.includes("/ipfs/")) {
       cid = cid.replace("/ipfs/", "");
     }
+    logger.info(`[Identity] pinIdentity(${id}, ${cid})`);
     if (!(await dbContainsKey(pin_db, id))) {
       await pin_db.put(id, []);
     }
-    let pins = await pin_db.get(id);
+    let db_pins = await pin_db.get(id);
     let ipfs_pins = await all(ipfs.pin.ls());
     if (ipfs_pins.some(pin => pin.cid.string === cid)) {
       console.log(`${cid} already pinned, skipping...`);
-      if (!pins.some(pin => pin === cid)) {
-        pins.push(cid);
-        await pin_db.put(id, pins);
+      if (!db_pins.some(pin => pin === cid)) {
+        db_pins.push(cid);
+        await pin_db.put(id, db_pins);
       }
     } else {
-      for await (const pin of pins) {
+      for await (const pin of db_pins) {
         logger.info(`unpinning old identity CIDs: ${pin}`);
         try {
           await ipfs.pin.rm(pin);
@@ -279,12 +298,12 @@ module.exports = async function(ctx) {
           console.log(error);
         }
       }
-      pins = [];
+      db_pins = [];
       logger.info(`pinning new identity CID: ${cid}`);
       try {
         const pin_result = await ipfs.pin.add(cid);
-        pins.push(pin_result.string);
-        await pin_db.put(id, pins);
+        db_pins.push(pin_result.string);
+        await pin_db.put(id, db_pins);
         return pin_result;
       } catch (error) {
         logger.info(`failed to pin CID: ${cid}`);
