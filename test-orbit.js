@@ -1,6 +1,6 @@
 const IpfsHttpClient = require("ipfs-http-client");
 const ipfs = IpfsHttpClient();
-const Orbit = require("orbit_");
+const Orbit = require("orbit-core");
 
 async function main() {
   try {

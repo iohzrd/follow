@@ -3,7 +3,7 @@ const fs = require("fs-extra");
 const { app, ipcMain } = require("electron");
 const APP_DATA_PATH = app.getPath("appData");
 const IpfsHttpClient = require("ipfs-http-client");
-const Orbit = require("orbit_");
+const Orbit = require("orbit-core");
 const logger = require("../common/logger");
 
 module.exports = async function(ctx) {

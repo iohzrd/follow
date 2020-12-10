@@ -119,6 +119,7 @@ npm start
 - [x] progress events for spinners and such
 - [x] TOR integration (serve identity. TODO retrieve content)
 - [ ] Distribute binaries / Auto-update
+- [ ] use SQLite for feed / posts...
 - [ ] Paginate feed
 - [ ] serve web-frendly html with identity + TOR
 - [ ] more progress spinners

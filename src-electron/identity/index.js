@@ -7,28 +7,9 @@ const fs = require("fs-extra");
 const levelup = require("levelup");
 const leveldown = require("leveldown");
 const encode = require("encoding-down");
+const granax = require("granax");
 const tr = require("tor-request");
 const logger = require("../common/logger");
-
-const granax = require("granax");
-// // HACKY, required in electron v11.0.3
-// // isn't looking for granax in app.asar.unpacked,
-// // even though it's there.
-// // https://github.com/electron-userland/electron-builder/issues/5360
-// // https://github.com/electron/electron/issues/26819
-// // https://github.com/electron/electron/pull/26749
-// let granax = null;
-// try {
-//   granax = require("granax");
-// } catch (error) {
-//   module.paths.push(
-//     path.join(
-//       __dirname.replace("app.asar", "app.asar.unpacked"),
-//       "node_modules"
-//     )
-//   );
-//   granax = require("granax");
-// }
 
 const IDENTITY_TEMPLATE = {
   aux: [],
