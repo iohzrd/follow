@@ -1,6 +1,6 @@
 {
   "name": "follow",
-  "version": "0.2.47",
+  "version": "0.2.48",
   "description": "Decentralized, censorship resistant social media and bulletin board on IPFS",
   "productName": "follow",
   "author": "iohzrd <iohzrd@gmail.com>",
@@ -51,6 +51,7 @@
     "sudo-prompt": "^9.2.1",
     "tor-request": "^3.1.0",
     "untildify": "^4.0.0",
+    "vue-i18n": "^8.22.2",
     "webtorrent": "^0.112.0",
     "webtorrent-hybrid": "^4.0.3",
     "winston": "^3.3.3"

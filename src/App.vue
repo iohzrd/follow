@@ -217,9 +217,9 @@ export default {
 };
 </script>
 <style scoped>
-.root-container {
+/* .root-container {
   padding-left: 16.5%;
   padding-right: 16.5%;
   position: relative;
-}
+} */
 </style>
