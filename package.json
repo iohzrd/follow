@@ -1,6 +1,6 @@
 {
   "name": "follow",
-  "version": "0.2.49",
+  "version": "0.2.50",
   "description": "Decentralized, censorship resistant social media and bulletin board on IPFS",
   "productName": "follow",
   "author": "iohzrd <iohzrd@gmail.com>",
@@ -20,7 +20,7 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@quasar/extras": "^1.9.11",
+    "@quasar/extras": "^1.9.12",
     "axios": "^0.21.0",
     "core-js": "^3.8.1",
     "cors": "^2.8.5",
@@ -38,10 +38,11 @@
     "ipfs": "^0.52.3",
     "ipfs-http-client": "^47.0.1",
     "ipfs-utils": "5.0.1",
-    "ipfsd-ctl": "^7.1.1",
+    "ipfsd-ctl": "^7.2.0",
     "is-ipfs": "^2.0.0",
     "it-all": "^1.0.4",
-    "knex": "^0.21.13",
+    "knex": "^0.21.14",
+    "knex-migrate": "^1.7.4",
     "leveldown": "^5.6.0",
     "levelup": "^4.4.0",
     "objection": "^2.2.3",
@@ -57,7 +58,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@quasar/app": "^2.1.11",
+    "@quasar/app": "^2.1.12",
     "babel-eslint": "^10.1.0",
     "devtron": "^1.4.0",
     "electron": "^11.1.0",
@@ -66,7 +67,7 @@
     "electron-devtools-installer": "^3.1.1",
     "electron-packager": "^15.2.0",
     "eslint": "^6.8.0",
-    "eslint-config-prettier": "^7.0.0",
+    "eslint-config-prettier": "^7.1.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",

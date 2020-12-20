@@ -7,6 +7,7 @@ const Knex = require("knex");
 // Initialize knex.
 const knex = Knex({
   client: "sqlite3",
+  debug: true,
   useNullAsDefault: true,
   connection: {
     filename: "objection.db"
@@ -17,19 +18,19 @@ const knex = Knex({
 Model.knex(knex);
 
 // Person model.
-class Person extends Model {
+class Post extends Model {
   static get tableName() {
-    return "persons";
+    return "posts";
   }
 
   static get relationMappings() {
     return {
       children: {
         relation: Model.HasManyRelation,
-        modelClass: Person,
+        modelClass: Post,
         join: {
-          from: "persons.id",
-          to: "persons.parentId"
+          from: "posts.id",
+          to: "posts.parentId"
         }
       }
     };
@@ -37,44 +38,48 @@ class Person extends Model {
 }
 
 async function createSchema() {
-  if (await knex.schema.hasTable("persons")) {
+  if (await knex.schema.hasTable("posts")) {
     return;
   }
 
   // Create database schema. You should use knex migration files
   // to do this. We create it here for simplicity.
-  await knex.schema.createTable("persons", table => {
+  await knex.schema.createTable("posts", table => {
     table.increments("id").primary();
-    table.integer("parentId").references("persons.id");
-    table.string("firstName");
+    table.integer("parentId").references("posts.id");
+    table.string("body");
+    table.string("dn");
+    table.string("filesRoot");
+    table.string("magnet");
+    table.string("publisher");
+    table.integer("ts");
+    table.jsonb("files");
+    table.jsonb("meta");
   });
 }
 
 async function main() {
   // Create some people.
-  const sylvester = await Person.query().insertGraph({
-    firstName: "Sylvester",
-
-    children: [
-      {
-        firstName: "Sage"
-      },
-      {
-        firstName: "Sophia"
-      }
-    ]
+  const post = await Post.query().insertGraph({
+    body: String(Math.floor(new Date().getTime())),
+    dn: "iohzrd",
+    files: ["file1.txt", "file2.txt"],
+    filesRoot: "",
+    magnet: "",
+    meta: ["meta1", "meta2"],
+    publisher: "Qmb4zrL17TtLGnaLFuUQC4TmaVbizEfVbDnnSzNLxkZ3Zp",
+    ts: Math.floor(new Date().getTime())
   });
 
-  console.log("created:", sylvester);
+  console.log("created:", post);
 
   // Fetch all people named Sylvester and sort them by id.
   // Load `children` relation eagerly.
-  const sylvesters = await Person.query()
-    .where("firstName", "Sylvester")
-    .withGraphFetched("children")
-    .orderBy("id");
+  const posts = await Post.query()
+    // .where("publisher", "Qmb4zrL17TtLGnaLFuUQC4TmaVbizEfVbDnnSzNLxkZ3Zp")
+    .orderBy("ts", "desc");
 
-  console.log("sylvesters:", sylvesters);
+  console.log(posts);
 }
 
 createSchema()
