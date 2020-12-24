@@ -1,15 +1,22 @@
 <template>
   <q-page>
     <NewPost class="new-post" />
-    <PostCard
-      v-for="post in feed"
-      :id="post.id"
-      :key="post.ts"
-      :post="post"
-      @remove-post="removePost"
-      @show-unfollow-prompt="showUnfollowPrompt"
-      @show-link-prompt="showLinkPrompt"
-    />
+    <q-infinite-scroll :offset="0" @load="onFeedPage">
+      <PostCard
+        v-for="post in feed"
+        :key="post.ts"
+        :publisher="post.publisher"
+        :post="post"
+        @remove-post="removePost"
+        @show-unfollow-prompt="showUnfollowPrompt"
+        @show-link-prompt="showLinkPrompt"
+      />
+      <template #loading>
+        <div class="row justify-center q-my-md">
+          <q-spinner-dots color="primary" size="80px" />
+        </div>
+      </template>
+    </q-infinite-scroll>
   </q-page>
 </template>
 
@@ -25,7 +32,7 @@ export default {
     PostCard
   },
   props: {
-    id: {
+    publisher: {
       type: String,
       required: true
     }
@@ -38,46 +45,49 @@ export default {
     };
   },
   beforeDestroy: function() {
-    clearInterval(this.requestFeedInterval);
+    // clearInterval(this.requestFeedInterval);
     clearInterval(this.updateFeedInterval);
-    ipcRenderer.removeAllListeners("feedItem");
-    ipcRenderer.removeAllListeners("feedAll");
+    ipcRenderer.removeAllListeners("feedNewItem");
   },
   mounted: function() {
-    ipcRenderer.on("feedItem", this.onFeedItem);
-    ipcRenderer.on("feedAll", this.onFeedAll);
-    ipcRenderer.send("get-feed");
-    // ipcRenderer.send("get-feed-all");
-    this.updateFeedInterval = setInterval(async function() {
+    ipcRenderer.on("feedItem", this.onNewFeedItem);
+    this.updateFeedInterval = setInterval(async () => {
       console.log("updating feed...");
       ipcRenderer.send("update-feed");
     }, 1 * 60 * 1000);
-    this.requestFeedInterval = setInterval(async function() {
-      console.log("requesting feed...");
-      ipcRenderer.send("get-feed");
-    }, 1 * 60 * 1000);
+    // this.requestFeedInterval = setInterval(async function() {
+    //   console.log("requesting feed...");
+    //   ipcRenderer.send("get-feed");
+    // }, 1 * 60 * 1000);
   },
   methods: {
-    showUnfollowPrompt(id) {
-      console.log(`Feed: showUnfollowPrompt(${id})`);
-      this.$emit("show-unfollow-prompt", id);
+    onFeedPage(index, done) {
+      console.log("onFeedPage");
+      ipcRenderer.invoke("get-feed-page", index - 1, 10).then(posts => {
+        if (posts.results.length > 0) {
+          posts.results.forEach(postObj => {
+            if (!this.feed.some(id => id.ts === postObj.ts)) {
+              this.feed.push(postObj);
+            }
+            // this.feed.push(postObj);
+          });
+          done();
+        }
+      });
     },
-    showLinkPrompt(link) {
-      console.log(`Feed: showLinkPrompt(${link})`);
-      this.$emit("show-link-prompt", link);
-    },
-    removePost(cid) {
-      console.log("removePost");
-      console.log(cid);
-      this.feed = this.feed.filter(post => post.postCid !== cid);
-    },
-    onFeedItem(event, postObj) {
+    onNewFeedItem(event, postObj) {
       if (!this.feed.some(id => id.ts === postObj.ts)) {
         this.feed.unshift(postObj);
       }
     },
-    onFeedAll(event, feedAll) {
-      this.feed = feedAll;
+    showUnfollowPrompt(id) {
+      this.$emit("show-unfollow-prompt", id);
+    },
+    showLinkPrompt(link) {
+      this.$emit("show-link-prompt", link);
+    },
+    removePost(cid) {
+      this.feed = this.feed.filter(post => post.postCid !== cid);
     }
   }
 };

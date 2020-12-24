@@ -1,5 +1,5 @@
 <template>
-  <div v-if="id">
+  <div v-if="publisher">
     <q-card flat bordered>
       <q-card-section>
         <div class="row items-center no-wrap">
@@ -10,21 +10,24 @@
           <q-card-section />
           <div class="col">
             <router-link
+              :publisher="identity.publisher"
               :to="{
                 name: 'Identity',
-                params: { id: id }
+                params: { publisher: identity.publisher }
               }"
             >
-              {{ identity.dn }} - {{ id }}
+              {{ identity.dn }} - {{ identity.publisher }}
             </router-link>
           </div>
           <!-- unfollow -->
-          <div v-if="ipfs_id.id != id" class="col-auto">
+          <div v-if="publisher != ipfs_id.id" class="col-auto">
             <q-btn color="grey-7" round flat icon="more_vert">
               <q-menu cover auto-close>
                 <q-list>
-                  <q-item v-if="id != ipfs_id.id" clickable>
-                    <q-item-section @click="showUnfollowPrompt(identity.id)">
+                  <q-item v-if="publisher != ipfs_id.id" clickable>
+                    <q-item-section
+                      @click="showUnfollowPrompt(identity.publisher)"
+                    >
                       Unfollow
                     </q-item-section>
                   </q-item>
@@ -62,7 +65,7 @@ import { ipcRenderer } from "electron";
 export default {
   name: "IdentityCard",
   props: {
-    id: {
+    publisher: {
       type: String,
       required: true
     }
@@ -75,23 +78,23 @@ export default {
     };
   },
   mounted: function() {
-    console.log(this.id);
-    this.ipfs_id = this.$store.state.id;
-
-    // ipcRenderer.on("identity", (event, identityObj) => {
-    //   console.log(identityObj);
-    //   this.identity = identityObj;
-    // });
-    ipcRenderer.invoke("get-identity", this.id).then(result => {
-      console.log("getIdentity.then");
-      console.log(result);
-      this.identity = result;
-    });
+    console.log(this.publisher);
+    this.ipfs_id = this.$store.state.ipfs_id;
+    if (this.$store.state.identities[this.publisher]) {
+      console.log("already had it...");
+      this.identity = this.$store.state.identities[this.publisher];
+    } else {
+      console.log("getting it...");
+      ipcRenderer.invoke("get-identity", this.publisher).then(identity => {
+        this.$store.commit("setIdentity", identity);
+        this.identity = identity;
+      });
+    }
   },
   methods: {
     showUnfollowPrompt() {
-      console.log(`IdentityCard: showUnfollowPrompt(${this.id})`);
-      this.$emit("show-unfollow-prompt", this.id);
+      console.log(`IdentityCard: showUnfollowPrompt(${this.publisher})`);
+      this.$emit("show-unfollow-prompt", this.publisher);
     }
   }
 };

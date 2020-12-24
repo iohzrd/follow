@@ -17,69 +17,54 @@ const knex = Knex({
 // Give the knex instance to objection.
 Model.knex(knex);
 
-// Person model.
-class Post extends Model {
+class Hiddenservice extends Model {
   static get tableName() {
-    return "posts";
+    return "hiddenservice";
   }
 
-  static get relationMappings() {
+  static get jsonSchema() {
     return {
-      children: {
-        relation: Model.HasManyRelation,
-        modelClass: Post,
-        join: {
-          from: "posts.id",
-          to: "posts.parentId"
-        }
+      type: "object",
+      required: ["keyType", "keyBlob", "serviceId"],
+
+      properties: {
+        keyType: { type: "string" },
+        keyBlob: { type: "string" },
+        serviceId: { type: "string" }
       }
     };
   }
 }
 
 async function createSchema() {
-  if (await knex.schema.hasTable("posts")) {
+  if (await knex.schema.hasTable("hiddenservice")) {
     return;
   }
 
-  // Create database schema. You should use knex migration files
-  // to do this. We create it here for simplicity.
-  await knex.schema.createTable("posts", table => {
+  await knex.schema.createTable("hiddenservice", table => {
     table.increments("id").primary();
-    table.integer("parentId").references("posts.id");
-    table.string("body");
-    table.string("dn");
-    table.string("filesRoot");
-    table.string("magnet");
-    table.string("publisher");
-    table.integer("ts");
-    table.jsonb("files");
-    table.jsonb("meta");
+    table.string("keyType");
+    table.string("keyBlob");
+    table.string("serviceId");
   });
 }
 
 async function main() {
-  // Create some people.
-  const post = await Post.query().insertGraph({
-    body: String(Math.floor(new Date().getTime())),
-    dn: "iohzrd",
-    files: ["file1.txt", "file2.txt"],
-    filesRoot: "",
-    magnet: "",
-    meta: ["meta1", "meta2"],
-    publisher: "Qmb4zrL17TtLGnaLFuUQC4TmaVbizEfVbDnnSzNLxkZ3Zp",
-    ts: Math.floor(new Date().getTime())
-  });
-
-  console.log("created:", post);
-
-  // Fetch all people named Sylvester and sort them by id.
-  // Load `children` relation eagerly.
-  const posts = await Post.query()
-    // .where("publisher", "Qmb4zrL17TtLGnaLFuUQC4TmaVbizEfVbDnnSzNLxkZ3Zp")
-    .orderBy("ts", "desc");
-
-  console.log(posts);
+  let hiddenservice = {};
+  let hs_query = await Hiddenservice.query().findOne("keyType", "asdfff");
+  if (hs_query) {
+    hiddenservice = hs_query;
+    console.log(hiddenservice);
+  } else {
+    // hiddenservice = {
+    //   keyType: "asdff",
+    //   keyBlob: "asdf",
+    //   serviceId: "asdf"
+    // };
+    // const hs = await Hiddenservice.query().insert(hiddenservice);
+    // console.log("created:", hs);
+  }
+  console.log(hs_query);
 }
 
 createSchema()

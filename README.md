@@ -41,10 +41,10 @@ root level keys:
     "dn": "", // user-defined display name
     "following": [""], // a list of ID's the user follows
     "hs": "", // users TOR HIDDEN SERVICE address
-    "id": "", // users IPNS ID
     "meta": [""], // list of CIDs that represent meta objects
     "posts": [""], // a list of CIDs that represent post objects
-    "ts": 10000, // UTC adjusted UNIX timestamp of the identities last edit
+    "publisher": "", // users IPNS ID
+    "ts": 1608271880058, // UTC adjusted UNIX timestamp of the identities last alteration
 }
 ```
 
@@ -68,7 +68,7 @@ post object:
     "magnet": "", // a webtorrent magnet link for redundancy
     "meta": [""], // list of CIDs that represent meta objects
     "publisher": "", // original publisher, will be used for "re-post" functionality
-    "ts": 0 // UTC adjusted UNIX timestamp of the post
+    "ts": 1608271880058 // UTC adjusted UNIX timestamp of the post
 }
 ```
 
@@ -118,9 +118,9 @@ npm start
 - [x] Migrate core logic to use IPC...
 - [x] progress events for spinners and such
 - [x] TOR integration (serve identity. TODO retrieve content)
+- [x] migrate to SQLite...
+- [x] Paginate feed
 - [ ] Distribute binaries / Auto-update
-- [ ] use SQLite for feed / posts...
-- [ ] Paginate feed
 - [ ] serve web-frendly html with identity + TOR
 - [ ] more progress spinners
 - [ ] meta view ("playlists" / arbitrary user defined categorization)
@@ -131,18 +131,17 @@ npm start
 - [ ] seed posts as web torrents (for redundancy)
 - [ ] sign posts (probably the list of CIDs or maybe body)
 - [ ] keybase-like functionality...
-- [ ] use IPLD
 
 ## Follow me
 
 ```
-Qmb4zrL17TtLGnaLFuUQC4TmaVbizEfVbDnnSzNLxkZ3Zp
+12D3KooWPPAV9MsQokpWnT3ufMoc8KDJrnEysBnwYW6pkbGEmzwa
 ```
 
 and
 
 ```
-12D3KooWPPAV9MsQokpWnT3ufMoc8KDJrnEysBnwYW6pkbGEmzwa
+Qmb4zrL17TtLGnaLFuUQC4TmaVbizEfVbDnnSzNLxkZ3Zp
 ```
 
 ## Shilling...

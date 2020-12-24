@@ -1,5 +1,5 @@
 <template>
-  <Feed :id="id"></Feed>
+  <Feed :publisher="publisher"></Feed>
 </template>
 
 <script>
@@ -10,7 +10,7 @@ export default {
     Feed
   },
   props: {
-    id: {
+    publisher: {
       type: String,
       required: true
     }

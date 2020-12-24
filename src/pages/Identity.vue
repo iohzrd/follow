@@ -26,29 +26,29 @@
               v-model="identity.dn"
               filled
               label="Display name"
-              :disable="ipfs_id != identity.id"
+              :disable="ipfs_id.id != identity.publisher"
             />
           </div>
         </div>
       </q-card-section>
       <!--  -->
       <q-card-section>
-        <q-input v-model="identity.id" filled label="ID" disable />
+        <q-input v-model="identity.publisher" filled label="ID" disable />
       </q-card-section>
       <!--  -->
       <q-card-section>
-        <q-input v-model="onion" filled label="HS" disable />
+        <q-input v-model="identity.hs" filled label="HS" disable />
       </q-card-section>
       <!--  -->
       <q-card-section>
-        <div v-for="(obj, index) in aux" :key="index">
+        <div v-for="(obj, index) in identity.aux" :key="index">
           <div class="row items-center no-wrap">
             <div class="col-auto">
               <q-input
                 v-model="obj.key"
                 filled
                 label="Custom key"
-                :disable="ipfs_id != identity.id"
+                :disable="ipfs_id.id != identity.publisher"
               />
             </div>
             <q-card-section />
@@ -57,12 +57,12 @@
                 v-model="obj.value"
                 filled
                 label="Custom value"
-                :disable="ipfs_id != identity.id"
+                :disable="ipfs_id.id != identity.publisher"
               />
             </div>
             <div class="col-auto">
               <q-btn
-                v-if="ipfs_id == identity.id"
+                v-if="ipfs_id.id == identity.publisher"
                 color="primary"
                 flat
                 size="xl"
@@ -79,7 +79,7 @@
           <div class="col"></div>
           <div class="col-auto">
             <q-btn
-              v-if="ipfs_id == identity.id"
+              v-if="ipfs_id.id == identity.publisher"
               color="primary"
               flat
               size="xl"
@@ -95,7 +95,7 @@
           <div class="col">Last update: {{ dt }}</div>
           <div class="col-auto">
             <q-btn
-              v-if="ipfs_id == identity.id"
+              v-if="ipfs_id.id == identity.publisher"
               flat
               color="primary"
               size="xl"
@@ -112,8 +112,8 @@
     <h6>Following:</h6>
     <IdentityCard
       v-for="iden in identity.following"
-      :id="iden"
       :key="iden"
+      :publisher="iden"
       @show-unfollow-prompt="showUnfollowPrompt"
     ></IdentityCard>
     <br />
@@ -127,12 +127,19 @@
     <br />
     <!-- posts  -->
     <h6>Posts:</h6>
-    <PostCard
-      v-for="post in posts_deep"
-      :id="post.id"
-      :key="post.ts"
-      :post="post"
-    ></PostCard>
+    <q-infinite-scroll :offset="0" @load="onPostsPage">
+      <PostCard
+        v-for="post in posts_deep"
+        :key="post.ts"
+        :publisher="post.publisher"
+        :post="post"
+      />
+      <template #loading>
+        <div class="row justify-center q-my-md">
+          <q-spinner-dots color="primary" size="80px" />
+        </div>
+      </template>
+    </q-infinite-scroll>
 
     <!-- edit field modal -->
     <q-dialog v-model="editModal" persistent>
@@ -172,59 +179,44 @@ import IdentityCard from "../components/IdentityCard.vue";
 import PostCard from "../components/PostCard.vue";
 export default {
   name: "Identity",
+  // components: { IdentityCard },
   components: { IdentityCard, PostCard },
   props: {
-    id: {
+    publisher: {
       type: String,
       required: true
     }
   },
   data: function() {
     return {
-      aux: [],
       dt: "",
       editModal: false,
       identity: {},
-      onion: "",
-      ipfs_id: "",
+      ipfs_id: {},
       meta_deep: [],
       posts_deep: []
     };
   },
   beforeDestroy: function() {
     ipcRenderer.removeAllListeners("post");
-    // try {
-    //   ipcRenderer.removeAllListeners("post");
-    // } catch (error) {
-    //   console.log(
-    //     "error trying to remove event listeners for 'post', listens must not have been listening"
-    //   );
-    //   console.log(error);
-    // }
   },
 
   mounted: async function() {
-    const ipfs_id = this.$store.state.id;
-    this.ipfs_id = ipfs_id.id;
-    ipcRenderer.once("identity", (event, identityObj) => {
-      this.identity = identityObj;
-      if (!Array.isArray(this.identity.aux)) {
-        this.identity.aux = [];
-      }
-      this.aux = this.identity.aux;
-      this.onion = this.identity.hs + ".onion";
-      console.log("this.aux");
-      console.log(this.aux);
-      this.dt = new Date(Number(this.identity.ts));
-    });
-    ipcRenderer.send("get-identity", this.id);
-    ipcRenderer.on("post", (event, postObj) => {
-      if (!this.posts_deep.some(id => id.ts === postObj.ts)) {
-        this.posts_deep.push(postObj);
-        this.posts_deep.sort((a, b) => (a.ts > b.ts ? -1 : 1));
-      }
-    });
-    ipcRenderer.send("get-posts", this.id);
+    this.ipfs_id = this.$store.state.ipfs_id;
+    if (this.$store.state.identities[this.publisher]) {
+      console.log("already had it...");
+      this.identity = this.$store.state.identities[this.publisher];
+    } else {
+      console.log("getting it...");
+      ipcRenderer.invoke("get-identity", this.publisher).then(identity => {
+        this.$store.commit("setIdentity", identity);
+        this.identity = identity;
+      });
+    }
+    if (!Array.isArray(this.identity.aux)) {
+      this.identity.aux = [];
+    }
+    this.dt = new Date(Number(this.identity.ts));
   },
 
   methods: {
@@ -233,10 +225,25 @@ export default {
       const newKey = ``;
       const newValue = ``;
       const newObj = { key: newKey, value: newValue };
-      this.aux.push(newObj);
+      this.identity.aux.push(newObj);
+    },
+    onPostsPage(index, done) {
+      ipcRenderer
+        .invoke("get-posts-page", this.publisher, index - 1, 10)
+        .then(posts => {
+          if (posts.results.length > 0) {
+            posts.results.forEach(postObj => {
+              if (!this.posts_deep.some(id => id.ts === postObj.ts)) {
+                this.posts_deep.push(postObj);
+              }
+              // this.posts_deep.push(postObj);
+            });
+            done();
+          }
+        });
     },
     removeAuxItem(index) {
-      this.aux.splice(index, 1);
+      this.identity.aux.splice(index, 1);
     },
     saveIdentityFields() {
       console.log("edit-identity-field");
@@ -250,9 +257,9 @@ export default {
       });
       ipcRenderer.send("edit-identity-field", {
         key: "aux",
-        value: this.aux
+        value: this.identity.aux
       });
-      ipcRenderer.send("get-identity", this.id);
+      ipcRenderer.send("get-identity", this.ipfs_id);
     },
     showUnfollowPrompt(id) {
       console.log(`Identity: showUnfollowPrompt(${id})`);

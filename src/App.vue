@@ -23,10 +23,10 @@
           <q-list v-for="(menuItem, index) in menuList" :key="index">
             <q-item
               v-if="ipfs_id.id"
-              :id="ipfs_id.id"
               v-ripple
               clickable
-              :to="{ name: menuItem.route, params: { id: ipfs_id.id } }"
+              :publisher="ipfs_id.id"
+              :to="{ name: menuItem.route, params: { publisher: ipfs_id.id } }"
             >
               <q-item-section avatar>
                 <q-icon :name="menuItem.icon" />
@@ -50,8 +50,8 @@
       <q-page-container>
         <router-view
           v-if="ipfs_id.id"
-          :id="ipfs_id.id"
           :key="$route.path"
+          :publisher="ipfs_id.id"
           class="root-container"
           @show-unfollow-prompt="showUnfollowPrompt"
           @show-link-prompt="showLinkPrompt"
@@ -126,18 +126,18 @@ const menuList = [
   {
     icon: "rss_feed",
     label: "Feed",
-    route: "Feed",
+    route: "Feed"
   },
   {
     icon: "assignment_ind",
     label: "Profile",
-    route: "Identity",
+    route: "Identity"
   },
   {
     icon: "settings",
     label: "Settings",
-    route: "Settings",
-  },
+    route: "Settings"
+  }
 ];
 
 export default {
@@ -155,41 +155,46 @@ export default {
       refreshInterval: null,
       unfollowPrompt: false,
       shareLinkPrompt: false,
-      shareLink: "",
+      shareLink: ""
     };
   },
 
   watch: {
     dark: {
-      handler: function (after) {
+      handler: function(after) {
         this.dark = after;
         this.$q.dark.set(this.dark);
-      },
-    },
+      }
+    }
   },
   created() {
     this.$q.dark.set(true);
   },
-  beforeDestroy: function () {
+  beforeDestroy: function() {
     clearInterval(this.publishInterval);
     clearInterval(this.refreshInterval);
   },
-  mounted: function () {
-    ipcRenderer.invoke("get-id", this.id).then((id) => {
-      console.log("getIdentity.then");
+  mounted: function() {
+    ipcRenderer.invoke("get-ipfs_id").then(id => {
+      console.log("get-ipfs_id.then");
       console.log(id);
       this.ipfs_id = id;
-      this.$store.commit("setID", id);
+      this.$store.commit("setIpfsId", id);
+    });
+    ipcRenderer.invoke("get-identities").then(identities => {
+      console.log("get-identities.then");
+      console.log(identities);
+      this.$store.commit("setIdentites", identities);
     });
 
     ipcRenderer.send("publish-identity");
     ipcRenderer.send("update-following");
 
-    this.publishInterval = setInterval(async function () {
+    this.publishInterval = setInterval(async function() {
       console.log("auto-publish...");
       ipcRenderer.send("publish-identity");
     }, 10 * 60 * 1000);
-    this.refreshInterval = setInterval(async function () {
+    this.refreshInterval = setInterval(async function() {
       console.log("refreshing identities...");
       ipcRenderer.send("update-following");
     }, 1 * 60 * 1000);
@@ -212,8 +217,8 @@ export default {
     async removeFollowing() {
       ipcRenderer.send("unfollow", this.idToUnollow);
       this.idToUnollow = "";
-    },
-  },
+    }
+  }
 };
 </script>
 <style scoped>

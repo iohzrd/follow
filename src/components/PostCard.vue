@@ -18,12 +18,12 @@
             <div class="text-caption">
               From:
               <router-link
-                :id="identity.id"
+                :publisher="identity.publisher"
                 :to="{
                   name: 'Identity',
-                  params: { id: identity.id }
+                  params: { publisher: identity.publisher }
                 }"
-                >{{ identity.dn || identity.id }}</router-link
+                >{{ identity.dn || identity.publisher }}</router-link
               >
             </div>
           </div>
@@ -43,12 +43,12 @@
             <q-btn color="grey-7" round flat icon="more_vert">
               <q-menu cover auto-close>
                 <q-list>
-                  <q-item v-if="identity.id == ipfs_id.id" clickable>
+                  <q-item v-if="identity.publisher == ipfs_id.id" clickable>
                     <q-item-section @click="removePost">
                       Delete post
                     </q-item-section>
                   </q-item>
-                  <q-item v-if="identity.id != ipfs_id.id" clickable>
+                  <q-item v-if="identity.publisher != ipfs_id.id" clickable>
                     <q-item-section @click="showUnfollowPrompt(identity.id)">
                       Unfollow
                     </q-item-section>
@@ -103,16 +103,15 @@
           :to="{ name: 'Post', params: { post: post } }"
         />
         <!--  -->
-        <div v-if="identity.id != ipfs_id.id">
-          <q-btn
-            class="col"
-            color="primary"
-            flat
-            icon="autorenew"
-            label="Repost"
-            @click="repost()"
-          />
-        </div>
+        <q-btn
+          v-if="identity.publisher != ipfs_id.id"
+          class="col"
+          color="primary"
+          flat
+          icon="autorenew"
+          label="Repost"
+          @click="repost()"
+        />
         <!--  -->
         <q-btn
           class="col"
@@ -187,6 +186,7 @@ export default {
       carousel: false,
       slide: 0,
       ipfs_id: {},
+      publisher: "",
       identity: {},
       magnet: "",
       meta: [],
@@ -196,8 +196,19 @@ export default {
     };
   },
   mounted: function() {
-    this.identity = this.post.identity;
-    this.ipfs_id = this.$store.state.id;
+    console.log("PostCard init");
+    this.publisher = this.post.publisher;
+    if (this.$store.state.identities[this.publisher]) {
+      console.log("already had it...");
+      this.identity = this.$store.state.identities[this.publisher];
+    } else {
+      console.log("getting it...");
+      ipcRenderer.invoke("get-identity", this.publisher).then(identity => {
+        this.$store.commit("setIdentity", identity);
+        this.identity = identity;
+      });
+    }
+    this.ipfs_id = this.$store.state.ipfs_id;
     this.init();
   },
   methods: {
@@ -256,8 +267,8 @@ export default {
       }
     },
     showUnfollowPrompt() {
-      console.log(`PostCard: showUnfollowPrompt(${this.identity.id})`);
-      this.$emit("show-unfollow-prompt", this.identity.id);
+      console.log(`PostCard: showUnfollowPrompt(${this.identity.publisher})`);
+      this.$emit("show-unfollow-prompt", this.identity.publisher);
     },
     showPostLinkPrompt() {
       console.log(`PostCard: showPostLinkPrompt(${this.shareLink})`);

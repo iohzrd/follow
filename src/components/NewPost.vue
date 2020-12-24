@@ -49,6 +49,9 @@ export default {
     };
   },
   computed: {},
+  mounted: function() {
+    console.log("NewPost init");
+  },
   methods: {
     async addPost() {
       console.log("NewPost.addPost");

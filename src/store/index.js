@@ -16,10 +16,18 @@ Vue.use(Vuex);
 
 export default function(/* { ssrContext } */) {
   const Store = new Vuex.Store({
-    state: { id: {} },
+    state: { ipfs_id: {}, identities: {} },
     mutations: {
-      setID(state, payload) {
-        state.id = payload;
+      setIpfsId(state, payload) {
+        state.ipfs_id = payload;
+      },
+      setIdentity(state, identity) {
+        state.identities[identity["publisher"]] = identity;
+      },
+      setIdentites(state, identities) {
+        console.log("setIdentites");
+        console.log(identities);
+        state.identities = identities;
       }
     },
     // enable strict mode (adds overhead!)

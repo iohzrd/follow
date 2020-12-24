@@ -10,7 +10,7 @@ import Settings from "../pages/Settings.vue";
 const routes = [
   // { path: "/", name: "home", component: Home, props: true },
   // {
-  //   path: "/feed/:id",
+  //   path: "/feed/:publisher",
   //   name: "Feed",
   //   component: Feed,
   //   props: true
@@ -35,13 +35,13 @@ const routes = [
     props: true
   },
   {
-    path: "/identity/:id",
+    path: "/identity/:publisher",
     name: "Identity",
     component: Identity,
     props: true
   },
   {
-    path: "/collection/:id",
+    path: "/collection/:publisher",
     name: "Meta",
     component: Meta,
     props: true

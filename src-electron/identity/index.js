@@ -1,14 +1,20 @@
-const { app, ipcMain } = require("electron");
+const { ipcMain } = require("electron");
 const IpfsHttpClient = require("ipfs-http-client");
 const all = require("it-all");
 const http = require("http");
 const path = require("path");
 const fs = require("fs-extra");
-const levelup = require("levelup");
-const leveldown = require("leveldown");
-const encode = require("encoding-down");
 const granax = require("granax");
 const tr = require("tor-request");
+const Knex = require("knex");
+const knexConfig = require("./db/knexfile");
+const knexMigrate = require("knex-migrate");
+const { Model } = require("objection");
+const Hiddenservice = require("./db/models/Hiddenservice");
+const Identity = require("./db/models/Identity");
+// const Pin = require("./db/models/Pin");
+// const Meta = require("./db/models/Meta");
+const Post = require("./db/models/Post");
 const logger = require("../common/logger");
 
 const IDENTITY_TEMPLATE = {
@@ -16,39 +22,20 @@ const IDENTITY_TEMPLATE = {
   av: "",
   dn: "",
   following: [],
-  id: "",
   hs: "",
   meta: [],
   posts: [],
+  publisher: "",
   ts: 0
 };
 
 module.exports = async function(ctx) {
-  logger.info("[identity] starting");
-  logger.info(ctx);
-  let app_data_path = null;
-  let identity_storage_path = null;
-  let post_storage_path = null;
-  let feed_storage_path = null;
-  let pin_storage_path = null;
+  logger.info(`[identity] starting: ${ctx}`);
   let ipfs = null;
   let ipfs_id = null;
-  let identity_db = null;
-  let post_db = null;
-  let feed_db = null;
-  let pin_db = null;
   let self = null;
   let tor = null;
-  let tor_id = {};
-
-  const dbContainsKey = (db, key) => {
-    return new Promise(resolve => {
-      db.get(key, function(err) {
-        if (err) resolve(false);
-        resolve(true);
-      });
-    });
-  };
+  let hiddenservice = {};
 
   const torRequestPromise = onion => {
     return new Promise((resolve, reject) => {
@@ -63,7 +50,6 @@ module.exports = async function(ctx) {
 
   const init = async () => {
     logger.info("[identity] init");
-
     // start IpfsHttpClient
     ipfs = IpfsHttpClient({
       host: "localhost",
@@ -72,69 +58,26 @@ module.exports = async function(ctx) {
     });
     ipfs_id = await ipfs.id();
 
-    // ensure paths and directories...
-    app_data_path = path.join(app.getPath("appData"), "follow");
-    if (!fs.existsSync(app_data_path)) {
-      fs.mkdirSync(app_data_path);
-    }
-    identity_storage_path = path.join(app_data_path, "Identity Storage");
-    if (!fs.existsSync(identity_storage_path)) {
-      fs.mkdirSync(identity_storage_path);
-    }
-    post_storage_path = path.join(app_data_path, "Post Storage");
-    if (!fs.existsSync(post_storage_path)) {
-      fs.mkdirSync(post_storage_path);
-    }
-    pin_storage_path = path.join(app_data_path, "Pin Storage");
-    if (!fs.existsSync(pin_storage_path)) {
-      fs.mkdirSync(pin_storage_path);
-    }
-    feed_storage_path = path.join(app_data_path, "Feed Storage");
-    if (!fs.existsSync(feed_storage_path)) {
-      fs.mkdirSync(feed_storage_path);
-    }
-
-    // ensure db's
-    identity_db = levelup(
-      encode(leveldown(identity_storage_path), {
-        valueEncoding: "json"
-      })
-    );
-    post_db = levelup(
-      encode(leveldown(post_storage_path), {
-        valueEncoding: "json"
-      })
-    );
-    pin_db = levelup(
-      encode(leveldown(pin_storage_path), {
-        valueEncoding: "json"
-      })
-    );
-    feed_db = levelup(
-      encode(leveldown(feed_storage_path), {
-        valueEncoding: "json"
-      })
+    // Initialize knex and give the instance to objection.
+    const knex_config = knexConfig(ipfs_id.id);
+    const knex = await Knex(knex_config);
+    Model.knex(knex);
+    await knexMigrate(
+      "up",
+      {
+        config: knex_config,
+        migrations: path.resolve(__dirname, "db/migrations")
+      },
+      logger.info
     );
 
-    if (!(await dbContainsKey(post_db, ipfs_id.id))) {
-      await post_db.put(ipfs_id.id, {});
-    }
-
-    if (!(await dbContainsKey(pin_db, ipfs_id.id))) {
-      await pin_db.put(ipfs_id.id, []);
-    }
-
-    if (!(await dbContainsKey(feed_db, "feed"))) {
-      await feed_db.put("feed", []);
-    }
-
-    if (await dbContainsKey(identity_db, ipfs_id.id)) {
-      await load();
+    if (await Identity.query().findOne("publisher", ipfs_id.id)) {
+      self = await Identity.query().findOne("publisher", ipfs_id.id);
     } else {
       // first run, initialize new identity...
       self = IDENTITY_TEMPLATE;
       self.following = [ipfs_id.id];
-      await save();
+      await saveIdentity();
     }
 
     const server = http.createServer((req, res) => {
@@ -153,13 +96,14 @@ module.exports = async function(ctx) {
     server.listen(0, "127.0.0.1");
     tor = await granax();
 
-    if (await dbContainsKey(identity_db, "tor_id")) {
-      tor_id = await identity_db.get("tor_id");
+    let hs_query = await Hiddenservice.query().findById(1);
+    if (hs_query) {
+      hiddenservice = hs_query;
     }
 
     const tor_hs = await tor.createHiddenServicePromise(
       `127.0.0.1:${server.address().port}`,
-      tor_id
+      hiddenservice
     );
     logger.info("serving identity via tor hidden service:");
     console.log(tor_hs);
@@ -169,15 +113,16 @@ module.exports = async function(ctx) {
       self.hs = tor_hs.serviceId;
     }
 
-    if (!(await dbContainsKey(identity_db, "tor_id"))) {
+    if (!hs_query) {
       if (tor_hs && tor_hs.privateKey && tor_hs.serviceId) {
         const pk = tor_hs.privateKey.split(":");
-        tor_id = {
+        hiddenservice = {
           keyType: pk[0],
           keyBlob: pk[1],
           serviceId: tor_hs.serviceId
         };
-        await identity_db.put("tor_id", tor_id);
+        const hs = await Hiddenservice.query().insert(hiddenservice);
+        console.log("Tor hidden service created:", hs);
       }
     }
 
@@ -185,32 +130,34 @@ module.exports = async function(ctx) {
   };
 
   // get id
-  ipcMain.on("get-id", async event => {
+  ipcMain.on("get-ipfs_id", async event => {
     if (!ipfs_id) {
       ipfs_id = await ipfs.id();
     }
-    event.sender.send("id", ipfs_id);
+    event.sender.send("ipfs_id", ipfs_id);
   });
-  ipcMain.handle("get-id", async () => {
+  ipcMain.handle("get-ipfs_id", async () => {
     if (!ipfs_id) {
       ipfs_id = await ipfs.id();
     }
     return ipfs_id;
   });
 
-  const load = async () => {
-    logger.info("load");
-    self = await identity_db.get(ipfs_id.id);
-    console.log(self);
-  };
-
-  const save = async () => {
+  const saveIdentity = async () => {
     logger.info("saving identity...");
-    self.id = ipfs_id.id;
-    self.hs = tor_id.serviceId || "";
+    self.publisher = ipfs_id.id;
+    self.hs = hiddenservice.serviceId || "";
     self.ts = Math.floor(new Date().getTime());
-    console.log(self);
-    await identity_db.put(ipfs_id.id, self);
+    if (await Identity.query().findOne("publisher", ipfs_id.id)) {
+      console.log(`${ipfs_id.id} found`);
+      await Identity.query()
+        .findOne("publisher", ipfs_id.id)
+        .patch(self);
+    } else {
+      console.log(`${ipfs_id.id} not found`);
+      console.log(self);
+      await Identity.query().insert(self);
+    }
     await publish();
   };
 
@@ -228,7 +175,7 @@ module.exports = async function(ctx) {
       timeout: 10000
     };
     const publish_object = await ipfs.add(obj, add_options);
-    await pinIdentity(ipfs_id.id, publish_object.cid.string);
+    // await pinIdentity(ipfs_id.id, publish_object.cid.string);
     const publish_result = await ipfs.name.publish(publish_object.cid.string, {
       lifetime: "8760h"
     });
@@ -253,21 +200,18 @@ module.exports = async function(ctx) {
     return pin_result;
   };
 
-  const pinIdentity = async (id, cid) => {
+  const pinIdentity = async (publisher, cid) => {
     if (typeof cid === "string" && cid.includes("/ipfs/")) {
       cid = cid.replace("/ipfs/", "");
     }
-    logger.info(`[Identity] pinIdentity(${id}, ${cid})`);
-    if (!(await dbContainsKey(pin_db, id))) {
-      await pin_db.put(id, []);
-    }
-    let db_pins = await pin_db.get(id);
+    logger.info(`[Identity] pinIdentity(${publisher}, ${cid})`);
+    let db_pins = await pin_db.get(publisher);
     let ipfs_pins = await all(ipfs.pin.ls());
     if (ipfs_pins.some(pin => pin.cid.string === cid)) {
       console.log(`${cid} already pinned, skipping...`);
       if (!db_pins.some(pin => pin === cid)) {
         db_pins.push(cid);
-        await pin_db.put(id, db_pins);
+        await pin_db.put(publisher, db_pins);
       }
     } else {
       for await (const pin of db_pins) {
@@ -284,7 +228,7 @@ module.exports = async function(ctx) {
       try {
         const pin_result = await ipfs.pin.add(cid);
         db_pins.push(pin_result.string);
-        await pin_db.put(id, db_pins);
+        await pin_db.put(publisher, db_pins);
         return pin_result;
       } catch (error) {
         logger.info(`failed to pin CID: ${cid}`);
@@ -293,20 +237,20 @@ module.exports = async function(ctx) {
     }
   };
 
-  const getIdentityIpfs = async id => {
-    logger.info(`[Identity] getIdentityIpfs(${id})`);
-    const identity_root_cid = await all(ipfs.name.resolve(id));
+  const getIdentityIpfs = async publisher => {
+    logger.info(`[Identity] getIdentityIpfs(${publisher})`);
+    const identity_root_cid = await all(ipfs.name.resolve(publisher));
     const identity_json_cid = `${identity_root_cid[0]}/identity.json`;
-    await pinIdentity(id, identity_root_cid[0]);
+    // await pinIdentity(publisher, identity_root_cid[0]);
     const identity_json = Buffer.concat(await all(ipfs.cat(identity_json_cid)));
     return JSON.parse(identity_json);
   };
 
-  const getIdentityTor = async id => {
-    logger.info(`[Identity] getIdentityTor(${id})`);
+  const getIdentityTor = async publisher => {
+    logger.info(`[Identity] getIdentityTor(${publisher})`);
     let identity_json, identity_object;
-    if (await dbContainsKey(identity_db, id)) {
-      identity_object = await identity_db.get(id);
+    if (await Identity.query().findOne("publisher", publisher)) {
+      identity_object = await Identity.query().findOne("publisher", publisher);
     }
     if (identity_object.hs) {
       const tor_url = `http://${identity_object.hs}.onion/identity.json`;
@@ -315,34 +259,56 @@ module.exports = async function(ctx) {
     return JSON.parse(identity_json);
   };
 
-  const getIdentity = async id => {
-    logger.info(`getIdentity(${id})`);
+  const getIdentity = async publisher => {
+    logger.info(`getIdentity(${publisher})`);
     let identity_object;
-    if (await dbContainsKey(identity_db, id)) {
+    if (await Identity.query().findOne("publisher", publisher)) {
       logger.info("loading identity from DB...");
-      identity_object = await identity_db.get(id);
+      identity_object = await Identity.query().findOne("publisher", publisher);
     } else {
       logger.info(
         "inserting blank identity into DB. We'll grab the real one when we can..."
       );
       identity_object = IDENTITY_TEMPLATE;
-      identity_object.following = [id];
-      identity_object.id = id;
+      identity_object.following = [publisher];
+      identity_object.publisher = publisher;
       identity_object.ts = Math.floor(new Date().getTime());
-      if (id !== ipfs_id.id) {
-        await identity_db.put(id, identity_object);
+      if (publisher !== ipfs_id.id) {
+        await Identity.query().insert(identity_object);
       }
     }
     // console.log(identity_object);
     return identity_object;
   };
-  ipcMain.on("get-identity", async (event, id) => {
-    const identity_object = await getIdentity(id);
+  ipcMain.on("get-identity", async (event, publisher) => {
+    console.log(`on get-identity(${publisher})`);
+    const identity_object = await getIdentity(publisher);
+    console.log(identity_object);
     event.sender.send("identity", identity_object);
   });
-  ipcMain.handle("get-identity", async (event, id) => {
-    const identity_object = await getIdentity(id);
+  ipcMain.handle("get-identity", async (event, publisher) => {
+    console.log(`handle get-identity(${publisher})`);
+    const identity_object = await getIdentity(publisher);
+    console.log(identity_object);
     return identity_object;
+  });
+  ipcMain.on("get-identities", async event => {
+    console.log(`on get-identities`);
+    const identities = await Identity.query();
+    const identities_obj = {};
+    identities.forEach(identity => {
+      identities_obj[identity.publisher] = identity;
+    });
+    event.sender.send("identity", identities_obj);
+  });
+  ipcMain.handle("get-identities", async event => {
+    console.log(`handle get-identities ${event}`);
+    const identities = await Identity.query();
+    const identities_obj = {};
+    identities.forEach(identity => {
+      identities_obj[identity.publisher] = identity;
+    });
+    return identities_obj;
   });
 
   // edit identity field
@@ -353,7 +319,7 @@ module.exports = async function(ctx) {
     const value = kv.value;
     if (typeof self[key] === typeof value) {
       self[key] = value;
-      await save();
+      await saveIdentity();
     }
   };
   ipcMain.on("edit-identity-field", editIdentityField);
@@ -361,28 +327,38 @@ module.exports = async function(ctx) {
   // update followed identities
   const updateFollowing = async () => {
     logger.info("updateFollowing()");
-    for await (const id of self.following) {
+    for await (const publisher of self.following) {
       let identity_object = null;
-      if (id !== ipfs_id.id) {
+      if (publisher !== ipfs_id.id) {
         // try retreiving identity from tor
-        identity_object = await getIdentityIpfs(id).catch(() => {
+        identity_object = await getIdentityIpfs(publisher).catch(() => {
           logger.info("failed to fetch identity from ipfs");
         });
         // if tor fails, try retreiving identity from IPFS
         if (!identity_object) {
-          identity_object = await getIdentityTor(id).catch(() => {
-            logger.info(`failed to fetch identity from tor: ${id}`);
+          identity_object = await getIdentityTor(publisher).catch(() => {
+            logger.info(`failed to fetch identity from tor: ${publisher}`);
           });
         }
         // if retreived, save it...
         if (identity_object) {
           logger.info("Identity retreived, saving DB...");
-          if (identity_object.id != id) {
-            console.log("Id in identity fraudulent, correcting....");
-            console.log(`expected: ${id}, got: ${identity_object["id"]}`);
-            identity_object["id"] = id;
+          if ("id" in identity_object) {
+            delete identity_object.id;
           }
-          await identity_db.put(id, identity_object);
+          if (
+            !identity_object.publisher ||
+            identity_object.publisher != publisher
+          ) {
+            identity_object.publisher = publisher;
+          }
+          if (await Identity.query().findOne("publisher", publisher)) {
+            await Identity.query()
+              .findOne("publisher", publisher)
+              .patch(identity_object);
+          } else {
+            await Identity.query().insert(identity_object);
+          }
         }
       }
     }
@@ -396,27 +372,27 @@ module.exports = async function(ctx) {
     return result;
   });
 
-  const followId = async id => {
+  const followId = async publisher => {
     logger.info("[Identity] followId()");
-    if (!self.following.includes(id)) {
-      self.following.push(id);
-      await save();
+    if (!self.following.includes(publisher)) {
+      self.following.push(publisher);
+      await saveIdentity();
     }
   };
-  ipcMain.on("follow", async (event, id) => {
-    await followId(id);
+  ipcMain.on("follow", async (event, publisher) => {
+    await followId(publisher);
   });
 
-  const unfollowId = async (id, purge) => {
-    logger.info(`[Identity] unfollowId(${id}, ${purge})`);
-    if (self.following.includes(id)) {
+  const unfollowId = async (publisher, purge) => {
+    logger.info(`[Identity] unfollowId(${publisher}, ${purge})`);
+    if (self.following.includes(publisher)) {
       // remove id from following
-      const id_index = self.following.indexOf(id);
+      const id_index = self.following.indexOf(publisher);
       if (id_index > -1) {
         self.following.splice(id_index, 1);
       }
       // remove identity pins
-      let pins = await pin_db.get(id);
+      let pins = await pin_db.get(publisher);
       for await (const pin of pins) {
         logger.info("unpinning old identity CID");
         try {
@@ -426,9 +402,9 @@ module.exports = async function(ctx) {
           console.log(error);
         }
       }
-      await pin_db.del(id);
+      await pin_db.del(publisher);
       // remove post pins
-      let posts_deep = await post_db.get(id);
+      let posts_deep = await post_db.get(publisher);
       for (const postCid in posts_deep) {
         try {
           ipfs.pin.rm(postCid);
@@ -437,17 +413,19 @@ module.exports = async function(ctx) {
           console.log(error);
         }
       }
-      await post_db.del(id);
       // remove posts from feed
-      let feed = await feed_db.get("feed");
-      feed = feed.filter(post_object => post_object.publisher != id);
-      feed_db.put("feed", feed);
+      await Identity.query()
+        .delete()
+        .where("publisher", publisher);
+      await Post.query()
+        .delete()
+        .where("publisher", publisher);
       // save
-      await save();
+      await saveIdentity();
     }
   };
-  ipcMain.on("unfollow", async (event, id, purge) => {
-    await unfollowId(id, purge);
+  ipcMain.on("unfollow", async (event, publisher, purge) => {
+    await unfollowId(publisher, purge);
   });
 
   const getPostIpfs = async post_cid => {
@@ -464,137 +442,103 @@ module.exports = async function(ctx) {
 
   const getPost = async (identity_object, cid) => {
     logger.info("getPost");
-    const fid = identity_object.id;
-    let post_object;
-
-    if (!(await dbContainsKey(post_db, fid))) {
-      await post_db.put(fid, {});
-    }
-    let posts_deep = await post_db.get(fid);
-    if (posts_deep[cid]) {
-      logger.info("loading post from DB...");
-      post_object = posts_deep[cid];
+    let post_object = await Post.query().findOne("postCid", cid);
+    if (post_object) {
+      logger.info("post loaded from DB...");
     } else {
-      logger.info("loading post from IPFS...");
+      logger.info("post not found in DB, loading from IPFS...");
       post_object = await getPostIpfs(cid);
-      posts_deep[cid] = post_object;
-      await post_db.put(fid, posts_deep);
+      if ("dn" in post_object) {
+        delete post_object.dn;
+      }
+      if (!post_object.postCid) {
+        post_object.postCid = cid;
+      }
+      if (!post_object.publisher) {
+        post_object.publisher = identity_object.publisher;
+      }
+      console.log("post_object");
+      console.log(post_object);
+      await Post.query().insert(post_object);
     }
-    if (!post_object.publisher) {
-      post_object.publisher = identity_object.id;
-    }
-    post_object.postCid = cid;
-    post_object.identity = {};
-    post_object.identity.av = identity_object.av;
-    post_object.identity.dn = identity_object.dn;
-    post_object.identity.id = identity_object.id;
-    post_object.identity.ts = identity_object.ts;
+
     return post_object;
   };
 
-  // get post
-  ipcMain.on("get-post", async (event, id, postCid) => {
-    const identity_object = await getIdentity(id);
-    const post_object = await getPost(identity_object, postCid);
+  // get a particular post from a particular id
+  ipcMain.on("get-post", async (event, publisher, postCid) => {
+    const post_object = await Post.query()
+      .where("publisher", publisher)
+      .findOne("postCid", postCid);
     event.sender.send("post", post_object);
   });
-
-  // get posts
-  ipcMain.on("get-posts", async (event, id) => {
-    const identity_object = await getIdentity(id);
-    for await (const postCid of identity_object.posts) {
-      const post_object = await getPost(identity_object, postCid);
-      event.sender.send("post", post_object);
-    }
+  ipcMain.handle("get-post", async (event, publisher, postCid) => {
+    let post = await Post.query()
+      .where("publisher", publisher)
+      .findOne("postCid", postCid);
+    return post;
   });
 
-  // get feed
-  ipcMain.on("get-feed", async event => {
-    logger.info("get-feed");
-    let feed = await feed_db.get("feed");
-    feed.forEach(post_object => {
-      event.sender.send("feedItem", post_object);
+  // get posts for a particular id
+  ipcMain.on("get-posts", async (event, publisher) => {
+    const posts = await Post.query()
+      .where("publisher", publisher)
+      .orderBy("ts", "desc");
+
+    posts.forEach(post_object => {
+      event.sender.send("post", post_object);
     });
   });
+  ipcMain.handle("get-posts", async (event, publisher) => {
+    let posts = await Post.query()
+      .where("publisher", publisher)
+      .orderBy("ts", "desc");
+    return posts;
+  });
 
-  // get feed all
-  ipcMain.on("get-feed-all", async event => {
-    let feed = await feed_db.get("feed");
-    event.sender.send("feedAll", feed);
+  // get paged posts for a particular id
+  ipcMain.on("get-posts-page", async (event, publisher, index, count) => {
+    const posts = await Post.query()
+      .where("publisher", publisher)
+      .orderBy("ts", "desc")
+      .page(index, count);
+    event.sender.send("posts", posts);
+  });
+  ipcMain.handle("get-posts-page", async (event, publisher, index, count) => {
+    let posts = await Post.query()
+      .where("publisher", publisher)
+      .orderBy("ts", "desc")
+      .page(index, count);
+    return posts;
+  });
+
+  // get feed page
+  ipcMain.handle("get-feed-page", async (event, index, count) => {
+    let posts = await Post.query()
+      .orderBy("ts", "desc")
+      .page(index, count);
+    return posts;
   });
 
   // update feed
-  const updateFeed = async rerender => {
+  const updateFeed = async () => {
     logger.info("updateFeed()");
-    let feed;
-    if (rerender) {
-      feed = [];
-    } else {
-      feed = await feed_db.get("feed");
-    }
-    console.log("loading posts_deep");
     for await (const fid of self.following) {
-      let include_deleted;
-      if (!(await dbContainsKey(post_db, fid))) {
-        await post_db.put(fid, {});
-      }
-      let posts_deep = await post_db.get(fid);
       const identity_object = await getIdentity(fid);
-      // update posts_deep
       for await (const postCid of identity_object.posts) {
         console.log("postCid");
         console.log(postCid);
-        const post_object = await getPost(identity_object, postCid);
-        if (!posts_deep[postCid]) {
-          console.log(`adding ${fid} to posts_deep`);
-          posts_deep[postCid] = post_object;
-        }
+        await getPost(identity_object, postCid);
       }
-      await post_db.put(fid, posts_deep);
-
-      if (typeof posts_deep.include_deleted === "boolean") {
-        include_deleted = posts_deep.include_deleted;
-      } else {
-        posts_deep.include_deleted = include_deleted = true;
-      }
-
-      if (include_deleted) {
-        // get posts, including deleted ones
-        for (const postCid in posts_deep) {
-          const post_object = posts_deep[postCid];
-          if (typeof post_object === "object") {
-            post_object.postCid = postCid;
-            post_object.identity = {};
-            post_object.identity.av = identity_object.av;
-            post_object.identity.dn = identity_object.dn;
-            post_object.identity.id = identity_object.id;
-            post_object.identity.ts = identity_object.ts;
-            if (!feed.some(id => id.postCid === post_object.postCid)) {
-              feed.unshift(post_object);
-            }
-          }
-        }
-      } else {
-        // get posts, excluding deleted ones
-        for await (const postCid of identity_object.posts) {
-          const post_object = await getPost(identity_object, postCid);
-          if (!feed.some(id => id.postCid === post_object.postCid)) {
-            feed.unshift(post_object);
-          }
-        }
-      }
-      //
     }
-    feed.sort((a, b) => (a.ts > b.ts ? 1 : -1));
-    await feed_db.put("feed", feed);
   };
   ipcMain.on("update-feed", async event => {
-    const result = await updateFeed();
-    event.sender.send("update-feed-complete", result);
+    await updateFeed();
+    event.sender.send("update-feed-complete");
   });
   ipcMain.handle("update-feed", async () => {
-    const result = await updateFeed();
-    return result;
+    await updateFeed();
+    return "update-feed-complete";
   });
 
   // get following deep
@@ -641,7 +585,6 @@ module.exports = async function(ctx) {
 
     const post_object = {
       body: body,
-      dn: self.dn,
       files: file_names,
       filesRoot: filesRoot,
       magnet: "",
@@ -675,31 +618,13 @@ module.exports = async function(ctx) {
     const cid = add_result.cid.string;
     if (typeof cid === "string" && cid.length == 46) {
       self.posts.unshift(cid);
-      save();
+      saveIdentity();
     }
-    post_object.postCid = cid;
-    post_object.identity = {};
-    post_object.identity.av = self.av;
-    post_object.identity.dn = self.dn;
-    post_object.identity.id = self.id;
-    post_object.identity.ts = self.ts;
+    if (!post_object.postCid) {
+      post_object.postCid = cid;
+    }
     // ctx.mainWindow.webContents.send("feedItem", post_object);
-
-    if (!(await dbContainsKey(post_db, ipfs_id.id))) {
-      await post_db.put(ipfs_id.id, {});
-    }
-    let posts_deep = await post_db.get(ipfs_id.id);
-    if (!posts_deep[cid]) {
-      console.log(`adding ${cid} to posts_deep`);
-      posts_deep[cid] = post_object;
-      await post_db.put(ipfs_id.id, posts_deep);
-    }
-
-    let feed = await feed_db.get("feed");
-    if (!feed.some(id => id.postCid === post_object.postCid)) {
-      feed.unshift(post_object);
-    }
-    await feed_db.put("feed", feed);
+    await Post.query().insert(post_object);
 
     return add_result;
   };
@@ -719,18 +644,10 @@ module.exports = async function(ctx) {
       self.posts.splice(post_index, 1);
     }
 
-    if (!(await dbContainsKey(post_db, ipfs_id.id))) {
-      await post_db.put(ipfs_id.id, {});
-    }
-    let posts_deep = await post_db.get(ipfs_id.id);
-    if (posts_deep && posts_deep[cid]) {
-      delete posts_deep[cid];
-      await post_db.put(ipfs_id.id, posts_deep);
-    }
-    save();
-    let feed = await feed_db.get("feed");
-    feed = feed.filter(post_object => post_object.postCid != cid);
-    feed_db.put("feed", feed);
+    await Post.query()
+      .delete()
+      .where("postCid", cid);
+    saveIdentity();
   };
   ipcMain.on("remove-post", async (event, cid) => {
     await removePost(cid);
@@ -745,7 +662,7 @@ module.exports = async function(ctx) {
     logger.info("[Identity] repost()");
     if (!self.posts.includes(cid)) {
       self.posts.unshift(cid);
-      await save();
+      await saveIdentity();
     }
   };
   ipcMain.on("repost", async (event, postCid) => {
