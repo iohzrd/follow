@@ -11,6 +11,7 @@ class Post extends Model {
     return {
       type: "object",
       required: [
+        "aux",
         "body",
         "files",
         "filesRoot",
@@ -22,6 +23,7 @@ class Post extends Model {
       ],
 
       properties: {
+        aux: { type: "array" },
         body: { type: "string" },
         files: { type: "array" },
         filesRoot: { type: "string" },

@@ -2,6 +2,7 @@
 
 exports.up = knex => {
   return knex.schema.createTable("posts", table => {
+    table.string("aux");
     table.string("body");
     table.jsonb("files");
     table.string("filesRoot");
