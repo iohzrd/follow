@@ -93,6 +93,8 @@ Once a user "follows" another user, the process of fetching their posts is done 
 
 Identity objects _will_ be automatically re-fetched periodically, followed by their new posts.
 
+We also serve to identity object via a tor hidden service for extra censorship resistance.
+
 ## How to run
 
 ```
