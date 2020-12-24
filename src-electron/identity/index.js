@@ -66,7 +66,7 @@ module.exports = async function(ctx) {
       "up",
       {
         config: knex_config,
-        migrations: path.resolve(__dirname, "db/migrations")
+        migrations: path.resolve("./src-electron/identity/db/migrations")
       },
       logger.info
     );
@@ -448,6 +448,9 @@ module.exports = async function(ctx) {
     } else {
       logger.info("post not found in DB, loading from IPFS...");
       post_object = await getPostIpfs(cid);
+      if (!post_object.aux) {
+        post_object.aux = [];
+      }
       if ("dn" in post_object) {
         delete post_object.dn;
       }
