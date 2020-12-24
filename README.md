@@ -13,7 +13,7 @@ merging planned for future...
 
 Also, this app will probably break frequently for the foreseeable future so don't get attached to your posts just yet ;)
 
-If a breaking change occurs, try manually editing your identity object, stored in electrons "user data" directory
+If a breaking change occurs, try manually editing or deleting your SQLite database, <YOUR-IPFS-ID>.db in electrons "user data" directory.
 
 ## Architecture
 
