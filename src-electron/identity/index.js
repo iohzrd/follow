@@ -66,7 +66,7 @@ module.exports = async function(ctx) {
       "up",
       {
         config: knex_config,
-        migrations: path.resolve("./src-electron/identity/db/migrations")
+        migrations: path.join(__statics, "/migrations/")
       },
       logger.info
     );

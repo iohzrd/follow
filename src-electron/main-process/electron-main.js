@@ -43,6 +43,7 @@ function handleError(err) {
   }
 
   logger.error(err);
+  logger.error(err.stack);
   criticalErrorDialog(err);
 }
 process.on("uncaughtException", handleError);
