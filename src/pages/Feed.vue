@@ -1,10 +1,10 @@
 <template>
   <q-page>
-    <NewPost class="new-post" />
+    <NewPost class="new-post" @add-post-complete="onAddPostComplete" />
     <q-infinite-scroll :offset="0" @load="onFeedPage">
       <PostCard
         v-for="post in feed"
-        :key="post.ts"
+        :key="post.postCid"
         :publisher="post.publisher"
         :post="post"
         @remove-post="removePost"
@@ -76,9 +76,10 @@ export default {
       });
     },
     onNewFeedItem(event, postObj) {
-      if (!this.feed.some(id => id.ts === postObj.ts)) {
-        this.feed.unshift(postObj);
-      }
+      this.feed.unshift(postObj);
+    },
+    onAddPostComplete(postObj) {
+      this.feed.unshift(postObj);
     },
     showUnfollowPrompt(id) {
       this.$emit("show-unfollow-prompt", id);

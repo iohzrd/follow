@@ -66,12 +66,10 @@ export default {
       });
       ipcRenderer
         .invoke("add-post", { body: this.body, files: files })
-        .then(result => {
-          console.log("add-post.then");
-          console.log(result);
+        .then(post => {
           this.body = "";
           this.files = [];
-          ipcRenderer.send("get-feed");
+          this.$emit("add-post-complete", post);
         });
     }
   }

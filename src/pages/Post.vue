@@ -1,7 +1,7 @@
 <template>
   <q-page v-if="post">
     <PostCard
-      :key="post.ts"
+      :key="post.postCid"
       :post="post"
       @delete-post="deletePost"
       @show-unfollow-prompt="unfollow"

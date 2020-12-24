@@ -630,11 +630,14 @@ module.exports = async function(ctx) {
     return add_result;
   };
   ipcMain.on("add-post", async (event, post_object) => {
-    await addPost(post_object);
+    const add_result = await addPost(post_object);
+    const post = await Post.query().findOne("postCid", add_result.cid.string);
+    event.sender.send("add-post-complete", post);
   });
   ipcMain.handle("add-post", async (event, post_object) => {
     const add_result = await addPost(post_object);
-    return add_result;
+    const post = await Post.query().findOne("postCid", add_result.cid.string);
+    return post;
   });
 
   // remove post

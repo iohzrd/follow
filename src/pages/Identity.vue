@@ -130,7 +130,7 @@
     <q-infinite-scroll :offset="0" @load="onPostsPage">
       <PostCard
         v-for="post in posts_deep"
-        :key="post.ts"
+        :key="post.postCid"
         :publisher="post.publisher"
         :post="post"
       />
