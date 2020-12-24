@@ -19,15 +19,15 @@ If a breaking change occurs, try manually editing or deleting your SQLite databa
 
 The core of follow is it's concept of an identity.
 
-The identity object is where the data about the users posts, the people they "follow", and whatever else they might want to include is stored.
+The identity object is where data about the users posts, the people they "follow", and whatever else they might want to include is stored.
 
 An identity object is the fundamental unit that we'll use to create a distributed social graph.
 
 First, we connect to IPFS and retrieve our ID.
 
-On first boot, we instantiate a new "Identity" object, which is ultimately saved to disk.
+On first boot, we instantiate a new "Identity" object, which is ultimately saved to disk via SQLite.
 
-Most of the identity logic is contained in the Identity class:
+Most of the identity logic is contained:
 `src/modules/identity.js`
 
 Identity object structure:
@@ -36,8 +36,8 @@ root level keys:
 
 ```
 {
-    "aux": [{key: "", value: ""}], // an array for arbitrary, user-defined data. Ex.
-    "av": "", // base64 encoded image data for "avatar"
+    "aux": [{key: "", value: ""}], // a list for arbitrary, user-defined data.
+    "av": "", // base64 encoded image or ipfs CID for "avatar"
     "dn": "", // user-defined display name
     "following": [""], // a list of ID's the user follows
     "hs": "", // users TOR HIDDEN SERVICE address
@@ -48,13 +48,20 @@ root level keys:
 }
 ```
 
-aux object:
+identity aux object:
 
 ```
-{
-    "btc": "",
-    "website": ""
-}
+[
+    {key: "btc", value: "1T8mM7TDWBcxKF5ZZy7B58adMsBgxivr1"}
+]
+```
+
+identity meta object:
+
+```
+[
+    {"TODO": ""}
+]
 ```
 
 post object:
@@ -63,8 +70,8 @@ post object:
 {
     "aux": [{key: "", value: ""}], // an array for arbitrary, user-defined data. Ex.
     "body": "", // the text body of the post
-    "cid": "", // IPFS CID of the root directory of the post
     "files": [], // a list of file paths, relative to the post root
+    "filesRoot": "", // IPFS CID of the root directory of the post
     "magnet": "", // a webtorrent magnet link for redundancy
     "meta": [""], // list of CIDs that represent meta objects
     "publisher": "", // original publisher, will be used for "re-post" functionality
@@ -72,12 +79,20 @@ post object:
 }
 ```
 
-meta object:
+post aux object:
 
 ```
-{
-    "TODO": "" //
-}
+[
+    {key: "alternative_link1", value: "example.com"}
+]
+```
+
+post meta object:
+
+```
+[
+    {"TODO": ""}
+]
 ```
 
 We cache every post (user and following) object and "post body"(text) to disk for faster load times, and we automatically pin post CIDs to strengthen the network. ID caches follow a strict directory structure.
@@ -113,7 +128,7 @@ npm start
 - [x] enable file in posts
 - [x] bundle IPFS binaries and manage execution
 - [x] "re-post" / mirror a post
-- [x] per post comments via pubsub
+- [x] per post comments via pubsub / orbit
 - [x] post view
 - [x] include index.html with posts to allow styling for browser consumption...
 - [x] implement tray.
@@ -127,6 +142,7 @@ npm start
 - [ ] more progress spinners
 - [ ] meta view ("playlists" / arbitrary user defined categorization)
 - [ ] meta comment system (topic based bulletin board)
+- [ ] advanced pin management
 - [ ] settings view
 - [ ] add banners to following view (amount of new posts etc...)
 - [ ] "remix"(clone and modify) other users "playlists"...

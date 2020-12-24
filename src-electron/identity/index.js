@@ -584,6 +584,7 @@ module.exports = async function(ctx) {
     }
 
     const post_object = {
+      aux: [],
       body: body,
       files: file_names,
       filesRoot: filesRoot,
