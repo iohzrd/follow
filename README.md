@@ -162,7 +162,7 @@ and
 Qmb4zrL17TtLGnaLFuUQC4TmaVbizEfVbDnnSzNLxkZ3Zp
 ```
 
-## Shekels...
+## Donate
 
 ```
 BTC:
