@@ -1,6 +1,6 @@
 {
   "name": "follow",
-  "version": "0.2.65",
+  "version": "0.2.66",
   "description": "Decentralized, censorship resistant social media and bulletin board on IPFS",
   "productName": "follow",
   "author": "iohzrd <iohzrd@gmail.com>",
@@ -40,7 +40,7 @@
     "ipfsd-ctl": "^7.2.0",
     "is-ipfs": "^2.0.0",
     "it-all": "^1.0.4",
-    "knex": "^0.21.14",
+    "knex": "^0.21.15",
     "knex-migrate": "^1.7.4",
     "objection": "^2.2.3",
     "orbit-core": "git://github.com/iohzrd/orbit-core.git",

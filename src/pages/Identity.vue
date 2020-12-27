@@ -33,11 +33,16 @@
       </q-card-section>
       <!--  -->
       <q-card-section>
-        <q-input v-model="identity.publisher" filled label="ID" disable />
+        <q-input
+          v-model="identity.publisher"
+          filled
+          label="Publisher"
+          disable
+        />
       </q-card-section>
       <!--  -->
       <q-card-section>
-        <q-input v-model="identity.hs" filled label="HS" disable />
+        <q-input v-model="identity.hs" filled label="Hidden service" disable />
       </q-card-section>
       <!--  -->
       <q-card-section>
@@ -74,12 +79,11 @@
         </div>
       </q-card-section>
       <!--  -->
-      <q-card-section>
+      <q-card-section v-if="ipfs_id.id == identity.publisher">
         <div class="row items-center no-wrap">
           <div class="col"></div>
           <div class="col-auto">
             <q-btn
-              v-if="ipfs_id.id == identity.publisher"
               color="primary"
               flat
               size="xl"
@@ -93,16 +97,17 @@
       <q-card-section>
         <div class="row items-center no-wrap">
           <div class="col">Last update: {{ dt }}</div>
-          <div class="col-auto">
+          <div v-if="ipfs_id.id == identity.publisher" class="col-auto">
             <q-btn
-              v-if="ipfs_id.id == identity.publisher"
+              v-if="!saving"
               flat
               color="primary"
               size="xl"
               label=""
               icon="save"
-              @click="saveIdentityFields()"
+              @click="editIdentity()"
             />
+            <q-spinner v-else-if="saving" color="primary" size="xl" />
           </div>
         </div>
       </q-card-section>
@@ -119,7 +124,7 @@
     <br />
     <!-- meta  -->
     <h6>Collections:</h6>
-    <div v-for="obj in identity.meta_deep" :key="obj">
+    <div v-for="obj in meta" :key="obj">
       <router-link :to="{ name: 'Meta', params: { obj } }" :obj="obj">
         {{ obj }}
       </router-link>
@@ -127,9 +132,9 @@
     <br />
     <!-- posts  -->
     <h6>Posts:</h6>
-    <q-infinite-scroll :offset="0" @load="onPostsPage">
+    <q-infinite-scroll :offset="0" @load="getPosts">
       <PostCard
-        v-for="post in posts_deep"
+        v-for="post in posts"
         :key="post.postCid"
         :publisher="post.publisher"
         :post="post"
@@ -189,19 +194,29 @@ export default {
   },
   data: function() {
     return {
-      dt: "",
       editModal: false,
+      getLatestPostsInterval: null,
       identity: {},
       ipfs_id: {},
-      meta_deep: [],
-      posts_deep: []
+      meta: [],
+      newestTs: 0,
+      oldestTs: Math.floor(new Date().getTime()),
+      pageSize: 10,
+      posts: [],
+      saving: false,
+      updateFeedInterval: null
     };
   },
-  beforeDestroy: function() {
-    ipcRenderer.removeAllListeners("post");
+  computed: {
+    dt: function() {
+      return new Date(Number(this.identity.ts));
+    }
   },
-
-  mounted: async function() {
+  beforeDestroy: function() {
+    clearInterval(this.getLatestPostsInterval);
+    clearInterval(this.updateFeedInterval);
+  },
+  mounted: function() {
     this.ipfs_id = this.$store.state.ipfs_id;
     if (this.$store.state.identities[this.publisher]) {
       console.log("already had it...");
@@ -209,57 +224,91 @@ export default {
     } else {
       console.log("getting it...");
       ipcRenderer.invoke("get-identity", this.publisher).then(identity => {
-        this.$store.commit("setIdentity", identity);
-        this.identity = identity;
+        this.$store.state.identities[this.publisher] = identity;
+        this.identity = this.$store.state.identities[this.publisher];
       });
     }
-    if (!Array.isArray(this.identity.aux)) {
-      this.identity.aux = [];
-    }
-    this.dt = new Date(Number(this.identity.ts));
+    this.updateFeedInterval = setInterval(async () => {
+      console.log("updating feed...");
+      ipcRenderer.send("update-feed");
+    }, 1 * 60 * 1000);
+    this.getLatestPostsInterval = setInterval(this.getLatestPosts, 5 * 1000);
   },
 
   methods: {
     addAuxItem() {
       console.log("addAuxItem");
-      const newKey = ``;
-      const newValue = ``;
+      const newKey = "";
+      const newValue = "";
       const newObj = { key: newKey, value: newValue };
       this.identity.aux.push(newObj);
-    },
-    onPostsPage(index, done) {
-      ipcRenderer
-        .invoke("get-posts-page", this.publisher, index - 1, 10)
-        .then(posts => {
-          if (posts.results.length > 0) {
-            posts.results.forEach(postObj => {
-              if (!this.posts_deep.some(id => id.ts === postObj.ts)) {
-                this.posts_deep.push(postObj);
-              }
-              // this.posts_deep.push(postObj);
-            });
-            done();
-          }
-        });
     },
     removeAuxItem(index) {
       this.identity.aux.splice(index, 1);
     },
-    saveIdentityFields() {
-      console.log("edit-identity-field");
-      ipcRenderer.send("edit-identity-field", {
-        key: "av",
-        value: this.identity.av
+    getLatestPosts() {
+      console.log("getLatestPosts");
+      if (this.posts.length > 0) {
+        this.newestTs = this.posts[0].ts;
+        ipcRenderer
+          .invoke("get-posts-newer-than", this.publisher, this.newestTs)
+          .then(posts => {
+            if (posts.length > 0) {
+              posts.forEach(postObj => {
+                this.posts.unshift(postObj);
+              });
+            }
+          });
+      } else {
+        this.getPosts();
+      }
+    },
+    getPosts(index, done) {
+      console.log("getPosts");
+      if (this.posts.length > 0) {
+        this.oldestTs = this.posts[this.posts.length - 1].ts;
+      }
+      ipcRenderer
+        .invoke(
+          "get-posts-older-than",
+          this.publisher,
+          this.oldestTs,
+          this.pageSize
+        )
+        .then(posts => {
+          if (posts.length > 0) {
+            posts.forEach(postObj => {
+              this.posts.push(postObj);
+            });
+            if (done) {
+              done();
+            }
+          }
+        });
+    },
+    editIdentity() {
+      console.log("edit-identity");
+      const array = [
+        {
+          key: "av",
+          value: this.identity.av
+        },
+        {
+          key: "dn",
+          value: this.identity.dn
+        },
+        {
+          key: "aux",
+          value: this.identity.aux
+        }
+      ];
+      this.saving = true;
+      ipcRenderer.invoke("edit-identity", array).then(identity => {
+        console.log("edit-complete");
+        console.log(identity);
+        this.$store.state.identities[this.publisher] = identity;
+        this.saving = false;
       });
-      ipcRenderer.send("edit-identity-field", {
-        key: "dn",
-        value: this.identity.dn
-      });
-      ipcRenderer.send("edit-identity-field", {
-        key: "aux",
-        value: this.identity.aux
-      });
-      ipcRenderer.send("get-identity", this.ipfs_id);
     },
     showUnfollowPrompt(id) {
       console.log(`Identity: showUnfollowPrompt(${id})`);

@@ -233,11 +233,9 @@ export default {
         console.log("remove-post.then");
         console.log(result);
       });
-      // ipcRenderer.send("remove-post", this.post.postCid);
       this.$emit("remove-post", this.post.postCid);
     },
     repost() {
-      // ipcRenderer.send("repost", this.post.postCid);
       ipcRenderer.invoke("repost", this.post.postCid).then(result => {
         console.log("repost.then");
         console.log(result);

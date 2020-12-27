@@ -29,10 +29,7 @@ export default function(/* { ssrContext } */) {
         console.log(identities);
         state.identities = identities;
       }
-    },
-    // enable strict mode (adds overhead!)
-    // for dev mode only
-    strict: process.env.DEV
+    }
   });
 
   return Store;

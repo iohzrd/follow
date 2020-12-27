@@ -312,17 +312,19 @@ module.exports = async function(ctx) {
   });
 
   // edit identity field
-  const editIdentityField = async (event, kv) => {
-    logger.info("[Identity] editIdentityField()");
-    console.log(kv);
-    const key = kv.key;
-    const value = kv.value;
-    if (typeof self[key] === typeof value) {
-      self[key] = value;
-      await saveIdentity();
-    }
-  };
-  ipcMain.on("edit-identity-field", editIdentityField);
+  ipcMain.handle("edit-identity", async (event, array) => {
+    logger.info("[Identity] editIdentity()");
+    console.log(array);
+    array.forEach(kv => {
+      const key = kv.key;
+      const value = kv.value;
+      if (typeof self[key] === typeof value) {
+        self[key] = value;
+      }
+    });
+    await saveIdentity();
+    return self;
+  });
 
   // update followed identities
   const updateFollowing = async () => {
@@ -482,7 +484,7 @@ module.exports = async function(ctx) {
     return post;
   });
 
-  // get posts for a particular id
+  // get all posts for a particular publisher
   ipcMain.on("get-posts", async (event, publisher) => {
     const posts = await Post.query()
       .where("publisher", publisher)
@@ -499,27 +501,42 @@ module.exports = async function(ctx) {
     return posts;
   });
 
-  // get paged posts for a particular id
-  ipcMain.on("get-posts-page", async (event, publisher, index, count) => {
-    const posts = await Post.query()
-      .where("publisher", publisher)
-      .orderBy("ts", "desc")
-      .page(index, count);
-    event.sender.send("posts", posts);
-  });
-  ipcMain.handle("get-posts-page", async (event, publisher, index, count) => {
+  // get posts newer than
+  ipcMain.handle("get-posts-newer-than", async (event, publisher, ts) => {
     let posts = await Post.query()
       .where("publisher", publisher)
-      .orderBy("ts", "desc")
-      .page(index, count);
+      .where("ts", ">", ts)
+      .orderBy("ts", "asc");
     return posts;
   });
 
-  // get feed page
-  ipcMain.handle("get-feed-page", async (event, index, count) => {
+  // get posts older than
+  ipcMain.handle(
+    "get-posts-older-than",
+    async (event, publisher, ts, count) => {
+      let posts = await Post.query()
+        .where("publisher", publisher)
+        .where("ts", "<", ts)
+        .limit(count)
+        .orderBy("ts", "desc");
+      return posts;
+    }
+  );
+
+  // get feed items newer than
+  ipcMain.handle("get-feed-newer-than", async (event, ts) => {
     let posts = await Post.query()
-      .orderBy("ts", "desc")
-      .page(index, count);
+      .where("ts", ">", ts)
+      .orderBy("ts", "asc");
+    return posts;
+  });
+
+  // get feed items older than
+  ipcMain.handle("get-feed-older-than", async (event, ts, count) => {
+    let posts = await Post.query()
+      .where("ts", "<", ts)
+      .limit(count)
+      .orderBy("ts", "desc");
     return posts;
   });
 
@@ -542,14 +559,6 @@ module.exports = async function(ctx) {
   ipcMain.handle("update-feed", async () => {
     await updateFeed();
     return "update-feed-complete";
-  });
-
-  // get following deep
-  ipcMain.on("get-following", async event => {
-    for await (const fid of self.following) {
-      const identity_object = await getIdentity(fid);
-      event.sender.send("followingIdentity", identity_object);
-    }
   });
 
   // add post
@@ -654,7 +663,8 @@ module.exports = async function(ctx) {
     await Post.query()
       .delete()
       .where("postCid", cid);
-    saveIdentity();
+    await saveIdentity();
+    return cid;
   };
   ipcMain.on("remove-post", async (event, cid) => {
     await removePost(cid);
@@ -680,7 +690,9 @@ module.exports = async function(ctx) {
     const result = await repost(postCid);
     return result;
   });
-  //
 
+  ////////////////////
+  // main entry
+  ////////////////////
   await init();
 };
