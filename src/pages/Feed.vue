@@ -42,7 +42,7 @@ export default {
       feed: [],
       getLatestFeedInterval: null,
       newestTs: 0,
-      oldestTs: Math.floor(new Date().getTime()),
+      oldestTs: 0,
       pageSize: 10,
       updateFeedInterval: null
     };
@@ -78,6 +78,8 @@ export default {
       console.log("getFeed");
       if (this.feed.length > 0) {
         this.oldestTs = this.feed[this.feed.length - 1].ts;
+      } else {
+        this.oldestTs = Math.floor(new Date().getTime());
       }
       ipcRenderer
         .invoke("get-feed-older-than", this.oldestTs, this.pageSize)

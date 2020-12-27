@@ -200,7 +200,7 @@ export default {
       ipfs_id: {},
       meta: [],
       newestTs: 0,
-      oldestTs: Math.floor(new Date().getTime()),
+      oldestTs: 0,
       pageSize: 10,
       posts: [],
       saving: false,
@@ -218,16 +218,11 @@ export default {
   },
   mounted: function() {
     this.ipfs_id = this.$store.state.ipfs_id;
-    if (this.$store.state.identities[this.publisher]) {
-      console.log("already had it...");
+    // always get lastest version of the identity...
+    ipcRenderer.invoke("get-identity", this.publisher).then(identity => {
+      this.$store.state.identities[this.publisher] = identity;
       this.identity = this.$store.state.identities[this.publisher];
-    } else {
-      console.log("getting it...");
-      ipcRenderer.invoke("get-identity", this.publisher).then(identity => {
-        this.$store.state.identities[this.publisher] = identity;
-        this.identity = this.$store.state.identities[this.publisher];
-      });
-    }
+    });
     this.updateFeedInterval = setInterval(async () => {
       console.log("updating feed...");
       ipcRenderer.send("update-feed");
@@ -267,6 +262,8 @@ export default {
       console.log("getPosts");
       if (this.posts.length > 0) {
         this.oldestTs = this.posts[this.posts.length - 1].ts;
+      } else {
+        this.oldestTs = Math.floor(new Date().getTime());
       }
       ipcRenderer
         .invoke(

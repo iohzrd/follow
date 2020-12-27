@@ -9,7 +9,13 @@ class Pin extends Model {
 
   static get jsonSchema() {
     return {
-      type: "array"
+      type: "object",
+      required: ["pins", "publisher"],
+
+      properties: {
+        pins: { type: "array" },
+        publisher: { type: "string" }
+      }
     };
   }
 }

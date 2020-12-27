@@ -12,7 +12,7 @@ const knexMigrate = require("knex-migrate");
 const { Model } = require("objection");
 const Hiddenservice = require("./db/models/Hiddenservice");
 const Identity = require("./db/models/Identity");
-// const Pin = require("./db/models/Pin");
+const Pin = require("./db/models/Pin");
 // const Meta = require("./db/models/Meta");
 const Post = require("./db/models/Post");
 const logger = require("../common/logger");
@@ -175,7 +175,7 @@ module.exports = async function(ctx) {
       timeout: 10000
     };
     const publish_object = await ipfs.add(obj, add_options);
-    // await pinIdentity(ipfs_id.id, publish_object.cid.string);
+    await pinIdentity(ipfs_id.id, publish_object.cid.string);
     const publish_result = await ipfs.name.publish(publish_object.cid.string, {
       lifetime: "8760h"
     });
@@ -205,16 +205,25 @@ module.exports = async function(ctx) {
       cid = cid.replace("/ipfs/", "");
     }
     logger.info(`[Identity] pinIdentity(${publisher}, ${cid})`);
-    let db_pins = await pin_db.get(publisher);
+    let db_pins = await Pin.query().findOne("publisher", publisher);
+    if (!db_pins) {
+      db_pins = {};
+      db_pins.pins = [];
+      db_pins.publisher = publisher;
+      await Pin.query().insert(db_pins);
+    }
+
     let ipfs_pins = await all(ipfs.pin.ls());
     if (ipfs_pins.some(pin => pin.cid.string === cid)) {
       console.log(`${cid} already pinned, skipping...`);
-      if (!db_pins.some(pin => pin === cid)) {
-        db_pins.push(cid);
-        await pin_db.put(publisher, db_pins);
+      if (!db_pins.pins.some(pin => pin === cid)) {
+        db_pins.pins.push(cid);
+        await Pin.query()
+          .findOne("publisher", publisher)
+          .patch(db_pins);
       }
     } else {
-      for await (const pin of db_pins) {
+      for await (const pin of db_pins.pins) {
         logger.info(`unpinning old identity CIDs: ${pin}`);
         try {
           await ipfs.pin.rm(pin);
@@ -223,12 +232,14 @@ module.exports = async function(ctx) {
           console.log(error);
         }
       }
-      db_pins = [];
+      db_pins.pins = [];
       logger.info(`pinning new identity CID: ${cid}`);
       try {
         const pin_result = await ipfs.pin.add(cid);
-        db_pins.push(pin_result.string);
-        await pin_db.put(publisher, db_pins);
+        db_pins.pins.push(pin_result.string);
+        await Pin.query()
+          .findOne("publisher", publisher)
+          .patch(db_pins);
         return pin_result;
       } catch (error) {
         logger.info(`failed to pin CID: ${cid}`);
@@ -241,7 +252,7 @@ module.exports = async function(ctx) {
     logger.info(`[Identity] getIdentityIpfs(${publisher})`);
     const identity_root_cid = await all(ipfs.name.resolve(publisher));
     const identity_json_cid = `${identity_root_cid[0]}/identity.json`;
-    // await pinIdentity(publisher, identity_root_cid[0]);
+    await pinIdentity(publisher, identity_root_cid[0]);
     const identity_json = Buffer.concat(await all(ipfs.cat(identity_json_cid)));
     return JSON.parse(identity_json);
   };
@@ -394,8 +405,8 @@ module.exports = async function(ctx) {
         self.following.splice(id_index, 1);
       }
       // remove identity pins
-      let pins = await pin_db.get(publisher);
-      for await (const pin of pins) {
+      let db_pins = await Pin.query().findOne("publisher", publisher);
+      for await (const pin of db_pins.pins) {
         logger.info("unpinning old identity CID");
         try {
           await ipfs.pin.rm(pin);
@@ -404,12 +415,11 @@ module.exports = async function(ctx) {
           console.log(error);
         }
       }
-      await pin_db.del(publisher);
       // remove post pins
-      let posts_deep = await post_db.get(publisher);
-      for (const postCid in posts_deep) {
+      let posts = await Post.query().where("publisher", publisher);
+      for (const post in posts) {
         try {
-          ipfs.pin.rm(postCid);
+          ipfs.pin.rm(post.postCid);
         } catch (error) {
           logger.info("failed to remove some pins from post_db");
           console.log(error);
@@ -417,6 +427,9 @@ module.exports = async function(ctx) {
       }
       // remove posts from feed
       await Identity.query()
+        .delete()
+        .where("publisher", publisher);
+      await Pin.query()
         .delete()
         .where("publisher", publisher);
       await Post.query()

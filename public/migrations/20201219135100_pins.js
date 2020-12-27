@@ -2,12 +2,11 @@
 
 exports.up = knex => {
   return knex.schema.createTable("pins", table => {
-    table.increments("id").primary();
-    table.jsonb("identity_pins");
-    table.jsonb("post_pins");
+    table.string("publisher").primary();
+    table.jsonb("pins");
   });
 };
 
 exports.down = knex => {
-  return knex.schema.dropTableIfExists("posts");
+  return knex.schema.dropTableIfExists("pins");
 };

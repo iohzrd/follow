@@ -10,61 +10,65 @@ const knex = Knex({
   debug: true,
   useNullAsDefault: true,
   connection: {
-    filename: "objection.db"
+    filename: "test.db"
   }
 });
 
 // Give the knex instance to objection.
 Model.knex(knex);
 
-class Hiddenservice extends Model {
+class Pin extends Model {
   static get tableName() {
-    return "hiddenservice";
+    return "pins";
   }
 
   static get jsonSchema() {
     return {
       type: "object",
-      required: ["keyType", "keyBlob", "serviceId"],
+      required: ["publisher", "pins"],
 
       properties: {
-        keyType: { type: "string" },
-        keyBlob: { type: "string" },
-        serviceId: { type: "string" }
+        publisher: { type: "string" },
+        pins: { type: "array" }
       }
     };
   }
 }
 
 async function createSchema() {
-  if (await knex.schema.hasTable("hiddenservice")) {
+  if (await knex.schema.hasTable("pins")) {
     return;
   }
 
-  await knex.schema.createTable("hiddenservice", table => {
-    table.increments("id").primary();
-    table.string("keyType");
-    table.string("keyBlob");
-    table.string("serviceId");
+  await knex.schema.createTable("pins", table => {
+    table.string("publisher").primary();
+    table.jsonb("pins");
   });
 }
 
 async function main() {
-  let hiddenservice = {};
-  let hs_query = await Hiddenservice.query().findOne("keyType", "asdfff");
-  if (hs_query) {
-    hiddenservice = hs_query;
-    console.log(hiddenservice);
+  let pins = [];
+  let pins_query = await Pin.query().findOne("publisher", "asdf");
+  console.log(pins_query);
+  if (pins_query) {
+    pins = pins_query.pins;
+    pins.push("pinX");
+    await Pin.query()
+      .findOne("publisher", "asdf")
+      .patch({
+        publisher: "asdf",
+        pins: pins
+      });
   } else {
-    // hiddenservice = {
-    //   keyType: "asdff",
-    //   keyBlob: "asdf",
-    //   serviceId: "asdf"
-    // };
-    // const hs = await Hiddenservice.query().insert(hiddenservice);
-    // console.log("created:", hs);
+    pins = ["pin1"];
+    const publisher = await Pin.query().insert({
+      publisher: "asdf",
+      pins: pins
+    });
+    console.log("created:", publisher);
   }
-  console.log(hs_query);
+  let db_pins = await Pin.query().findOne("publisher", "asdf");
+  console.log(db_pins.pins);
 }
 
 createSchema()
