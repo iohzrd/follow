@@ -13,7 +13,19 @@ merging planned for future...
 
 Also, this app will probably break frequently for the foreseeable future so don't get attached to your posts just yet ;)
 
-If a breaking change occurs, try manually editing or deleting your SQLite database, <YOUR-IPFS-ID>.db in electrons "user data" directory.
+If a breaking change occurs, try deleting your SQLite database in electrons "user data" directory.
+
+on windows:
+
+```
+C:\Users\<USER>\AppData\Roaming\follow\<IPFS-ID>.db
+```
+
+on linux:
+
+```
+/home/<USER>/.config/follow/<IPFS-ID>.db
+```
 
 ## Architecture
 
@@ -27,7 +39,7 @@ First, we connect to IPFS and retrieve our ID.
 
 On first boot, we instantiate a new "Identity" object, which is ultimately saved to disk via SQLite.
 
-Most of the identity logic is contained:
+Most of the identity logic is contained in:
 `src/modules/identity.js`
 
 Identity object structure:
@@ -167,34 +179,22 @@ Qmb4zrL17TtLGnaLFuUQC4TmaVbizEfVbDnnSzNLxkZ3Zp
 ```
 BTC:
 1T8mM7TDWBcxKF5ZZy7B58adMsBgxivr1
-```
 
-```
 DASH:
 Xmo796DeCgcyZVyhTUWs2aHouPWBvEcecG
-```
 
-```
 ETH / LINK:
 0x81509160F8293422D714612e3c49e2E20cbb9C7d
-```
 
-```
 LTC:
 LazaoMemjTjgpvzmFkJuL9JrZRkx2io8Z7
-```
 
-```
 XMR:
 45TMU8YyJD7XCZXRGFUL3bGrgqnA2BrqWXbt9GTWGzCZ43e2fKBVowFintAzn5CsQA4S3MiHagCk22FP1L3meQJQF94PWE3
-```
 
-```
 XRP:
 rJSfDg1JAS317VVRo8xwhqezArLj47gYqr
-```
 
-```
 ZEC:
 t1QVcM4Kvyk2mVY6AWxRk4VSrQT6KfkiVQ4
 ```
