@@ -227,7 +227,7 @@ export default {
       console.log("updating feed...");
       ipcRenderer.send("update-feed");
     }, 1 * 60 * 1000);
-    this.getLatestPostsInterval = setInterval(this.getLatestPosts, 5 * 1000);
+    this.getLatestPostsInterval = setInterval(this.getLatestPosts, 10 * 1000);
   },
 
   methods: {

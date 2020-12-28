@@ -355,7 +355,7 @@ module.exports = async function(ctx) {
         }
         // if retreived, save it...
         if (identity_object) {
-          logger.info("Identity retreived, saving DB...");
+          logger.info("Identity retreived...");
           if ("id" in identity_object) {
             delete identity_object.id;
           }
@@ -365,11 +365,22 @@ module.exports = async function(ctx) {
           ) {
             identity_object.publisher = publisher;
           }
-          if (await Identity.query().findOne("publisher", publisher)) {
-            await Identity.query()
-              .findOne("publisher", publisher)
-              .patch(identity_object);
+          let db_io = await Identity.query().findOne("publisher", publisher);
+          if (db_io) {
+            if (db_io.ts != identity_object.ts) {
+              logger.info(
+                "Identity is different the one in the DB, saving DB..."
+              );
+              await Identity.query()
+                .findOne("publisher", publisher)
+                .patch(identity_object);
+            } else {
+              logger.info(
+                "Identity is the same as the one in the DB, skipping..."
+              );
+            }
           } else {
+            logger.info("Identity not in DB, saving DB...");
             await Identity.query().insert(identity_object);
           }
         }
