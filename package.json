@@ -1,6 +1,6 @@
 {
   "name": "follow",
-  "version": "0.2.68",
+  "version": "0.2.69",
   "description": "Decentralized, censorship resistant social media and bulletin board on IPFS",
   "productName": "follow",
   "author": "iohzrd <iohzrd@gmail.com>",
@@ -69,7 +69,7 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-vue": "^7.3.0"
+    "eslint-plugin-vue": "^7.4.0"
   },
   "browserslist": [
     "last 10 Chrome versions",
