@@ -1,6 +1,6 @@
 {
   "name": "follow",
-  "version": "0.2.70",
+  "version": "0.2.71",
   "description": "Decentralized, censorship resistant social media and bulletin board on IPFS",
   "productName": "follow",
   "author": "iohzrd <iohzrd@gmail.com>",
@@ -42,9 +42,9 @@
     "it-all": "^1.0.4",
     "knex": "^0.21.15",
     "knex-migrate": "^1.7.4",
-    "objection": "^2.2.3",
+    "objection": "^2.2.4",
     "orbit-core": "git://github.com/iohzrd/orbit-core.git",
-    "quasar": "^1.14.7",
+    "quasar": "^1.15.0",
     "sqlite3": "^5.0.0",
     "sudo-prompt": "^9.2.1",
     "tor-request": "^3.1.0",
@@ -55,7 +55,8 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@quasar/app": "^2.1.13",
+    "@quasar/app": "^2.1.14",
+    "@quasar/quasar-app-extension-qmediaplayer": "^1.1.4",
     "babel-eslint": "^10.1.0",
     "devtron": "^1.4.0",
     "electron": "^11.1.1",

@@ -146,10 +146,13 @@ npm start
 - [x] implement tray.
 - [x] Migrate core logic to use IPC...
 - [x] progress events for spinners and such
+- [x] Distribute binaries
 - [x] TOR integration (serve identity. TODO retrieve content)
 - [x] migrate to SQLite...
 - [x] Paginate feed
-- [ ] Distribute binaries / Auto-update
+- [x] enable(fix) audio/video playback
+- [ ] System for curating comments
+- [ ] Auto-update system
 - [ ] serve web-frendly html with identity + TOR
 - [ ] more progress spinners
 - [ ] meta view ("playlists" / arbitrary user defined categorization)
@@ -159,7 +162,6 @@ npm start
 - [ ] add banners to following view (amount of new posts etc...)
 - [ ] "remix"(clone and modify) other users "playlists"...
 - [ ] seed posts as web torrents (for redundancy)
-- [ ] sign posts (probably the list of CIDs or maybe body)
 - [ ] keybase-like functionality...
 
 ## Follow me

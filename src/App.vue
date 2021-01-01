@@ -197,7 +197,7 @@ export default {
     this.refreshInterval = setInterval(async function() {
       console.log("refreshing identities...");
       ipcRenderer.send("update-following");
-    }, 1 * 60 * 1000);
+    }, 20 * 1000);
   },
   methods: {
     showUnfollowPrompt(id) {

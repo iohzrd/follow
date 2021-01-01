@@ -82,13 +82,12 @@
                 carousel = true;
               "
             />
-            <!-- <q-video
+            <q-media-player
               v-else-if="fileObj.mime.includes('video')"
-              :autoplay="false"
-              :src="fileObj.blobUrl"
-              controls
-              allowfullscreen
-            />-->
+              :sources="[{ src: fileObj.blobUrl }]"
+              type="video"
+            >
+            </q-media-player>
           </div>
         </div>
       </q-card-section>
