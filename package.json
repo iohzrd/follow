@@ -1,6 +1,6 @@
 {
   "name": "follow",
-  "version": "0.2.71",
+  "version": "0.2.72",
   "description": "Decentralized, censorship resistant social media and bulletin board on IPFS",
   "productName": "follow",
   "author": "iohzrd <iohzrd@gmail.com>",
@@ -20,9 +20,9 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@quasar/extras": "^1.9.12",
+    "@quasar/extras": "^1.9.13",
     "axios": "^0.21.1",
-    "core-js": "^3.8.1",
+    "core-js": "^3.8.2",
     "cors": "^2.8.5",
     "countly-sdk-nodejs": "^20.11.0",
     "electron-store": "^6.0.1",
@@ -42,14 +42,14 @@
     "it-all": "^1.0.4",
     "knex": "^0.21.15",
     "knex-migrate": "^1.7.4",
-    "objection": "^2.2.4",
-    "orbit-core": "git://github.com/iohzrd/orbit-core.git",
+    "objection": "^2.2.5",
+    "orbit-db": "^0.26.0",
     "quasar": "^1.15.0",
-    "sqlite3": "^5.0.0",
+    "sqlite3": "^5.0.1",
     "sudo-prompt": "^9.2.1",
     "tor-request": "^3.1.0",
     "untildify": "^4.0.0",
-    "vue-i18n": "^8.22.2",
+    "vue-i18n": "^8.22.3",
     "webtorrent": "^0.112.0",
     "webtorrent-hybrid": "^4.0.3",
     "winston": "^3.3.3"
@@ -70,7 +70,7 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-vue": "^7.4.0"
+    "eslint-plugin-vue": "^7.4.1"
   },
   "browserslist": [
     "last 10 Chrome versions",
