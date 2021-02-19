@@ -193,7 +193,14 @@ function buildMenu(ctx) {
     },
     {
       label: i18n.t("quit"),
-      click: () => {
+      click: async () => {
+        console.log("shutting down...");
+        if (ctx.tor && ctx.tor_hs && ctx.tor_hs.serviceId) {
+          await ctx.tor.destroyHiddenServicePromise(ctx.tor_hs.serviceId);
+        }
+        if (ctx.ipfs) {
+          await ctx.ipfs.shutdown();
+        }
         app.quit();
       },
       accelerator: IS_MAC ? "Command+Q" : null

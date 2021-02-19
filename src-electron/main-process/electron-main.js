@@ -12,7 +12,6 @@ const setupTray = require("../tray");
 const setupDownloadCid = require("../download-cid");
 // const setupAnalytics = require("../analytics");
 const setupIdentity = require("../identity");
-const setupOrbit = require("../orbit");
 
 // Hide Dock
 if (app.dock) app.dock.hide();
@@ -100,8 +99,15 @@ async function createWindow(ctx) {
 
 app.on("ready", main);
 
-app.on("window-all-closed", () => {
+app.on("window-all-closed", async () => {
   if (process.platform !== "darwin") {
+    console.log("shutting down...");
+    if (ctx.tor && ctx.tor_hs && ctx.tor_hs.serviceId) {
+      await ctx.tor.destroyHiddenServicePromise(ctx.tor_hs.serviceId);
+    }
+    if (ctx.ipfs) {
+      await ctx.ipfs.shutdown();
+    }
     app.quit();
   }
 });
@@ -138,8 +144,8 @@ async function main() {
     await setupIdentity(ctx);
     // open electron
     await createWindow(ctx);
-    // // Setup orbit
-    await setupOrbit(ctx);
+    // // Setup pubsub
+    // await setupOrbit(ctx);
   } catch (e) {
     handleError(e);
   }

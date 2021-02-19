@@ -65,9 +65,7 @@ export default {
         this.newestTs = this.feed[0].ts;
         ipcRenderer.invoke("get-feed-newer-than", this.newestTs).then(posts => {
           if (posts.length > 0) {
-            posts.forEach(postObj => {
-              this.feed.unshift(postObj);
-            });
+            this.onFeedNew(undefined, posts);
           }
         });
       } else {
@@ -85,14 +83,22 @@ export default {
         .invoke("get-feed-older-than", this.oldestTs, this.pageSize)
         .then(posts => {
           if (posts.length > 0) {
-            posts.forEach(postObj => {
-              this.feed.push(postObj);
-            });
+            this.onFeedOld(undefined, posts);
             if (done) {
               done();
             }
           }
         });
+    },
+    onFeedNew(event, posts) {
+      posts.forEach(postObj => {
+        this.feed.unshift(postObj);
+      });
+    },
+    onFeedOld(event, posts) {
+      posts.forEach(postObj => {
+        this.feed.push(postObj);
+      });
     },
     onAddPostComplete(postObj) {
       this.feed.unshift(postObj);

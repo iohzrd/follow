@@ -9,7 +9,8 @@ if (!fs.existsSync(app_data_path)) {
 const knexConfig = filename => {
   return {
     client: "sqlite3",
-    debug: process.env.DEV,
+    // debug: process.env.DEV,
+    debug: false,
     useNullAsDefault: true,
     connection: {
       filename: path.join(app_data_path, `${filename}.db`)

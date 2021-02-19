@@ -6,7 +6,7 @@
       @delete-post="deletePost"
       @show-unfollow-prompt="unfollow"
     />
-    <Comments :cid="post.postCid" />
+    <Comments :cid="post.postCid" :publisher="post.publisher" />
   </q-page>
 </template>
 <script>

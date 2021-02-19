@@ -26,7 +26,7 @@ module.exports = async function(ctx) {
     directory: orbitPath
   };
   const orbit = new Orbit(ipfs, orbitOptions);
-
+  ctx.orbit = orbit;
   orbit.events.on("connected", () => {
     logger.info(`[Orbit] connected`);
   });

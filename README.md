@@ -157,6 +157,7 @@ npm start
 - [x] Paginate feed
 - [x] enable(fix) audio/video playback
 - [ ] re-design comment system
+- [ ] strip exif data from images
 - [ ] System for curating comments
 - [ ] Auto-update system
 - [ ] serve web-frendly html with identity + TOR
