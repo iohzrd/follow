@@ -1,25 +1,25 @@
 {
-  "ipfsIsRunning": "IPFS is Running",
-  "ipfsIsStopping": "IPFS is Stopping",
-  "ipfsIsStarting": "IPFS is Starting",
-  "ipfsIsNotRunning": "IPFS is Not Running",
-  "ipfsHasErrored": "IPFS has Errored",
-  "runningWithGC": "Running (GC in progress)",
+  "ipfsIsRunning": "IPFS rulează",
+  "ipfsIsStopping": "IPFS se oprește",
+  "ipfsIsStarting": "IPFS pornește",
+  "ipfsIsNotRunning": "IPFS nu rulează",
+  "ipfsHasErrored": "IPFS a dat eroare",
+  "runningWithGC": "Rulează (GC în progres)",
   "runningWhileCheckingForUpdate": "Running (Checking for Updates)",
   "start": "Start",
   "stop": "Stop",
-  "restart": "Restart",
-  "about": "About",
-  "advanced": "Avancerad",
+  "restart": "Repornește",
+  "about": "Despre",
+  "advanced": "Avansat",
   "openRepoDir": "Open Repository Directory",
   "openLogsDir": "Open Logs Directory",
   "openConfigFile": "Open Configuration File",
   "viewOnGitHub": "View on GitHub…",
   "helpUsTranslate": "Help Translate This App…",
   "readReleaseNotes": "Read Release Notes",
-  "status": "Status",
-  "files": "Files",
-  "peers": "Kopplingar",
+  "status": "Stare",
+  "files": "Fișiere",
+  "peers": "Noduri partenere",
   "quit": "Quit",
   "versions": "Versions",
   "screenshotTaken": "Screenshot taken",
@@ -27,14 +27,14 @@
   "couldNotTakeScreenshot": "Could not take screenshot",
   "errorwhileTakingScreenshot": "An error occurred while taking the screenshot.",
   "clickToOpenLogs": "Click here to open the logs.",
-  "ipfsNotRunning": "IPFS is not running",
+  "ipfsNotRunning": "IPFS nu rulează",
   "checkForUpdates": "Check for Updates…",
   "checkingForUpdates": "Checking for Updates",
   "yes": "Yes",
   "no": "No",
-  "close": "Stäng",
+  "close": "Închide",
   "ok": "OK",
-  "cancel": "Ångra",
+  "cancel": "Cancel",
   "enable": "Enable",
   "reportTheError": "Report the error",
   "restartIpfsDesktop": "Restart IPFS Desktop",
@@ -56,7 +56,7 @@
     "message": "IPFS couldn't be added to /usr/local/bin/, either because you entered the wrong password, or you denied permission."
   },
   "ipfsNotRunningDialog": {
-    "title": "IPFS is not running",
+    "title": "IPFS nu rulează",
     "message": "IPFS needs to be running to perform this action. Do you want to start the daemon?"
   },
   "recoverableErrorDialog": {
@@ -130,7 +130,7 @@
   "updateDownloadedDialog": {
     "title": "Update downloaded",
     "message": "Update for version { version } downloaded. To install the update, please restart IPFS Desktop.",
-    "action": "Restart"
+    "action": "Repornește"
   },
   "updateDownloadedNotification": {
     "title": "Update downloaded",
@@ -219,7 +219,7 @@
     "message": "It was not possible to uninstall \"ipfs-npm\" package on your system. Please check the logs for more information or try uninstalling it manually by running \"npm uninstall -g ipfs-npm\" on your command line."
   },
   "settings": {
-    "settings": "Inställningar",
+    "settings": "Settings",
     "preferences": "Preferences",
     "openNodeSettings": "Open Node Settings",
     "appPreferences": "App Preferences",
@@ -231,7 +231,7 @@
     "ipfsCommandLineTools": "Command Line Tools",
     "takeScreenshotShortcut": "Global Screenshot Shortcut",
     "downloadHashShortcut": "Global Download Shortcut",
-    "experiments": "Experiment",
+    "experiments": "Experiments",
     "npmOnIpfs": "Enable npm on IPFS"
   },
   "setCustomIpfsBinaryConfirmation": {
