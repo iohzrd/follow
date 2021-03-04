@@ -29,45 +29,47 @@ export default {
   name: "Feed",
   components: {
     NewPost,
-    PostCard
+    PostCard,
   },
   props: {
     publisher: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
-  data: function() {
+  data: function () {
     return {
       feed: [],
       getLatestFeedInterval: null,
       newestTs: 0,
       oldestTs: 0,
       pageSize: 10,
-      updateFeedInterval: null
+      updateFeedInterval: null,
     };
   },
-  beforeDestroy: function() {
+  beforeDestroy: function () {
     clearInterval(this.getLatestFeedInterval);
     clearInterval(this.updateFeedInterval);
   },
-  mounted: function() {
+  mounted: function () {
     this.updateFeedInterval = setInterval(async () => {
       console.log("updating feed...");
       ipcRenderer.send("update-feed");
-    }, 10 * 1000);
-    this.getLatestFeedInterval = setInterval(this.getLatestFeed, 10 * 1000);
+    }, 1 * 60 * 1000);
+    this.getLatestFeedInterval = setInterval(this.getLatestFeed, 1 * 60 * 1000);
   },
   methods: {
     getLatestFeed() {
       console.log("getLatestFeed");
       if (this.feed.length > 0) {
         this.newestTs = this.feed[0].ts;
-        ipcRenderer.invoke("get-feed-newer-than", this.newestTs).then(posts => {
-          if (posts.length > 0) {
-            this.onFeedNew(undefined, posts);
-          }
-        });
+        ipcRenderer
+          .invoke("get-feed-newer-than", this.newestTs)
+          .then((posts) => {
+            if (posts.length > 0) {
+              this.onFeedNew(undefined, posts);
+            }
+          });
       } else {
         this.getFeed();
       }
@@ -81,7 +83,7 @@ export default {
       }
       ipcRenderer
         .invoke("get-feed-older-than", this.oldestTs, this.pageSize)
-        .then(posts => {
+        .then((posts) => {
           if (posts.length > 0) {
             this.onFeedOld(undefined, posts);
             if (done) {
@@ -91,12 +93,12 @@ export default {
         });
     },
     onFeedNew(event, posts) {
-      posts.forEach(postObj => {
+      posts.forEach((postObj) => {
         this.feed.unshift(postObj);
       });
     },
     onFeedOld(event, posts) {
-      posts.forEach(postObj => {
+      posts.forEach((postObj) => {
         this.feed.push(postObj);
       });
     },
@@ -110,9 +112,9 @@ export default {
       this.$emit("show-link-prompt", link);
     },
     removePost(cid) {
-      this.feed = this.feed.filter(post => post.postCid !== cid);
-    }
-  }
+      this.feed = this.feed.filter((post) => post.postCid !== cid);
+    },
+  },
 };
 </script>
 <style scoped></style>

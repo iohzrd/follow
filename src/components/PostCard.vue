@@ -21,7 +21,7 @@
                 :publisher="identity.publisher"
                 :to="{
                   name: 'Identity',
-                  params: { publisher: identity.publisher }
+                  params: { publisher: identity.publisher },
                 }"
                 >{{ identity.dn || identity.publisher }}</router-link
               >
@@ -63,7 +63,7 @@
 
       <q-card-section v-if="body">
         <div class="text-body1">
-          {{ body }}
+          {{ body.substring(0, 1024) }}
         </div>
       </q-card-section>
 
@@ -172,10 +172,10 @@ export default {
   props: {
     post: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
-  data: function() {
+  data: function () {
     return {
       body: "",
       filesRoot: "",
@@ -191,10 +191,10 @@ export default {
       meta: [],
       ts: "",
       removePostModal: false,
-      shareLink: ""
+      shareLink: "",
     };
   },
-  mounted: function() {
+  mounted: function () {
     console.log("PostCard init");
     this.publisher = this.post.publisher;
     if (this.$store.state.identities[this.publisher]) {
@@ -202,7 +202,7 @@ export default {
       this.identity = this.$store.state.identities[this.publisher];
     } else {
       console.log("getting it...");
-      ipcRenderer.invoke("get-identity", this.publisher).then(identity => {
+      ipcRenderer.invoke("get-identity", this.publisher).then((identity) => {
         this.$store.commit("setIdentity", identity);
         this.identity = identity;
       });
@@ -228,14 +228,14 @@ export default {
       this.shareLink = "https://ipfs.io/ipfs/" + this.post.postCid;
     },
     removePost() {
-      ipcRenderer.invoke("remove-post", this.post.postCid).then(result => {
+      ipcRenderer.invoke("remove-post", this.post.postCid).then((result) => {
         console.log("remove-post.then");
         console.log(result);
       });
       this.$emit("remove-post", this.post.postCid);
     },
     repost() {
-      ipcRenderer.invoke("repost", this.post.postCid).then(result => {
+      ipcRenderer.invoke("repost", this.post.postCid).then((result) => {
         console.log("repost.then");
         console.log(result);
         ipcRenderer.send("get-feed");
@@ -258,7 +258,7 @@ export default {
         const fileObj = {
           ...file,
           ...fType,
-          blobUrl
+          blobUrl,
         };
         this.fileObjs.push(fileObj);
       }
@@ -270,8 +270,8 @@ export default {
     showPostLinkPrompt() {
       console.log(`PostCard: showPostLinkPrompt(${this.shareLink})`);
       this.$emit("show-link-prompt", this.shareLink);
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -189,10 +189,10 @@ export default {
   props: {
     publisher: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
-  data: function() {
+  data: function () {
     return {
       editModal: false,
       getLatestPostsInterval: null,
@@ -204,22 +204,22 @@ export default {
       pageSize: 10,
       posts: [],
       saving: false,
-      updateFeedInterval: null
+      updateFeedInterval: null,
     };
   },
   computed: {
-    dt: function() {
+    dt: function () {
       return new Date(Number(this.identity.ts));
-    }
+    },
   },
-  beforeDestroy: function() {
+  beforeDestroy: function () {
     clearInterval(this.getLatestPostsInterval);
     clearInterval(this.updateFeedInterval);
   },
-  mounted: function() {
+  mounted: function () {
     this.ipfs_id = this.$store.state.ipfs_id;
     // always get lastest version of the identity...
-    ipcRenderer.invoke("get-identity", this.publisher).then(identity => {
+    ipcRenderer.invoke("get-identity", this.publisher).then((identity) => {
       this.$store.state.identities[this.publisher] = identity;
       this.identity = this.$store.state.identities[this.publisher];
     });
@@ -227,7 +227,10 @@ export default {
       console.log("updating feed...");
       ipcRenderer.send("update-feed");
     }, 1 * 60 * 1000);
-    this.getLatestPostsInterval = setInterval(this.getLatestPosts, 10 * 1000);
+    this.getLatestPostsInterval = setInterval(
+      this.getLatestPosts,
+      1 * 60 * 1000
+    );
   },
 
   methods: {
@@ -247,9 +250,9 @@ export default {
         this.newestTs = this.posts[0].ts;
         ipcRenderer
           .invoke("get-posts-newer-than", this.publisher, this.newestTs)
-          .then(posts => {
+          .then((posts) => {
             if (posts.length > 0) {
-              posts.forEach(postObj => {
+              posts.forEach((postObj) => {
                 this.posts.unshift(postObj);
               });
             }
@@ -272,9 +275,9 @@ export default {
           this.oldestTs,
           this.pageSize
         )
-        .then(posts => {
+        .then((posts) => {
           if (posts.length > 0) {
-            posts.forEach(postObj => {
+            posts.forEach((postObj) => {
               this.posts.push(postObj);
             });
             if (done) {
@@ -288,19 +291,19 @@ export default {
       const array = [
         {
           key: "av",
-          value: this.identity.av
+          value: this.identity.av,
         },
         {
           key: "dn",
-          value: this.identity.dn
+          value: this.identity.dn,
         },
         {
           key: "aux",
-          value: this.identity.aux
-        }
+          value: this.identity.aux,
+        },
       ];
       this.saving = true;
-      ipcRenderer.invoke("edit-identity", array).then(identity => {
+      ipcRenderer.invoke("edit-identity", array).then((identity) => {
         console.log("edit-complete");
         console.log(identity);
         this.$store.state.identities[this.publisher] = identity;
@@ -310,8 +313,8 @@ export default {
     showUnfollowPrompt(id) {
       console.log(`Identity: showUnfollowPrompt(${id})`);
       this.$emit("show-unfollow-prompt", id);
-    }
-  }
+    },
+  },
 };
 </script>
 

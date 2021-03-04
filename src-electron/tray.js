@@ -8,14 +8,20 @@ const runGarbageCollector = require("./run-gc");
 const {
   setCustomBinary,
   clearCustomBinary,
-  hasCustomBinary
+  hasCustomBinary,
 } = require("./custom-ipfs-binary");
 const { STATUS } = require("./daemon");
-const { IS_MAC, IS_WIN, VERSION, GO_IPFS_VERSION } = require("./common/consts");
+const {
+  IS_MAC,
+  IS_WIN,
+  ELECTRON_VERSION,
+  GO_IPFS_VERSION,
+  VERSION,
+} = require("./common/consts");
 
 const {
   CONFIG_KEY: AUTO_LAUNCH_KEY,
-  isSupported: supportsLaunchAtLogin
+  isSupported: supportsLaunchAtLogin,
 } = require("./auto-launch");
 
 const CONFIG_KEYS = [AUTO_LAUNCH_KEY];
@@ -28,7 +34,7 @@ function buildCheckbox(key, label) {
       ipcMain.emit(`toggle_${key}`);
     },
     type: "checkbox",
-    checked: false
+    checked: false,
   };
 }
 
@@ -44,13 +50,13 @@ function buildMenu(ctx) {
       ["ipfsIsStopping", "yellow"],
       ["ipfsIsNotRunning", "gray"],
       ["ipfsHasErrored", "red"],
-      ["runningWithGC", "yellow"]
+      ["runningWithGC", "yellow"],
     ].map(([status, color]) => ({
       id: status,
       label: i18n.t(status),
       visible: false,
       enabled: false,
-      icon: path.join(__statics, `${color}.png`)
+      icon: path.join(__statics, `${color}.png`),
     })),
     {
       id: "restartIpfs",
@@ -59,7 +65,7 @@ function buildMenu(ctx) {
         ctx.restartIpfs();
       },
       visible: false,
-      accelerator: IS_MAC ? "Command+R" : null
+      accelerator: IS_MAC ? "Command+R" : null,
     },
     {
       id: "startIpfs",
@@ -67,7 +73,7 @@ function buildMenu(ctx) {
       click: () => {
         ctx.startIpfs();
       },
-      visible: false
+      visible: false,
     },
     {
       id: "stopIpfs",
@@ -75,7 +81,7 @@ function buildMenu(ctx) {
       click: () => {
         ctx.stopIpfs();
       },
-      visible: false
+      visible: false,
     },
     { type: "separator" },
     {
@@ -85,10 +91,10 @@ function buildMenu(ctx) {
       submenu: [
         {
           label: i18n.t("settings.appPreferences"),
-          enabled: false
+          enabled: false,
         },
-        buildCheckbox(AUTO_LAUNCH_KEY, "settings.launchOnStartup")
-      ]
+        buildCheckbox(AUTO_LAUNCH_KEY, "settings.launchOnStartup"),
+      ],
     },
     {
       label: i18n.t("advanced"),
@@ -97,19 +103,19 @@ function buildMenu(ctx) {
           label: i18n.t("openLogsDir"),
           click: () => {
             shell.openItem(app.getPath("userData"));
-          }
+          },
         },
         {
           label: i18n.t("openRepoDir"),
           click: () => {
             shell.openItem(store.get("ipfsConfig.path"));
-          }
+          },
         },
         {
           label: i18n.t("openConfigFile"),
           click: () => {
             shell.openItem(store.path);
-          }
+          },
         },
         { type: "separator" },
         {
@@ -118,7 +124,7 @@ function buildMenu(ctx) {
           click: () => {
             runGarbageCollector(ctx);
           },
-          enabled: false
+          enabled: false,
         },
         { type: "separator" },
         {
@@ -126,7 +132,7 @@ function buildMenu(ctx) {
           label: i18n.t("moveRepositoryLocation"),
           click: () => {
             moveRepositoryLocation(ctx);
-          }
+          },
         },
         {
           id: "setCustomBinary",
@@ -134,7 +140,7 @@ function buildMenu(ctx) {
           click: () => {
             setCustomBinary(ctx);
           },
-          visible: false
+          visible: false,
         },
         {
           id: "clearCustomBinary",
@@ -142,37 +148,43 @@ function buildMenu(ctx) {
           click: () => {
             clearCustomBinary(ctx);
           },
-          visible: false
-        }
-      ]
+          visible: false,
+        },
+      ],
     },
     {
       label: i18n.t("about"),
       submenu: [
         {
           label: i18n.t("versions"),
-          enabled: false
+          enabled: false,
         },
         {
-          label: `follow ${VERSION}`,
+          label: `Follow: ${VERSION}`,
           click: () => {
             shell.openExternal("https://github.com/iohzrd/follow/releases");
-          }
+          },
+        },
+        {
+          label: `Electron: ${ELECTRON_VERSION}`,
+          click: () => {
+            shell.openExternal("https://github.com/electron/electron/releases");
+          },
         },
         {
           label: hasCustomBinary()
             ? i18n.t("customIpfsBinary")
-            : `go-ipfs ${GO_IPFS_VERSION}`,
+            : `go-ipfs: ${GO_IPFS_VERSION}`,
           click: () => {
             shell.openExternal("https://github.com/ipfs/go-ipfs/releases");
-          }
+          },
         },
         { type: "separator" },
         {
           label: i18n.t("checkForUpdates"),
           click: () => {
             ctx.checkForUpdates();
-          }
+          },
         },
         { type: "separator" },
         {
@@ -181,15 +193,15 @@ function buildMenu(ctx) {
             shell.openExternal(
               "https://github.com/iohzrd/follow/blob/master/README.md"
             );
-          }
+          },
         },
         {
           label: i18n.t("helpUsTranslate"),
           click: () => {
             shell.openExternal("https://www.transifex.com/ipfs/follow/");
-          }
-        }
-      ]
+          },
+        },
+      ],
     },
     {
       label: i18n.t("quit"),
@@ -203,8 +215,8 @@ function buildMenu(ctx) {
         }
         app.quit();
       },
-      accelerator: IS_MAC ? "Command+Q" : null
-    }
+      accelerator: IS_MAC ? "Command+Q" : null,
+    },
   ]);
 }
 
@@ -219,20 +231,20 @@ function icon(color) {
   return path.join(__statics, `${color}-22Template.png`);
 }
 
-module.exports = function(ctx) {
+module.exports = function (ctx) {
   logger.info("[tray] starting");
   const tray = new Tray(icon(off));
   let menu = null;
 
   const state = {
     status: null,
-    gcRunning: false
+    gcRunning: false,
   };
 
   if (!IS_MAC) {
     // Show the context menu on left click on other
     // platforms than macOS.
-    tray.on("click", event => {
+    tray.on("click", (event) => {
       event.preventDefault();
       tray.popUpContextMenu();
     });
@@ -309,7 +321,7 @@ module.exports = function(ctx) {
     }
   };
 
-  ipcMain.on("ipfsd", status => {
+  ipcMain.on("ipfsd", (status) => {
     state.status = status;
     updateMenu();
   });

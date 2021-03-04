@@ -126,18 +126,18 @@ const menuList = [
   {
     icon: "rss_feed",
     label: "Feed",
-    route: "Feed"
+    route: "Feed",
   },
   {
     icon: "assignment_ind",
     label: "Profile",
-    route: "Identity"
+    route: "Identity",
   },
   {
     icon: "settings",
     label: "Settings",
-    route: "Settings"
-  }
+    route: "Settings",
+  },
 ];
 
 export default {
@@ -155,33 +155,33 @@ export default {
       refreshInterval: null,
       unfollowPrompt: false,
       shareLinkPrompt: false,
-      shareLink: ""
+      shareLink: "",
     };
   },
 
   watch: {
     dark: {
-      handler: function(after) {
+      handler: function (after) {
         this.dark = after;
         this.$q.dark.set(this.dark);
-      }
-    }
+      },
+    },
   },
   created() {
     this.$q.dark.set(true);
   },
-  beforeDestroy: function() {
+  beforeDestroy: function () {
     clearInterval(this.publishInterval);
     clearInterval(this.refreshInterval);
   },
-  mounted: function() {
-    ipcRenderer.invoke("get-ipfs_id").then(id => {
+  mounted: function () {
+    ipcRenderer.invoke("get-ipfs_id").then((id) => {
       console.log("get-ipfs_id.then");
       console.log(id);
       this.ipfs_id = id;
       this.$store.commit("setIpfsId", id);
     });
-    ipcRenderer.invoke("get-identities").then(identities => {
+    ipcRenderer.invoke("get-identities").then((identities) => {
       console.log("get-identities.then");
       console.log(identities);
       this.$store.commit("setIdentites", identities);
@@ -190,14 +190,14 @@ export default {
     ipcRenderer.send("publish-identity");
     ipcRenderer.send("update-following");
 
-    this.publishInterval = setInterval(async function() {
+    this.publishInterval = setInterval(async function () {
       console.log("auto-publish...");
       ipcRenderer.send("publish-identity");
     }, 10 * 60 * 1000);
-    this.refreshInterval = setInterval(async function() {
+    this.refreshInterval = setInterval(async function () {
       console.log("refreshing identities...");
       ipcRenderer.send("update-following");
-    }, 20 * 1000);
+    }, 1 * 60 * 1000);
   },
   methods: {
     showUnfollowPrompt(id) {
@@ -217,8 +217,8 @@ export default {
     async removeFollowing() {
       ipcRenderer.send("unfollow", this.idToUnollow);
       this.idToUnollow = "";
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>
