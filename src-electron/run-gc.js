@@ -13,7 +13,7 @@ module.exports = function runGarbageCollector({ getIpfsd }) {
       message: i18n.t("runGarbageCollectorWarning.message"),
       type: "warning",
       buttons: [i18n.t("runGarbageCollectorWarning.action"), i18n.t("cancel")],
-      showDock: false
+      showDock: false,
     });
 
     if (opt !== 0) {
@@ -47,14 +47,14 @@ module.exports = function runGarbageCollector({ getIpfsd }) {
         message: i18n.t("runGarbageCollectorDone.message"),
         type: "info",
         buttons: [i18n.t("ok")],
-        showDock: false
+        showDock: false,
       });
       logger.info("[run gc] success");
     } catch (err) {
       logger.error(`[run gc] ${err.stack}`);
       recoverableErrorDialog(err, {
         title: i18n.t("runGarbageCollectorErrored.title"),
-        message: i18n.t("runGarbageCollectorErrored.message")
+        message: i18n.t("runGarbageCollectorErrored.message"),
       });
     }
 

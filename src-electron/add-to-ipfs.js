@@ -38,7 +38,7 @@ async function makeShareableObject(ipfs, results) {
     baseCID = await ipfs.object.patch.addLink(baseCID, {
       name: path,
       size,
-      cid
+      cid,
     });
   }
 
@@ -60,7 +60,7 @@ function sendNotification(failures, successes, launch, path) {
       link = "/files";
       title = i18n.t("itemsAddedNotification.title");
       body = i18n.t("itemsAddedNotification.message", {
-        count: successes.length
+        count: successes.length,
       });
     }
   } else {
@@ -75,7 +75,7 @@ function sendNotification(failures, successes, launch, path) {
   });
 }
 
-module.exports = async function({ getIpfsd }, files) {
+module.exports = async function ({ getIpfsd }, files) {
   const ipfsd = await getIpfsd();
 
   if (!ipfsd) {
@@ -86,11 +86,11 @@ module.exports = async function({ getIpfsd }, files) {
   const failures = [];
 
   const log = logger.start("[add to ipfs] started", {
-    withAnalytics: "ADD_VIA_DESKTOP"
+    withAnalytics: "ADD_VIA_DESKTOP",
   });
 
   await Promise.all(
-    files.map(async file => {
+    files.map(async (file) => {
       try {
         const result = await ipfsd.api.add(
           globSource(file, { recursive: true })

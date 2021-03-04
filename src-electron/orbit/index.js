@@ -6,11 +6,11 @@ const IpfsHttpClient = require("ipfs-http-client");
 const Orbit = require("orbit-core");
 const logger = require("../common/logger");
 
-module.exports = async function(ctx) {
+module.exports = async function (ctx) {
   const ipfs = await IpfsHttpClient({
     host: "localhost",
     port: "5001",
-    protocol: "http"
+    protocol: "http",
   });
   const { id } = await ipfs.id();
 
@@ -23,7 +23,7 @@ module.exports = async function(ctx) {
     fs.mkdirSync(orbitPath);
   }
   const orbitOptions = {
-    directory: orbitPath
+    directory: orbitPath,
   };
   const orbit = new Orbit(ipfs, orbitOptions);
   ctx.orbit = orbit;
@@ -33,10 +33,10 @@ module.exports = async function(ctx) {
 
   ipcMain.on("join-comment-channel", (event, channelName) => {
     try {
-      orbit.join(channelName).then(channel => {
+      orbit.join(channelName).then((channel) => {
         logger.info("joined");
 
-        channel.on("entry", entry => {
+        channel.on("entry", (entry) => {
           logger.info("entry");
           ctx.mainWindow.webContents.send("comment", entry.payload.value);
         });
@@ -47,8 +47,8 @@ module.exports = async function(ctx) {
           const all = channel.feed
             .iterator({ limit: -1 })
             .collect()
-            .map(e => e.payload.value);
-          all.forEach(comment => {
+            .map((e) => e.payload.value);
+          all.forEach((comment) => {
             ctx.mainWindow.webContents.send("comment", comment);
 
             logger.info(comment);

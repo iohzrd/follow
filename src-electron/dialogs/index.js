@@ -10,5 +10,5 @@ module.exports = Object.freeze({
   criticalErrorDialog,
   recoverableErrorDialog,
   ipfsNotRunningDialog,
-  selectDirectory
+  selectDirectory,
 });

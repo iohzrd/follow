@@ -6,7 +6,7 @@ module.exports = async function selectDirectory(options = {}) {
     title: i18n.t("selectDirectory"),
     defaultPath: app.getPath("home"),
     properties: ["openDirectory", "createDirectory"],
-    ...options
+    ...options,
   });
 
   if (canceled || filePaths.length === 0) {

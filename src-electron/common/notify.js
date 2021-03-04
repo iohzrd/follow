@@ -15,7 +15,7 @@ function notifyError({ title, body = "" }) {
   notify(
     {
       title,
-      body: `${body} ${i18n.t("clickToOpenLogs")}`.trim()
+      body: `${body} ${i18n.t("clickToOpenLogs")}`.trim(),
     },
     () => {
       shell.openPath(app.getPath("userData"));
@@ -25,5 +25,5 @@ function notifyError({ title, body = "" }) {
 
 module.exports = Object.freeze({
   notify,
-  notifyError
+  notifyError,
 });

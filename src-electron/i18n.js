@@ -5,18 +5,18 @@ const ICU = require("i18next-icu");
 const Backend = require("i18next-node-fs-backend");
 const store = require("./common/store");
 
-module.exports = async function() {
+module.exports = async function () {
   await i18n
     .use(ICU)
     .use(Backend)
     .init({
       lng: store.get("language"),
       fallbackLng: {
-        default: ["en"]
+        default: ["en"],
       },
       backend: {
-        loadPath: join(__statics, "/locales/{{lng}}.json")
-      }
+        loadPath: join(__statics, "/locales/{{lng}}.json"),
+      },
     });
 
   ipcMain.on("updateLanguage", async (_, lang) => {

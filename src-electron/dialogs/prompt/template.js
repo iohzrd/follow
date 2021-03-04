@@ -3,7 +3,7 @@ module.exports = ({
   message,
   defaultValue,
   buttons,
-  id
+  id,
 }) => `<!DOCTYPE html>
 <html>
   <body>

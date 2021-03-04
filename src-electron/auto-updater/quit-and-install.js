@@ -6,7 +6,7 @@ const logger = require("../common/logger");
 module.exports = async function quitAndInstall({ stopIpfs }) {
   app.removeAllListeners("window-all-closed");
   const browserWindows = BrowserWindow.getAllWindows();
-  browserWindows.forEach(function(browserWindow) {
+  browserWindows.forEach(function (browserWindow) {
     browserWindow.removeAllListeners("close");
   });
 

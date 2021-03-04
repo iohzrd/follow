@@ -19,8 +19,8 @@ class Comment extends Model {
         inReplyTo: { type: "string" },
         topic: { type: "string" },
         ts: { type: "integer" },
-        type: { type: "string" }
-      }
+        type: { type: "string" },
+      },
     };
   }
 }

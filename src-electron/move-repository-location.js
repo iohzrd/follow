@@ -6,11 +6,11 @@ const logger = require("./common/logger");
 const {
   showDialog,
   recoverableErrorDialog,
-  selectDirectory
+  selectDirectory,
 } = require("./dialogs");
 const dock = require("./utils/dock");
 
-module.exports = function({ stopIpfs, startIpfs }) {
+module.exports = function ({ stopIpfs, startIpfs }) {
   dock.run(async () => {
     logger.info("[move repository] user prompted about effects");
 
@@ -19,7 +19,7 @@ module.exports = function({ stopIpfs, startIpfs }) {
       message: i18n.t("moveRepositoryWarnDialog.message"),
       type: "warning",
       buttons: [i18n.t("moveRepositoryWarnDialog.action"), i18n.t("cancel")],
-      showDock: false
+      showDock: false,
     });
 
     if (opt !== 0) {
@@ -47,10 +47,10 @@ module.exports = function({ stopIpfs, startIpfs }) {
       return showDialog({
         title: i18n.t("moveRepositorySameDirDialog.title"),
         message: i18n.t("moveRepositorySameDirDialog.message", {
-          location: newDir
+          location: newDir,
         }),
         type: "warning",
-        showDock: false
+        showDock: false,
       });
     }
 
@@ -60,10 +60,10 @@ module.exports = function({ stopIpfs, startIpfs }) {
       return showDialog({
         title: i18n.t("moveRepositoryDirExists.title"),
         message: i18n.t("moveRepositoryDirExists.message", {
-          location: newDir
+          location: newDir,
         }),
         type: "warning",
-        showDock: false
+        showDock: false,
       });
     }
 
@@ -76,22 +76,22 @@ module.exports = function({ stopIpfs, startIpfs }) {
       logger.error(`[move repository] ${err.toString()}`);
       return recoverableErrorDialog(err, {
         title: i18n.t("moveRepositoryFailed.title"),
-        message: i18n.t("moveRepositoryFailed.message", { currDir, newDir })
+        message: i18n.t("moveRepositoryFailed.message", { currDir, newDir }),
       });
     }
 
     config.path = newDir;
     store.set("ipfsConfig", config);
     logger.info("[move repository] configuration updated", {
-      withAnalytics: "MOVE_REPOSITORY"
+      withAnalytics: "MOVE_REPOSITORY",
     });
 
     showDialog({
       title: i18n.t("moveRepositorySuccessDialog.title"),
       message: i18n.t("moveRepositorySuccessDialog.message", {
-        location: newDir
+        location: newDir,
       }),
-      showDock: false
+      showDock: false,
     });
 
     await startIpfs();

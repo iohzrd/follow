@@ -12,7 +12,7 @@ const {
   checkPorts,
   configExists,
   rmApiFile,
-  apiFileExists
+  apiFileExists,
 } = require("./config");
 const { getCustomBinary } = require("../custom-ipfs-binary");
 
@@ -21,7 +21,7 @@ function cannotConnectDialog(addr) {
     title: i18n.t("cannotConnectToApiDialog.title"),
     message: i18n.t("cannotConnectToApiDialog.message", { addr }),
     type: "error",
-    buttons: [i18n.t("close")]
+    buttons: [i18n.t("close")],
   });
 }
 
@@ -29,9 +29,7 @@ function getIpfsBinPath() {
   return (
     process.env.IPFS_GO_EXEC ||
     getCustomBinary() ||
-    require("go-ipfs")
-      .path()
-      .replace("app.asar", "app.asar.unpacked")
+    require("go-ipfs").path().replace("app.asar", "app.asar.unpacked")
   );
 }
 
@@ -53,12 +51,12 @@ async function spawn({ flags, path, keysize }) {
     ipfsHttpModule: require("ipfs-http-client"),
     ipfsBin,
     ipfsOptions: {
-      repo: path
+      repo: path,
     },
     remote: false,
     disposable: false,
     test: false,
-    args: flags
+    args: flags,
   });
 
   if (configExists(ipfsd)) {
@@ -79,7 +77,7 @@ async function spawn({ flags, path, keysize }) {
   return { ipfsd, isRemote: false };
 }
 
-module.exports = async function(opts) {
+module.exports = async function (opts) {
   const { ipfsd, isRemote } = await spawn(opts);
   if (!isRemote) await checkPorts(ipfsd);
 

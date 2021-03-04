@@ -16,7 +16,7 @@ function setup(ctx) {
   // mac requires manual upgrade, other platforms work out of the box
   autoUpdater.autoInstallOnAppQuit = !IS_MAC;
 
-  autoUpdater.on("error", err => {
+  autoUpdater.on("error", (err) => {
     logger.error(`[updater] ${err.toString()}`);
 
     if (!feedback) {
@@ -28,7 +28,7 @@ function setup(ctx) {
       title: i18n.t("updateErrorDialog.title"),
       message: i18n.t("updateErrorDialog.message"),
       type: "error",
-      buttons: [i18n.t("close")]
+      buttons: [i18n.t("close")],
     });
   });
 
@@ -54,10 +54,10 @@ function setup(ctx) {
       title: i18n.t("updateAvailableDialog.title"),
       message: i18n.t("updateAvailableDialog.message", {
         version,
-        releaseNotes
+        releaseNotes,
       }),
       type: "info",
-      buttons: [i18n.t("close"), i18n.t("readReleaseNotes")]
+      buttons: [i18n.t("close"), i18n.t("readReleaseNotes")],
     });
 
     if (opt === 1) {
@@ -79,7 +79,7 @@ function setup(ctx) {
       title: i18n.t("updateNotAvailableDialog.title"),
       message: i18n.t("updateNotAvailableDialog.message", { version }),
       type: "info",
-      buttons: [i18n.t("close")]
+      buttons: [i18n.t("close")],
     });
   });
 
@@ -100,7 +100,7 @@ function setup(ctx) {
       notify(
         {
           title: i18n.t("updateDownloadedNotification.title"),
-          body: i18n.t("updateDownloadedNotification.message", { version })
+          body: i18n.t("updateDownloadedNotification.message", { version }),
         },
         doIt
       );
@@ -115,8 +115,8 @@ function setup(ctx) {
       buttons: [
         autoInstallOnAppQuit
           ? i18n.t("ok")
-          : i18n.t("updateDownloadedDialog.action")
-      ]
+          : i18n.t("updateDownloadedDialog.action"),
+      ],
     });
 
     doIt();
@@ -131,13 +131,13 @@ async function checkForUpdates() {
   }
 }
 
-module.exports = async function(ctx) {
+module.exports = async function (ctx) {
   if (process.env.NODE_ENV === "development") {
     ctx.manualCheckForUpdates = () => {
       showDialog({
         title: "Not available in development",
         message: "Yes, you called this function successfully.",
-        buttons: [i18n.t("close")]
+        buttons: [i18n.t("close")],
       });
     };
     return;

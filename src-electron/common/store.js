@@ -10,16 +10,16 @@ const defaults = {
       "--enable-gc",
       "--enable-pubsub-experiment",
       "--routing",
-      "dhtclient"
+      "dhtclient",
     ],
-    keysize: 2048
+    keysize: 2048,
   },
   language: (electron.app || electron.remote.app).getLocale(),
-  experiments: {}
+  experiments: {},
 };
 
 const migrations = {
-  ">=0.11.0": store => {
+  ">=0.11.0": (store) => {
     store.delete("version");
 
     const flags = store.get("ipfsConfig.flags", []);
@@ -31,12 +31,12 @@ const migrations = {
     ) {
       store.set("ipfsConfig.flags", defaults.ipfsConfig.flags);
     }
-  }
+  },
 };
 
 const store = new Store({
   defaults,
-  migrations
+  migrations,
 });
 
 module.exports = store;

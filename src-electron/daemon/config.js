@@ -43,8 +43,8 @@ function applyDefaults(ipfsd) {
   // See: https://github.com/ipfs/js-ipfsd-ctl/issues/333
   config.API = {
     HTTPHeaders: {
-      "Access-Control-Allow-Origin": ["http://localhost:1589"]
-    }
+      "Access-Control-Allow-Origin": ["http://localhost:1589"],
+    },
   };
 
   config.Swarm = config.Swarm || {};
@@ -103,8 +103,9 @@ function migrateConfig(ipfsd) {
       store.set(REVISION_KEY, REVISION);
     } catch (err) {
       logger.error(
-        `[daemon] migrateConfig: error writing config file: ${err.message ||
-          err}`
+        `[daemon] migrateConfig: error writing config file: ${
+          err.message || err
+        }`
       );
       return;
     }
@@ -133,8 +134,9 @@ function checkCorsConfig(ipfsd) {
     // This is a best effort check, dont blow up here, that should happen else where.
     // TODO: gracefully handle config errors elsewhere!
     logger.error(
-      `[daemon] checkCorsConfig: error reading config file: ${err.message ||
-        err}`
+      `[daemon] checkCorsConfig: error reading config file: ${
+        err.message || err
+      }`
     );
     return;
   }
@@ -145,7 +147,7 @@ function checkCorsConfig(ipfsd) {
 
     if (Array.isArray(allowedOrigins)) {
       const specificOrigins = allowedOrigins.filter(
-        origin => !originsToRemove.includes(origin)
+        (origin) => !originsToRemove.includes(origin)
       );
 
       if (specificOrigins.length !== allowedOrigins.length) {
@@ -156,8 +158,9 @@ function checkCorsConfig(ipfsd) {
           store.set("updatedCorsConfig", Date.now());
         } catch (err) {
           logger.error(
-            `[daemon] checkCorsConfig: error writing config file: ${err.message ||
-              err}`
+            `[daemon] checkCorsConfig: error writing config file: ${
+              err.message || err
+            }`
           );
           // don't skip setting checkedCorsConfig so we try again next time time.
           return;
@@ -165,15 +168,16 @@ function checkCorsConfig(ipfsd) {
       }
     } else {
       config.API.HTTPHeaders["Access-Control-Allow-Origin"] = [
-        "http://localhost:1589"
+        "http://localhost:1589",
       ];
       try {
         writeConfigFile(ipfsd, config);
         store.set("updatedCorsConfig", Date.now());
       } catch (err) {
         logger.error(
-          `[daemon] checkCorsConfig: error writing config file: ${err.message ||
-            err}`
+          `[daemon] checkCorsConfig: error writing config file: ${
+            err.message || err
+          }`
         );
         // don't skip setting checkedCorsConfig so we try again next time time.
         return;
@@ -184,7 +188,7 @@ function checkCorsConfig(ipfsd) {
   store.set("checkedCorsConfig", true);
 }
 
-const parseCfgMultiaddr = addr =>
+const parseCfgMultiaddr = (addr) =>
   addr.includes("/http")
     ? multiaddr(addr)
     : multiaddr(addr).encapsulate("/http");
@@ -195,11 +199,11 @@ async function checkIfAddrIsDaemon(addr) {
     host: addr.address,
     port: addr.port,
     path:
-      "/api/v0/refs?arg=/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn"
+      "/api/v0/refs?arg=/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn",
   };
 
-  return new Promise(resolve => {
-    var req = http.request(options, function(r) {
+  return new Promise((resolve) => {
+    var req = http.request(options, function (r) {
       resolve(r.statusCode === 200);
     });
 
@@ -230,7 +234,7 @@ async function checkPortsArray(ipfsd, addrs) {
 
     const freePort = await portfinder.getPortPromise({
       port: port,
-      stopPort: port + 100
+      stopPort: port + 100,
     });
 
     if (port !== freePort) {
@@ -238,7 +242,7 @@ async function checkPortsArray(ipfsd, addrs) {
         title: i18n.t("multipleBusyPortsDialog.title"),
         message: i18n.t("multipleBusyPortsDialog.message"),
         type: "error",
-        buttons: [i18n.t("multipleBusyPortsDialog.action"), i18n.t("close")]
+        buttons: [i18n.t("multipleBusyPortsDialog.action"), i18n.t("close")],
       });
 
       if (opt === 0) {
@@ -311,21 +315,21 @@ async function checkPorts(ipfsd) {
         port1: apiPort,
         alt1: freeApiPort,
         port2: gatewayPort,
-        alt2: freeGatewayPort
+        alt2: freeGatewayPort,
       };
     } else if (busyApiPort) {
       logger.info("[daemon] api port busy");
       message = "busyPortDialog";
       options = {
         port: apiPort,
-        alt: freeApiPort
+        alt: freeApiPort,
       };
     } else {
       logger.info("[daemon] gateway port busy");
       message = "busyPortDialog";
       options = {
         port: gatewayPort,
-        alt: freeGatewayPort
+        alt: freeGatewayPort,
       };
     }
 
@@ -333,7 +337,7 @@ async function checkPorts(ipfsd) {
       title: i18n.t(`${message}.title`),
       message: i18n.t(`${message}.message`, options),
       type: "error",
-      buttons: [i18n.t(`${message}.action`, options), i18n.t("close")]
+      buttons: [i18n.t(`${message}.action`, options), i18n.t("close")],
     });
 
     if (opt !== 0) {
@@ -367,5 +371,5 @@ module.exports = Object.freeze({
   applyDefaults,
   migrateConfig,
   checkCorsConfig,
-  checkPorts
+  checkPorts,
 });

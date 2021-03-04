@@ -6,7 +6,7 @@ const dock = require("../utils/dock");
 // NOTE: always send the buttons in the order [OK, Cancel, ...Actions].
 // See this post for more interesting information about the topic:
 // https://medium.muz.li/ok-key-and-cancel-key-which-one-should-be-set-up-on-the-left-4780e86c16eb
-module.exports = function({
+module.exports = function ({
   title,
   message,
   type = "info",
@@ -18,7 +18,7 @@ module.exports = function({
     type: type,
     buttons: buttons,
     noLink: true,
-    ...opts
+    ...opts,
   };
 
   if (IS_MAC) {

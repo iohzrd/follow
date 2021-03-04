@@ -15,7 +15,7 @@ async function setCustomBinary(ctx) {
       title: i18n.t("setCustomIpfsBinaryConfirmation.title"),
       message: i18n.t("setCustomIpfsBinaryConfirmation.message"),
       type: "warning",
-      buttons: [i18n.t("yes"), i18n.t("no")]
+      buttons: [i18n.t("yes"), i18n.t("no")],
     });
 
     if (opt !== 0) {
@@ -26,7 +26,7 @@ async function setCustomBinary(ctx) {
     const { canceled, filePaths } = await dialog.showOpenDialog({
       title: i18n.t("pickCustomIpfsBinary"),
       defaultPath: app.getPath("home"),
-      properties: ["openFile"]
+      properties: ["openFile"],
     });
 
     if (canceled || filePaths.length === 0) {
@@ -40,9 +40,9 @@ async function setCustomBinary(ctx) {
       showDock: false,
       title: i18n.t("setCustomIpfsBinarySuccess.title"),
       message: i18n.t("setCustomIpfsBinarySuccess.message", {
-        path: filePaths[0]
+        path: filePaths[0],
       }),
-      buttons: [i18n.t("restart"), i18n.t("close")]
+      buttons: [i18n.t("restart"), i18n.t("close")],
     });
 
     logger.info(`[custom binary] updated to ${filePaths[0]}`);
@@ -60,7 +60,7 @@ function clearCustomBinary(ctx) {
   const opt = showDialog({
     title: i18n.t("clearCustomIpfsBinarySuccess.title"),
     message: i18n.t("clearCustomIpfsBinarySuccess.message"),
-    buttons: [i18n.t("restart"), i18n.t("close")]
+    buttons: [i18n.t("restart"), i18n.t("close")],
   });
 
   if (opt === 0) {
@@ -82,5 +82,5 @@ module.exports = {
   setCustomBinary,
   clearCustomBinary,
   hasCustomBinary,
-  getCustomBinary
+  getCustomBinary,
 };

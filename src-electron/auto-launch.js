@@ -49,7 +49,7 @@ async function disable() {
   await fs.remove(getDesktopFile());
 }
 
-module.exports = async function() {
+module.exports = async function () {
   const activate = async ({ newValue, oldValue, feedback }) => {
     if (process.env.NODE_ENV === "development") {
       logger.info("[launch on startup] unavailable during development");
@@ -58,7 +58,7 @@ module.exports = async function() {
         showDialog({
           title: "Launch at Login",
           message: "Not available during development.",
-          buttons: [i18n.t("close")]
+          buttons: [i18n.t("close")],
         });
       }
 
@@ -72,7 +72,7 @@ module.exports = async function() {
         showDialog({
           title: i18n.t("launchAtLoginNotSupported.title"),
           message: i18n.t("launchAtLoginNotSupported.message"),
-          buttons: [i18n.t("close")]
+          buttons: [i18n.t("close")],
         });
       }
 
@@ -97,7 +97,7 @@ module.exports = async function() {
       if (feedback) {
         recoverableErrorDialog(err, {
           title: i18n.t("launchAtLoginFailed.title"),
-          message: i18n.t("launchAtLoginFailed.message")
+          message: i18n.t("launchAtLoginFailed.message"),
         });
       }
 

@@ -6,20 +6,20 @@ if (!fs.existsSync(app_data_path)) {
   fs.mkdirSync(app_data_path);
 }
 
-const knexConfig = filename => {
+const knexConfig = (filename) => {
   return {
     client: "sqlite3",
     // debug: process.env.DEV,
     debug: false,
     useNullAsDefault: true,
     connection: {
-      filename: path.join(app_data_path, `${filename}.db`)
+      filename: path.join(app_data_path, `${filename}.db`),
     },
     pool: {
       afterCreate: (conn, cb) => {
         conn.run("PRAGMA foreign_keys = ON", cb);
-      }
-    }
+      },
+    },
   };
 };
 

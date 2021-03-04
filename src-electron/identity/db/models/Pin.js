@@ -14,8 +14,8 @@ class Pin extends Model {
 
       properties: {
         pins: { type: "array" },
-        publisher: { type: "string" }
-      }
+        publisher: { type: "string" },
+      },
     };
   }
 }

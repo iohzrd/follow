@@ -7,7 +7,8 @@ function show() {
 function hide() {
   if (!app.dock) return;
 
-  const count = BrowserWindow.getAllWindows().filter(w => w.isVisible()).length;
+  const count = BrowserWindow.getAllWindows().filter((w) => w.isVisible())
+    .length;
 
   if (count <= 0) {
     app.dock.hide();
@@ -17,16 +18,16 @@ function hide() {
 module.exports = Object.freeze({
   show,
   hide,
-  run: async fn => {
+  run: async (fn) => {
     show();
     const res = await fn();
     hide();
     return res;
   },
-  runSync: fn => {
+  runSync: (fn) => {
     show();
     const res = fn();
     hide();
     return res;
-  }
+  },
 });

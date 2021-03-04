@@ -22,7 +22,7 @@ async function saveFile(dir, file) {
 
 async function get(ipfs, cid) {
   return all(
-    (async function*() {
+    (async function* () {
       for await (let { path, content } of ipfs.get(cid)) {
         content = content ? (await concat(content)).toString() : null;
         yield { path, content };
@@ -41,8 +41,8 @@ async function getCID() {
     buttons: [i18n.t("downloadCidContentDialog.action"), i18n.t("cancel")],
     window: {
       width: 500,
-      height: 120
-    }
+      height: 120,
+    },
   });
 
   if (button !== 0) {
@@ -73,7 +73,7 @@ async function downloadCid(ctx) {
     showDialog({
       title: i18n.t("cantResolveCidDialog.title"),
       message: i18n.t("cantResolveCidDialog.message", { path: cid }),
-      buttons: [i18n.t("close")]
+      buttons: [i18n.t("close")],
     });
 
     return;
@@ -81,7 +81,7 @@ async function downloadCid(ctx) {
 
   const dir = await dock.run(() =>
     selectDirectory({
-      defaultPath: app.getPath("downloads")
+      defaultPath: app.getPath("downloads"),
     })
   );
 
@@ -94,7 +94,7 @@ async function downloadCid(ctx) {
 
   try {
     logger.info(`[cid download] downloading ${path}: started`, {
-      withAnalytics: "DOWNLOAD_HASH"
+      withAnalytics: "DOWNLOAD_HASH",
     });
     files = await get(ipfsd.api, path);
     logger.info(`[cid download] downloading ${path}: completed`);
@@ -104,7 +104,7 @@ async function downloadCid(ctx) {
     showDialog({
       title: i18n.t("couldNotGetCidDialog.title"),
       message: i18n.t("couldNotGetCidDialog.message", { path }),
-      buttons: [i18n.t("close")]
+      buttons: [i18n.t("close")],
     });
 
     return;
@@ -112,13 +112,13 @@ async function downloadCid(ctx) {
 
   try {
     await Promise.all(
-      files.filter(file => !!file.content).map(file => saveFile(dir, file))
+      files.filter((file) => !!file.content).map((file) => saveFile(dir, file))
     );
 
     const opt = showDialog({
       title: i18n.t("contentsSavedDialog.title"),
       message: i18n.t("contentsSavedDialog.message", { path }),
-      buttons: [i18n.t("contentsSavedDialog.action"), i18n.t("close")]
+      buttons: [i18n.t("contentsSavedDialog.action"), i18n.t("close")],
     });
 
     if (opt === 0) {
@@ -130,24 +130,24 @@ async function downloadCid(ctx) {
     showDialog({
       title: i18n.t("couldNotSaveDialog.title"),
       message: i18n.t("couldNotSaveDialog.message"),
-      buttons: [i18n.t("close")]
+      buttons: [i18n.t("close")],
     });
   }
 }
 
-module.exports = function(ctx) {
+module.exports = function (ctx) {
   setupGlobalShortcut({
     confirmationDialog: {
       title: i18n.t("enableGlobalDownloadShortcut.title"),
       message: i18n.t("enableGlobalDownloadShortcut.message", {
-        accelerator: SHORTCUT
-      })
+        accelerator: SHORTCUT,
+      }),
     },
     settingsOption: CONFIG_KEY,
     accelerator: SHORTCUT,
     action: () => {
       downloadCid(ctx);
-    }
+    },
   });
 };
 

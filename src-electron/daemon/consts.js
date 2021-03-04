@@ -5,6 +5,6 @@ module.exports = Object.freeze({
     STARTING_FAILED: 3,
     STOPPING_STARTED: 4,
     STOPPING_FINISHED: 5,
-    STOPPING_FAILED: 6
-  }
+    STOPPING_FAILED: 6,
+  },
 });

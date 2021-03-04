@@ -21,8 +21,8 @@ class Identity extends Model {
         meta: { type: "array" },
         posts: { type: "array" },
         publisher: { type: "string" },
-        ts: { type: "integer" }
-      }
+        ts: { type: "integer" },
+      },
     };
   }
 }

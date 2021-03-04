@@ -9,14 +9,14 @@ const pallette = {
     background: "#ECECEC",
     color: "#262626",
     inputBackground: "#ffffff",
-    defaultBackground: "#007AFF"
+    defaultBackground: "#007AFF",
   },
   dark: {
     background: "#323232",
     color: "#ffffff",
     inputBackground: "#656565",
-    defaultBackground: "#0A84FF"
-  }
+    defaultBackground: "#0A84FF",
+  },
 };
 
 function generatePage({ message, defaultValue = "", buttons }, id) {
@@ -40,7 +40,7 @@ module.exports = async function showPrompt(options) {
     {},
     {
       window: {},
-      showDock: true
+      showDock: true,
     },
     options
   );
@@ -57,15 +57,15 @@ module.exports = async function showPrompt(options) {
       ? pallette.dark.background
       : pallette.default.background,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
     },
-    ...options.window
+    ...options.window,
   });
 
   // Generate random id
   const id = crypto.randomBytes(16).toString("hex");
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     ipcMain.once(id, (_, data) => {
       window.destroy();
       if (options.showDock) dock.hide();

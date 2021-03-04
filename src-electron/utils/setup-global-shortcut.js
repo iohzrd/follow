@@ -7,11 +7,11 @@ const { showDialog } = require("../dialogs");
 
 // This function registers a global shortcut/accelerator with a certain action
 // and (de)activates it according to its 'settingsOption' value on settings.
-module.exports = function({
+module.exports = function ({
   settingsOption,
   accelerator,
   action,
-  confirmationDialog
+  confirmationDialog,
 }) {
   const activate = ({ newValue, oldValue, feedback }) => {
     if (newValue === oldValue) return;
@@ -21,7 +21,7 @@ module.exports = function({
         if (
           showDialog({
             ...confirmationDialog,
-            buttons: [i18n.t("enable"), i18n.t("cancel")]
+            buttons: [i18n.t("enable"), i18n.t("cancel")],
           }) !== 0
         ) {
           // User canceled

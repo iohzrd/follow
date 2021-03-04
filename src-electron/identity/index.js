@@ -718,7 +718,7 @@ module.exports = async function (ctx) {
     } else {
       logger.info("post not found in DB, loading from IPFS...");
       post_object = await getPostIpfs(cid);
-      if (post_object) {
+      if (typeof post_object === "object") {
         if (!post_object.aux) {
           post_object.aux = [];
         }

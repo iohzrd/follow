@@ -19,7 +19,7 @@ class Post extends Model {
         "meta",
         "postCid",
         "publisher",
-        "ts"
+        "ts",
       ],
 
       properties: {
@@ -31,8 +31,8 @@ class Post extends Model {
         meta: { type: "array" },
         postCid: { type: "string" },
         publisher: { type: "string" },
-        ts: { type: "integer" }
-      }
+        ts: { type: "integer" },
+      },
     };
   }
 }

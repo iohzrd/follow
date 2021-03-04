@@ -2,7 +2,7 @@ const { ipcMain } = require("electron");
 const store = require("../common/store");
 const logger = require("../common/logger");
 
-module.exports = function(settingsOption, activate) {
+module.exports = function (settingsOption, activate) {
   ipcMain.on(`toggle_${settingsOption}`, async () => {
     const oldValue = store.get(settingsOption, null);
     const newValue = !oldValue;

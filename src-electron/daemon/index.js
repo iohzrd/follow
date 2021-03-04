@@ -7,12 +7,12 @@ const logger = require("../common/logger");
 const { STATUS } = require("./consts");
 const createDaemon = require("./daemon");
 
-module.exports = async function(ctx) {
+module.exports = async function (ctx) {
   let ipfsd = null;
   let status = null;
   let wasOnline = null;
 
-  const updateStatus = stat => {
+  const updateStatus = (stat) => {
     status = stat;
     ipcMain.emit("ipfsd", status);
   };
@@ -29,7 +29,7 @@ module.exports = async function(ctx) {
     return ipfsd;
   };
 
-  const runAndStatus = fn => async () => {
+  const runAndStatus = (fn) => async () => {
     await fn();
     return status;
   };
@@ -40,7 +40,7 @@ module.exports = async function(ctx) {
     }
 
     const log = logger.start("[ipfsd] start daemon", {
-      withAnalytics: "DAEMON_START"
+      withAnalytics: "DAEMON_START",
     });
     const config = store.get("ipfsConfig");
     updateStatus(STATUS.STARTING_STARTED);
@@ -84,7 +84,7 @@ module.exports = async function(ctx) {
     }
 
     const log = logger.start("[ipfsd] stop daemon", {
-      withAnalytics: "DAEMON_STOP"
+      withAnalytics: "DAEMON_STOP",
     });
     updateStatus(STATUS.STOPPING_STARTED);
 

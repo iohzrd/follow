@@ -10,9 +10,9 @@ const execFile = util.promisify(childProcess.execFile);
 
 const env = {
   noSudo: {
-    ELECTRON_RUN_AS_NODE: 1
+    ELECTRON_RUN_AS_NODE: 1,
   },
-  sudo: "env ELECTRON_RUN_AS_NODE=1"
+  sudo: "env ELECTRON_RUN_AS_NODE=1",
 };
 
 const getResult = (err, stdout, stderr, scope, failSilently, errorOptions) => {
@@ -50,12 +50,12 @@ const getResult = (err, stdout, stderr, scope, failSilently, errorOptions) => {
   return false;
 };
 
-module.exports = async function({
+module.exports = async function ({
   script,
   scope,
   failSilently,
   trySudo = true,
-  errorOptions
+  errorOptions,
 }) {
   const dataArg = `--data="${app.getPath("userData")}"`;
   let err = null;
@@ -63,7 +63,7 @@ module.exports = async function({
   // First try executing with regular permissions.
   try {
     const { stdout } = await execFile(process.execPath, [script, dataArg], {
-      env: env.noSudo
+      env: env.noSudo,
     });
     logger.info(`[${scope}] stdout: ${stdout.toString().trim()}`);
     return true;
@@ -83,7 +83,7 @@ module.exports = async function({
 
   // Otherwise, try to elevate the user.
   const command = `${env.sudo} "${process.execPath}" "${script}" ${dataArg}`;
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     sudo.exec(command, { name: "IPFS Desktop" }, (err, stdout, stderr) => {
       resolve(
         getResult(err, stdout, stderr, scope, failSilently, errorOptions)

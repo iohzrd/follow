@@ -9,7 +9,7 @@ const logsPath = app.getPath("userData");
 
 const errorFile = new transports.File({
   level: "error",
-  filename: join(logsPath, "error.log")
+  filename: join(logsPath, "error.log"),
 });
 
 errorFile.on("finish", () => {
@@ -20,19 +20,19 @@ const logger = createLogger({
   format: combine(
     timestamp(),
     splat(),
-    printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
+    printf((info) => `${info.timestamp} ${info.level}: ${info.message}`)
   ),
   transports: [
     new transports.Console({
       level: "debug",
-      silent: process.env.NODE_ENV === "production"
+      silent: process.env.NODE_ENV === "production",
     }),
     errorFile,
     new transports.File({
       level: "debug",
-      filename: join(logsPath, "combined.log")
-    })
-  ]
+      filename: join(logsPath, "combined.log"),
+    }),
+  ],
 });
 
 logger.info(`[meta] logs can be found on ${logsPath}`);
@@ -47,13 +47,13 @@ module.exports = Object.freeze({
         const seconds = (performance.now() - start) / 1000;
         logger.info(`${msg} FINISHED ${seconds}s`);
       },
-      info: str => {
+      info: (str) => {
         logger.info(`${msg} ${str}`);
       },
-      fail: err => {
+      fail: (err) => {
         Countly.log_error(err);
         logger.error(`${msg} ${err.stack}`);
-      }
+      },
     };
   },
 
@@ -61,10 +61,10 @@ module.exports = Object.freeze({
     logger.info(msg);
   },
 
-  error: err => {
+  error: (err) => {
     Countly.log_error(err);
     logger.error(err);
   },
 
-  logsPath
+  logsPath,
 });

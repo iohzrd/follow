@@ -15,8 +15,8 @@ class Hiddenservice extends Model {
       properties: {
         keyType: { type: "string" },
         keyBlob: { type: "string" },
-        serviceId: { type: "string" }
-      }
+        serviceId: { type: "string" },
+      },
     };
   }
 }
