@@ -79,7 +79,7 @@ export default {
       if (this.feed.length > 0) {
         this.oldestTs = this.feed[this.feed.length - 1].ts;
       } else {
-        this.oldestTs = Math.floor(new Date().getTime());
+        this.oldestTs = Math.floor(new Date().getTime()) + 365 * 86400 * 1000;
       }
       ipcRenderer
         .invoke("get-feed-older-than", this.oldestTs, this.pageSize)

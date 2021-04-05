@@ -138,6 +138,7 @@
         :key="post.postCid"
         :publisher="post.publisher"
         :post="post"
+        @show-link-prompt="showLinkPrompt"
       />
       <template #loading>
         <div class="row justify-center q-my-md">
@@ -313,6 +314,9 @@ export default {
     showUnfollowPrompt(id) {
       console.log(`Identity: showUnfollowPrompt(${id})`);
       this.$emit("show-unfollow-prompt", id);
+    },
+    showLinkPrompt(link) {
+      this.$emit("show-link-prompt", link);
     },
   },
 };
