@@ -20,7 +20,7 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@quasar/extras": "^1.10.2",
+    "@quasar/extras": "^1.10.3",
     "axios": "^0.21.1",
     "core-js": "^3.10.1",
     "cors": "^2.8.5",
@@ -38,7 +38,7 @@
     "intl-messageformat": "^9.6.7",
     "ipfs": "^0.54.4",
     "ipfs-http-client": "^49.0.4",
-    "ipfs-utils": "6.0.6",
+    "ipfs-utils": "6.0.7",
     "ipfsd-ctl": "^7.2.0",
     "is-ipfs": "^4.0.0",
     "it-all": "^1.0.5",
@@ -52,7 +52,7 @@
     "sudo-prompt": "^9.2.1",
     "tor-request": "^3.1.0",
     "untildify": "^4.0.0",
-    "vue-i18n": "^8.24.2",
+    "vue-i18n": "^8.24.3",
     "winston": "^3.3.3"
   },
   "devDependencies": {
@@ -62,17 +62,17 @@
     "@quasar/quasar-app-extension-qoverlay": "^1.0.5",
     "babel-eslint": "^10.1.0",
     "devtron": "^1.4.0",
-    "electron": "^12.0.2",
+    "electron": "^12.0.4",
     "electron-builder": "^22.10.5",
     "electron-debug": "^3.2.0",
-    "electron-devtools-installer": "^3.1.1",
+    "electron-devtools-installer": "^3.2.0",
     "electron-packager": "^15.2.0",
     "eslint": "^7.24.0",
-    "eslint-config-prettier": "^8.1.0",
+    "eslint-config-prettier": "^8.2.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-vue": "^7.9.0"
   },
