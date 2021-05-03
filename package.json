@@ -45,7 +45,7 @@
     "knex": "^0.21.19",
     "knex-migrate": "^1.7.4",
     "objection": "^2.2.15",
-    "quasar": "^1.15.12",
+    "quasar": "^1.15.13",
     "set-system-clock": "^1.0.4",
     "set-system-clock-wfix": "^1.0.5",
     "sqlite3": "^5.0.2",
@@ -56,7 +56,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@quasar/app": "^2.2.5",
+    "@quasar/app": "^2.2.6",
     "@quasar/quasar-app-extension-qmarkdown": "^1.4.1",
     "@quasar/quasar-app-extension-qmediaplayer": "^1.2.1",
     "@quasar/quasar-app-extension-qoverlay": "^1.0.5",
