@@ -1,6 +1,6 @@
 {
   "name": "follow",
-  "version": "0.2.82",
+  "version": "0.2.83",
   "description": "Decentralized, censorship resistant social media and bulletin board on IPFS",
   "productName": "follow",
   "author": "iohzrd <iohzrd@gmail.com>",
@@ -29,7 +29,7 @@
     "exifremove": "^1.0.1",
     "file-type": "^16.3.0",
     "fix-path": "^3.0.0",
-    "fs-extra": "^9.1.0",
+    "fs-extra": "^10.0.0",
     "go-ipfs": "^0.8.0",
     "granax": "git://github.com/iohzrd/granax.git",
     "i18next": "^20.2.2",
