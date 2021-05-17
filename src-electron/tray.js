@@ -211,7 +211,7 @@ function buildMenu(ctx) {
           await ctx.tor.destroyHiddenServicePromise(ctx.tor_hs.serviceId);
         }
         if (ctx.ipfs) {
-          await ctx.ipfs.shutdown();
+          await ctx.ipfs.stop();
         }
         app.quit();
       },
@@ -245,7 +245,6 @@ module.exports = function (ctx) {
     // Show the context menu on left click on other
     // platforms than macOS.
     tray.on("click", (event) => {
-      event.preventDefault();
       tray.popUpContextMenu();
     });
   }

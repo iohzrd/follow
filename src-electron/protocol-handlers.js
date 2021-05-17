@@ -52,7 +52,6 @@ module.exports = function (ctx) {
 
   // Handle URLs in macOS
   app.on("open-url", (event, url) => {
-    event.preventDefault();
     parseUrl(url, ctx);
   });
 };

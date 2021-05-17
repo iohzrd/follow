@@ -107,7 +107,7 @@ app.on("window-all-closed", async () => {
       await ctx.tor.destroyHiddenServicePromise(ctx.tor_hs.serviceId);
     }
     if (ctx.ipfs) {
-      await ctx.ipfs.shutdown();
+      await ctx.ipfs.stop();
     }
     app.quit();
   }

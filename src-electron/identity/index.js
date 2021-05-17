@@ -1,5 +1,5 @@
 const { ipcMain } = require("electron");
-const IpfsHttpClient = require("ipfs-http-client");
+const { create } = require("ipfs-http-client");
 const all = require("it-all");
 const http = require("http");
 const path = require("path");
@@ -52,7 +52,7 @@ module.exports = async function (ctx) {
   const init = async () => {
     logger.info("[identity] init");
     // start IpfsHttpClient
-    ipfs = IpfsHttpClient({
+    ipfs = create({
       host: "localhost",
       port: "5001",
       protocol: "http",
