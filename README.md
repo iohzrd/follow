@@ -156,6 +156,7 @@ npm start
 - [x] migrate to SQLite...
 - [x] Paginate feed
 - [x] enable(fix) audio/video playback
+- [ ] follow via tor hidden service
 - [ ] re-design comment system
 - [ ] strip exif data from images
 - [ ] System for curating comments
