@@ -350,7 +350,7 @@ module.exports = async function (ctx) {
       await Identity.query().findOne("publisher", ipfs_id.id).patch(self);
     } else {
       logger.info(`${ipfs_id.id} not found`);
-      logger.info(self);
+      logger.info(JSON.stringify(self, null, 2));
       await Identity.query().insert(self);
     }
     await publish();
@@ -360,7 +360,7 @@ module.exports = async function (ctx) {
   const publish = async () => {
     logger.info("[Identity] publish()");
     try {
-      logger.info(self);
+      logger.info(JSON.stringify(self, null, 2));
       const obj = {
         path: "identity.json",
         content: JSON.stringify(self),
@@ -375,7 +375,7 @@ module.exports = async function (ctx) {
       const publish_result = await ipfs.name.publish(
         publish_object.cid.string,
         {
-          lifetime: "168h",
+          lifetime: "24h",
         }
       );
       logger.info("publish complete");
@@ -384,13 +384,18 @@ module.exports = async function (ctx) {
     } catch (error) {
       logger.info(`[Identity] error in publish()`);
       logger.info(error);
+      // hack to get around error in publish:
+      // "ipfs publish can’t replace a newer value with an older value"
+      self.ts = Math.floor(new Date().getTime());
     }
   };
   ipcMain.on("publish-identity", async (event) => {
+    // const result = await saveIdentity();
     const result = await publish();
     event.sender.send("publish-identity-complete", result);
   });
   ipcMain.handle("publish-identity", async () => {
+    // const result = await saveIdentity();
     const result = await publish();
     return result;
   });
