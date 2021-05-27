@@ -1,11 +1,18 @@
 const { shell } = require("electron");
 const { autoUpdater } = require("electron-updater");
 const i18n = require("i18next");
+const { ipcMain } = require("electron");
 const logger = require("../common/logger");
 const { notify } = require("../common/notify");
 const { showDialog } = require("../dialogs");
 const macQuitAndInstall = require("./macos-quit-and-install");
-const { IS_MAC } = require("../common/consts");
+const { IS_MAC, IS_WIN, IS_APPIMAGE } = require("../common/consts");
+
+function isAutoUpdateSupported() {
+  // atm only macOS, windows and AppImage builds support autoupdate mechanism,
+  // everything else needs to be updated manually or via a third-party package manager
+  return IS_MAC || IS_WIN || IS_APPIMAGE;
+}
 
 let feedback = false;
 
@@ -124,11 +131,13 @@ function setup(ctx) {
 }
 
 async function checkForUpdates() {
+  ipcMain.emit("updating");
   try {
     await autoUpdater.checkForUpdates();
   } catch (_) {
     // Ignore. The errors are already handled on 'error' event.
   }
+  ipcMain.emit("updatingEnded");
 }
 
 module.exports = async function (ctx) {
@@ -142,6 +151,12 @@ module.exports = async function (ctx) {
     };
     return;
   }
+  if (!isAutoUpdateSupported()) {
+    ctx.manualCheckForUpdates = () => {
+      shell.openExternal("https://github.com/iohzrd/follow/releases/latest");
+    };
+    return;
+  }
 
   setup(ctx);
 
@@ -149,6 +164,7 @@ module.exports = async function (ctx) {
 
   setInterval(checkForUpdates, 43200000); // every 12 hours
 
+  // enable on-demand check via About submenu
   ctx.manualCheckForUpdates = () => {
     feedback = true;
     checkForUpdates();

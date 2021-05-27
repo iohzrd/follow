@@ -45,7 +45,7 @@ async function makeShareableObject(ipfs, results) {
   return { cid: baseCID, path: "" };
 }
 
-function sendNotification(failures, successes, launch, path) {
+function sendNotification(failures, successes, launchWebUI, path) {
   let link, title, body, fn;
 
   if (failures.length === 0) {
@@ -71,11 +71,11 @@ function sendNotification(failures, successes, launch, path) {
   }
 
   fn({ title, body }, () => {
-    launch(link);
+    launchWebUI(link, { forceRefresh: true });
   });
 }
 
-module.exports = async function ({ getIpfsd }, files) {
+module.exports = async function ({ getIpfsd, launchWebUI }, files) {
   const ipfsd = await getIpfsd();
 
   if (!ipfsd) {
@@ -114,7 +114,7 @@ module.exports = async function ({ getIpfsd }, files) {
   }
 
   const { cid, path } = await makeShareableObject(ipfsd.api, successes);
-  sendNotification(failures, successes, path);
+  sendNotification(failures, successes, launchWebUI, path);
   const filename = path
     ? `?filename=${encodeURIComponent(path.split("/").pop())}`
     : "";

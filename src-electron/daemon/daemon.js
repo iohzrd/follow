@@ -43,7 +43,7 @@ function writeIpfsBinaryPath(path) {
   );
 }
 
-async function spawn({ flags, path, keysize }) {
+async function spawn({ flags, path }) {
   const ipfsBin = getIpfsBinPath();
   writeIpfsBinaryPath(ipfsBin);
 
@@ -74,6 +74,7 @@ async function spawn({ flags, path, keysize }) {
   await ipfsd.init();
 
   applyDefaults(ipfsd);
+  checkCorsConfig(ipfsd);
   return { ipfsd, isRemote: false };
 }
 

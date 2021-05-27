@@ -6,6 +6,9 @@ module.exports = ({
   id,
 }) => `<!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" /> 
+  </head>
   <body>
     <p>${message}</p>
     <input type="text" value="${defaultValue}" />

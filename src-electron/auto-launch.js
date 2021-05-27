@@ -30,8 +30,8 @@ async function enable() {
   const desktop = `[Desktop Entry]
 Type=Application
 Version=1.0
-Name=IPFS Desktop
-Comment=IPFS Desktop Startup Script
+Name=follow
+Comment=follow Startup Script
 Exec="${process.execPath}"
 Icon=follow
 StartupNotify=false

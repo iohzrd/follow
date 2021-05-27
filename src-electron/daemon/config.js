@@ -41,11 +41,7 @@ function applyDefaults(ipfsd) {
 
   // Ensure strict CORS checking
   // See: https://github.com/ipfs/js-ipfsd-ctl/issues/333
-  config.API = {
-    HTTPHeaders: {
-      "Access-Control-Allow-Origin": ["http://localhost:1589"],
-    },
-  };
+  config.API = { HTTPHeaders: {} };
 
   config.Swarm = config.Swarm || {};
   config.Swarm.DisableNatPortMap = false;
@@ -84,7 +80,7 @@ function migrateConfig(ipfsd) {
     return;
   }
 
-  // Cleanup https://github.com/iohzrd/follow/issues/1631
+  // Cleanup https://github.com/ipfs-shipyard/ipfs-desktop/issues/1631
   if (
     config.Discovery &&
     config.Discovery.MDNS &&
@@ -121,10 +117,10 @@ function migrateConfig(ipfsd) {
 // runs then we leave them in, under the assumption that you really want it.
 // TODO: show warning in UI when wildcard is in the allowed origins.
 function checkCorsConfig(ipfsd) {
-  // if (store.get("checkedCorsConfig")) {
-  //   // We've already checked so skip it.
-  //   return;
-  // }
+  if (store.get("checkedCorsConfig")) {
+    // We've already checked so skip it.
+    return;
+  }
 
   let config = null;
 
@@ -140,7 +136,31 @@ function checkCorsConfig(ipfsd) {
     );
     return;
   }
-  if (config.API && config.API.HTTPHeaders) {
+
+  config.API.HTTPHeaders["Access-Control-Allow-Origin"] = [
+    "http://localhost:1589",
+    "https://webui.ipfs.io",
+    "https://dev.webui.ipfs.io",
+  ];
+  config.API.HTTPHeaders["Access-Control-Allow-Methods"] = ["PUT", "POST"];
+  try {
+    writeConfigFile(ipfsd, config);
+    store.set("updatedCorsConfig", Date.now());
+  } catch (err) {
+    logger.error(
+      `[daemon] checkCorsConfig: error writing config file: ${
+        err.message || err
+      }`
+    );
+    // don't skip setting checkedCorsConfig so we try again next time time.
+    return;
+  }
+
+  if (
+    config.API &&
+    config.API.HTTPHeaders &&
+    config.API.HTTPHeaders["Access-Control-Allow-Origin"]
+  ) {
     const allowedOrigins =
       config.API.HTTPHeaders["Access-Control-Allow-Origin"];
     const originsToRemove = ["*", "webui://-"];
@@ -166,22 +186,6 @@ function checkCorsConfig(ipfsd) {
           return;
         }
       }
-    } else {
-      config.API.HTTPHeaders["Access-Control-Allow-Origin"] = [
-        "http://localhost:1589",
-      ];
-      try {
-        writeConfigFile(ipfsd, config);
-        store.set("updatedCorsConfig", Date.now());
-      } catch (err) {
-        logger.error(
-          `[daemon] checkCorsConfig: error writing config file: ${
-            err.message || err
-          }`
-        );
-        // don't skip setting checkedCorsConfig so we try again next time time.
-        return;
-      }
     }
   }
 
@@ -195,11 +199,11 @@ const parseCfgMultiaddr = (addr) =>
 
 async function checkIfAddrIsDaemon(addr) {
   const options = {
+    timeout: 3000, // 3s is plenty for localhost request
     method: "POST",
     host: addr.address,
     port: addr.port,
-    path:
-      "/api/v0/refs?arg=/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn",
+    path: "/api/v0/refs?arg=/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn",
   };
 
   return new Promise((resolve) => {

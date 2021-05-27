@@ -5,14 +5,7 @@ const defaults = {
   ipfsConfig: {
     type: "go",
     path: "",
-    flags: [
-      "--migrate",
-      "--enable-gc",
-      "--enable-pubsub-experiment",
-      "--routing",
-      "dhtclient",
-    ],
-    keysize: 2048,
+    flags: ["--migrate", "--enable-gc", "--routing", "dhtclient"],
   },
   language: (electron.app || electron.remote.app).getLocale(),
   experiments: {},
@@ -25,11 +18,18 @@ const migrations = {
     const flags = store.get("ipfsConfig.flags", []);
 
     if (
-      !flags.includes("--enable-pubsub-experiment") ||
       flags.includes("--migrate=true") ||
       flags.includes("--enable-gc=true")
     ) {
       store.set("ipfsConfig.flags", defaults.ipfsConfig.flags);
+    }
+  },
+  ">0.13.2": (store) => {
+    const flags = store.get("ipfsConfig.flags", []);
+    const automaticGC = store.get("automaticGC", false);
+    // ensure checkbox follows cli flag config
+    if (flags.includes("--enable-gc") && !automaticGC) {
+      store.set("automaticGC", true);
     }
   },
 };

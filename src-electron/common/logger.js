@@ -45,6 +45,15 @@ module.exports = Object.freeze({
     return {
       end: () => {
         const seconds = (performance.now() - start) / 1000;
+
+        if (opts.withAnalytics) {
+          Countly.add_event({
+            key: opts.withAnalytics,
+            count: 1,
+            dur: seconds,
+          });
+        }
+
         logger.info(`${msg} FINISHED ${seconds}s`);
       },
       info: (str) => {
@@ -58,6 +67,13 @@ module.exports = Object.freeze({
   },
 
   info: (msg, opts = {}) => {
+    if (opts.withAnalytics) {
+      Countly.add_event({
+        key: opts.withAnalytics,
+        count: 1,
+      });
+    }
+
     logger.info(msg);
   },
 

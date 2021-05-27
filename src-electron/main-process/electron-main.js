@@ -1,15 +1,22 @@
-import { app, dialog, BrowserWindow, nativeTheme } from "electron";
+require("v8-compile-cache");
+const { app, dialog, BrowserWindow, nativeTheme } = require("electron");
 const fixPath = require("fix-path");
 const { criticalErrorDialog } = require("../dialogs");
 const logger = require("../common/logger");
 // const setupProtocolHandlers = require("../protocol-handlers");
 const setupI18n = require("../i18n");
 const setupDaemon = require("../daemon");
+// const setupWebUI = require('../webui')
 const setupAutoLaunch = require("../auto-launch");
+const setupAutoGc = require("../automatic-gc");
+const setupPubsub = require("../enable-pubsub");
+const setupNamesysPubsub = require("../enable-namesys-pubsub");
+const setupDownloadCid = require("../download-cid");
 const setupAppMenu = require("../app-menu");
+// const setupArgvFilesHandler = require("../argv-files-handler");
 // const setupAutoUpdater = require("../auto-updater");
 const setupTray = require("../tray");
-const setupDownloadCid = require("../download-cid");
+// const setupIpfsOnPath = require('../ipfs-on-path')
 // const setupAnalytics = require("../analytics");
 const setupIdentity = require("../identity");
 
@@ -131,14 +138,21 @@ async function main() {
     // await setupAnalytics(ctx); // ctx.countlyDeviceId
     await setupI18n(ctx);
     await setupAppMenu(ctx);
+
+    // await setupWebUI(ctx) // ctx.webui, launchWebUI
     await setupTray(ctx); // ctx.tray
     await setupDaemon(ctx); // ctx.getIpfsd, startIpfs, stopIpfs, restartIpfs
     // await setupAutoUpdater(ctx); // ctx.checkForUpdates
 
     await Promise.all([
+      // setupArgvFilesHandler(ctx),
       setupAutoLaunch(ctx),
+      setupAutoGc(ctx),
+      setupPubsub(ctx),
+      setupNamesysPubsub(ctx),
       // Setup global shortcuts
       setupDownloadCid(ctx),
+      // setupIpfsOnPath(ctx)
     ]);
 
     // // Setup identity
