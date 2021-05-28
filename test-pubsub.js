@@ -1,8 +1,8 @@
 const fs = require("fs-extra");
-const IpfsHttpClient = require("ipfs-http-client");
-const ipfs = IpfsHttpClient();
+const { create } = require("ipfs-http-client");
+const ipfs = create();
 
-const handleComment = msg => {
+const handleComment = (msg) => {
   console.log("New comment...");
   // open file...
   const filePath = "comments.json";
@@ -13,7 +13,8 @@ const handleComment = msg => {
   const raw = fs.readFileSync(filePath);
   const commentsFile = JSON.parse(raw);
   try {
-    const comment = JSON.parse(msg.data);
+    const json = new TextDecoder().decode(msg.data);
+    const comment = JSON.parse(json);
     // TODO: ID blacklist...
     // TODO: global cooldown...
     // TODO: per "from" cooldown...
@@ -32,7 +33,7 @@ const handleComment = msg => {
         // filter duplicates
         if (
           !commentsFile.comments.some(
-            existingComment =>
+            (existingComment) =>
               existingComment.msg === comment.msg &&
               existingComment.from === comment.from
           )
@@ -54,4 +55,4 @@ async function main(topic, msg) {
   await ipfs.pubsub.publish(topic, JSON.stringify(msgObj));
   await ipfs.pubsub.subscribe(topic, handleComment);
 }
-main("QmUsHMBjzxGMJy19d9XUNHKRQ21eUNsRAdAa8VMrJbQowJ", "bishasdkfhaiod");
+main("QmUsHMBjzxGMJy19d9XUNHKRQ21eUNsRAdAa8VMrJbQowJ", "asdf");
