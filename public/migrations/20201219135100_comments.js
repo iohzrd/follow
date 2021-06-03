@@ -1,7 +1,7 @@
 "use strict";
 
-exports.up = knex => {
-  return knex.schema.createTable("comments", table => {
+exports.up = (knex) => {
+  return knex.schema.createTable("comments", (table) => {
     table.boolean("acknowledged");
     table.integer("ts");
     table.string("cid");
@@ -13,6 +13,6 @@ exports.up = knex => {
   });
 };
 
-exports.down = knex => {
+exports.down = (knex) => {
   return knex.schema.dropTableIfExists("comments");
 };

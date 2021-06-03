@@ -1,7 +1,7 @@
 "use strict";
 
-exports.up = knex => {
-  return knex.schema.createTable("hiddenservice", table => {
+exports.up = (knex) => {
+  return knex.schema.createTable("hiddenservice", (table) => {
     table.increments("id").primary();
     table.string("keyType");
     table.string("keyBlob");
@@ -9,6 +9,6 @@ exports.up = knex => {
   });
 };
 
-exports.down = knex => {
+exports.down = (knex) => {
   return knex.schema.dropTableIfExists("hiddenservice");
 };

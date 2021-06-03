@@ -1,7 +1,7 @@
 "use strict";
 
-exports.up = knex => {
-  return knex.schema.createTable("posts", table => {
+exports.up = (knex) => {
+  return knex.schema.createTable("posts", (table) => {
     table.string("aux");
     table.string("body");
     table.jsonb("files");
@@ -14,6 +14,6 @@ exports.up = knex => {
   });
 };
 
-exports.down = knex => {
+exports.down = (knex) => {
   return knex.schema.dropTableIfExists("posts");
 };
