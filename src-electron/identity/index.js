@@ -134,28 +134,54 @@ module.exports = async function (ctx) {
     publish();
   };
 
-  const handlePubsubUnsolicited = async (msg) => {
-    logger.info(`handlePubsubUnsolicited(${msg})`);
-    // TODO (not in blacklist)...
-    if (msg.from != ipfs_id.id && true) {
-      let obj;
-      try {
-        const data = new TextDecoder("utf-8").decode(msg.data);
-        obj = JSON.parse(data);
-      } catch (error) {
-        logger.info(`[Identity] error in handlePubsubUnsolicited(${msg})`);
-        logger.info(error);
-      }
-      if (typeof obj === "object") {
-        if (obj.type === "comments") {
-          obj.from = msg.from;
+  const handlePubsubUnsolicited = async (rawMsg) => {
+    logger.info(`handlePubsubUnsolicited(${rawMsg})`);
+    let blacklist = [];
+    // TODO real blacklist...
+    if (!blacklist.includes(rawMsg.from)) {
+      if (rawMsg.from != ipfs_id.id) {
+        // parse message...
+        let obj;
+        try {
+          const data = new TextDecoder("utf-8").decode(rawMsg.data);
+          obj = JSON.parse(data);
+        } catch (error) {
+          logger.info(`[Identity] error in handlePubsubUnsolicited(${rawMsg})`);
+          logger.info(error);
+        }
+        // handle message...
+        if (typeof obj === "object") {
+          if (obj.type === "place-holder") {
+            obj.from = rawMsg.from;
+          } else if (obj.type === "get-comments-request") {
+            if (typeof obj.topic === "string" && obj.ts && obj.count) {
+              const comments = getCommentsOlderThan(
+                ipfs_id.id,
+                obj.topic,
+                obj.ts,
+                obj.count
+              );
+              const response = {
+                type: "get-comments-response",
+                topic: obj.topic,
+                comments: comments,
+              };
+              ipfs.pubsub.publish(ipfs_id.id, JSON.stringify(response));
+            }
+            //
+          } else if (obj.type === "get-comments-response") {
+            ipcMain.emit();
+            // store in DB
+            //
+          } else if (obj.type === "post-comment-request") {
+            //
+          } else if (obj.type === "post-comment-response") {
+            // ACK
+            // NAK
+          }
         }
       }
     }
-  };
-
-  const replyPubsubUnsolicited = async (msg) => {
-    logger.info(`replyPubsubUnsolicited(${msg})`);
   };
 
   const pubsubSendReceive = (publisher, msg) => {
@@ -246,6 +272,57 @@ module.exports = async function (ctx) {
     "get-comments-newer-than",
     async (event, publisher, postCid, ts) => {
       const comments = await getCommentsNewerThan(publisher, postCid, ts);
+      return comments;
+    }
+  );
+
+  // get comments Newest
+  const getCommentsNewest = async (publisher, postCid, ts, count) => {
+    logger.info("getCommentsNewest");
+    if (publisher != ipfs_id.id) {
+      const comments = await pubsubSendReceive(
+        publisher,
+        JSON.stringify({
+          count: count,
+          topic: postCid,
+          olderThan: ts,
+          type: "comment-request",
+        })
+      );
+      return comments;
+    } else {
+      const comments = await Comment.query()
+        .where("topic", postCid)
+        .max("ts")
+        .limit(count)
+        .orderBy("ts", "desc");
+      logger.info(comments);
+      return comments;
+    }
+  };
+  ipcMain.on(
+    "get-comments-newest",
+    async (event, publisher, postCid, ts, count) => {
+      logger.info("on.get-comments-newest");
+      const comments = await getCommentsOlderThan(
+        publisher,
+        postCid,
+        ts,
+        count
+      );
+      event.sender.send("comments-newest", comments);
+    }
+  );
+  ipcMain.handle(
+    "get-comments-newest",
+    async (event, publisher, postCid, ts, count) => {
+      logger.info("handle.get-comments-newest");
+      const comments = await getCommentsOlderThan(
+        publisher,
+        postCid,
+        ts,
+        count
+      );
       return comments;
     }
   );
