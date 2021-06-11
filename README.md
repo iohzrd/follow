@@ -129,7 +129,13 @@ We also serve the identity object via a tor hidden service for extra censorship 
 
 ## How to run
 
+Node.js >=10 is required.
+
 ```
+yarn global add @quasar/cli
+# or
+npm install -g @quasar/cli
+
 git clone git@github.com:iohzrd/follow.git
 cd follow
 npm install

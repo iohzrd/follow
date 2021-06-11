@@ -1,22 +1,21 @@
 {
   "name": "follow",
-  "version": "0.2.90",
+  "version": "0.2.91",
   "description": "Decentralized, censorship resistant social media and bulletin board on IPFS",
   "productName": "follow",
   "author": "iohzrd <iohzrd@gmail.com>",
   "license": "GPLv3",
   "private": true,
   "scripts": {
-    "build": "npx quasar build",
+    "build": "quasar build",
     "build:binaries": "electron-builder --publish onTag",
-    "build:linux": "npx quasar build -m electron linux -t mat",
-    "build:mac": "npx quasar build -m electron mac -t mat",
-    "build:win": "npx quasar build -m electron win -t mat",
-    "dev": "npx quasar dev -m electron",
+    "build:linux": "quasar build -m electron linux -t mat",
+    "build:mac": "quasar build -m electron mac -t mat",
+    "build:win": "quasar build -m electron win -t mat",
+    "dev": "quasar dev -m electron",
     "lint": "eslint --ext .js,.vue ./",
     "lint:fix": "eslint --ext .js,.vue src --fix",
-    "ncu": "npx ncu",
-    "start": "npx quasar dev -m electron",
+    "start": "quasar dev -m electron",
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
@@ -44,7 +43,7 @@
     "knex": "^0.21.19",
     "knex-migrate": "^1.7.4",
     "objection": "^2.2.15",
-    "quasar": "^1.15.19",
+    "quasar": "^1.15.20",
     "set-system-clock": "^1.0.4",
     "set-system-clock-wfix": "^1.0.5",
     "sqlite3": "^5.0.2",
@@ -55,14 +54,14 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@quasar/app": "^2.2.8",
+    "@quasar/app": "^2.2.10",
     "@quasar/quasar-app-extension-qmarkdown": "^1.4.3",
     "@quasar/quasar-app-extension-qmediaplayer": "^1.2.1",
     "@quasar/quasar-app-extension-qoverlay": "^1.0.5",
     "babel-eslint": "^10.1.0",
     "devtron": "^1.4.0",
-    "electron": "^13.1.1",
-    "electron-builder": "^22.11.1",
+    "electron": "^13.1.2",
+    "electron-builder": "^22.11.7",
     "electron-debug": "^3.2.0",
     "electron-devtools-installer": "^3.2.0",
     "electron-packager": "^15.2.0",
@@ -73,7 +72,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-vue": "^7.10.0"
+    "eslint-plugin-vue": "^7.11.0"
   },
   "browserslist": [
     "last 10 Chrome versions",

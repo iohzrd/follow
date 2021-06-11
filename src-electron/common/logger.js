@@ -2,7 +2,7 @@ const { createLogger, format, transports } = require("winston");
 const { join } = require("path");
 const { app } = require("electron");
 const { performance } = require("perf_hooks");
-const Countly = require("countly-sdk-nodejs");
+// const Countly = require("countly-sdk-nodejs");
 
 const { combine, splat, timestamp, printf } = format;
 const logsPath = app.getPath("userData");
@@ -46,13 +46,13 @@ module.exports = Object.freeze({
       end: () => {
         const seconds = (performance.now() - start) / 1000;
 
-        if (opts.withAnalytics) {
-          Countly.add_event({
-            key: opts.withAnalytics,
-            count: 1,
-            dur: seconds,
-          });
-        }
+        // if (opts.withAnalytics) {
+        //   Countly.add_event({
+        //     key: opts.withAnalytics,
+        //     count: 1,
+        //     dur: seconds,
+        //   });
+        // }
 
         logger.info(`${msg} FINISHED ${seconds}s`);
       },
@@ -60,25 +60,25 @@ module.exports = Object.freeze({
         logger.info(`${msg} ${str}`);
       },
       fail: (err) => {
-        Countly.log_error(err);
+        // Countly.log_error(err);
         logger.error(`${msg} ${err.stack}`);
       },
     };
   },
 
   info: (msg, opts = {}) => {
-    if (opts.withAnalytics) {
-      Countly.add_event({
-        key: opts.withAnalytics,
-        count: 1,
-      });
-    }
+    // if (opts.withAnalytics) {
+    //   Countly.add_event({
+    //     key: opts.withAnalytics,
+    //     count: 1,
+    //   });
+    // }
 
     logger.info(msg);
   },
 
   error: (err) => {
-    Countly.log_error(err);
+    // Countly.log_error(err);
     logger.error(err);
   },
 

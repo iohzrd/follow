@@ -1,4 +1,4 @@
-require("v8-compile-cache");
+// require("v8-compile-cache");
 const { app, dialog, BrowserWindow, nativeTheme } = require("electron");
 const fixPath = require("fix-path");
 const { criticalErrorDialog } = require("../dialogs");

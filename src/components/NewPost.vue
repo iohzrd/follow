@@ -12,7 +12,7 @@
       </div>
 
       <!-- file manager -->
-      <div class="q-pa-md column items-start q-gutter-y-md">
+      <div class="q-pa-md">
         <q-file
           v-model="files"
           label="drag file(s) or click here"
@@ -42,21 +42,21 @@ export default {
   name: "NewPost",
   components: {},
   props: {},
-  data: function() {
+  data: function () {
     return {
       body: "",
-      files: []
+      files: [],
     };
   },
   computed: {},
-  mounted: function() {
+  mounted: function () {
     console.log("NewPost init");
   },
   methods: {
     async addPost() {
       console.log("NewPost.addPost");
       const files = [];
-      this.files.forEach(file => {
+      this.files.forEach((file) => {
         const file_object = {};
         file_object.name = file.name;
         file_object.path = file.path;
@@ -66,13 +66,13 @@ export default {
       });
       ipcRenderer
         .invoke("add-post", { body: this.body, files: files })
-        .then(post => {
+        .then((post) => {
           this.body = "";
           this.files = [];
           this.$emit("add-post-complete", post);
         });
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>
