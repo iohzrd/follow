@@ -139,8 +139,10 @@ function checkCorsConfig(ipfsd) {
 
   config.API.HTTPHeaders["Access-Control-Allow-Origin"] = [
     "http://localhost:1589",
-    "https://webui.ipfs.io",
+    "http://localhost:3000",
+    "http://localhost:5001",
     "https://dev.webui.ipfs.io",
+    "https://webui.ipfs.io",
   ];
   config.API.HTTPHeaders["Access-Control-Allow-Methods"] = ["PUT", "POST"];
   try {
