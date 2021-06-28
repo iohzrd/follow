@@ -2,15 +2,17 @@
   <div></div>
 </template>
 <script>
-export default {
+import { defineComponent } from "vue";
+
+export default defineComponent({
   name: "MetaCard",
   props: {},
-  data: function() {
+  data: function () {
     return {};
   },
   watch: {},
-  mounted: function() {},
-  methods: {}
-};
+  mounted: function () {},
+  methods: {},
+});
 </script>
 <style scoped></style>

@@ -1,4 +1,4 @@
-const { join } = require("path");
+const path = require("path");
 const { ipcMain } = require("electron");
 const i18n = require("i18next");
 const ICU = require("i18next-icu");
@@ -18,7 +18,11 @@ module.exports = async function () {
         default: ["en"],
       },
       backend: {
-        loadPath: join(__statics, "/locales/{{lng}}.json"),
+        loadPath: path.resolve(
+          __dirname,
+          process.env.QUASAR_PUBLIC_FOLDER,
+          "locales/{{lng}}.json"
+        ),
       },
     });
 

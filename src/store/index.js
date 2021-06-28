@@ -1,9 +1,7 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import { store } from "quasar/wrappers";
+import { createStore } from "vuex";
 
 // import example from './module-example'
-
-Vue.use(Vuex);
 
 /*
  * If not building with SSR mode, you can
@@ -14,8 +12,8 @@ Vue.use(Vuex);
  * with the Store instance.
  */
 
-export default function(/* { ssrContext } */) {
-  const Store = new Vuex.Store({
+export default store(function (/* { ssrContext } */) {
+  const Store = createStore({
     state: { ipfs_id: {}, identities: {} },
     mutations: {
       setIpfsId(state, payload) {
@@ -28,9 +26,9 @@ export default function(/* { ssrContext } */) {
         console.log("setIdentites");
         console.log(identities);
         state.identities = identities;
-      }
-    }
+      },
+    },
   });
 
   return Store;
-}
+});

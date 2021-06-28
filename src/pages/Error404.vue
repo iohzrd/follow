@@ -5,7 +5,7 @@
     <div>
       <div style="font-size: 30vh">404</div>
 
-      <div class="text-h2" style="opacity:.4">Oops. Nothing here...</div>
+      <div class="text-h2" style="opacity: 0.4">Oops. Nothing here...</div>
 
       <q-btn
         class="q-mt-xl"
@@ -21,7 +21,9 @@
 </template>
 
 <script>
-export default {
-  name: "Error404"
-};
+import { defineComponent } from "vue";
+
+export default defineComponent({
+  name: "Error404",
+});
 </script>

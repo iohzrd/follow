@@ -36,12 +36,13 @@
   </q-card>
 </template>
 <script>
-import { ipcRenderer } from "electron";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   name: "NewPost",
   components: {},
   props: {},
+  emits: ["add-post-complete"],
   data: function () {
     return {
       body: "",
@@ -64,7 +65,7 @@ export default {
         file_object.size = file.size;
         files.push(file_object);
       });
-      ipcRenderer
+      window.ipc
         .invoke("add-post", { body: this.body, files: files })
         .then((post) => {
           this.body = "";
@@ -73,7 +74,7 @@ export default {
         });
     },
   },
-};
+});
 </script>
 <style scoped>
 .addPost-button {

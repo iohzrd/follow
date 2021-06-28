@@ -10,6 +10,7 @@ async function copyFile(ipfs, cid, name) {
   const ext = extname(name);
   const base = basename(name, ext);
 
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     const newName = (i === 0 ? base : `${base} (${i})`) + ext;
 

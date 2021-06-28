@@ -180,10 +180,11 @@
 </template>
 
 <script>
-import { ipcRenderer } from "electron";
+import { defineComponent } from "vue";
 import IdentityCard from "../components/IdentityCard.vue";
 import PostCard from "../components/PostCard.vue";
-export default {
+
+export default defineComponent({
   name: "Identity",
   // components: { IdentityCard },
   components: { IdentityCard, PostCard },
@@ -193,6 +194,7 @@ export default {
       required: true,
     },
   },
+  emits: ["show-unfollow-prompt", "show-link-prompt"],
   data: function () {
     return {
       editModal: false,
@@ -213,20 +215,20 @@ export default {
       return new Date(Number(this.identity.ts));
     },
   },
-  beforeDestroy: function () {
+  beforeUnmount: function () {
     clearInterval(this.getLatestPostsInterval);
     clearInterval(this.updateFeedInterval);
   },
   mounted: function () {
     this.ipfs_id = this.$store.state.ipfs_id;
     // always get lastest version of the identity...
-    ipcRenderer.invoke("get-identity", this.publisher).then((identity) => {
+    window.ipc.invoke("get-identity", this.publisher).then((identity) => {
       this.$store.state.identities[this.publisher] = identity;
       this.identity = this.$store.state.identities[this.publisher];
     });
     this.updateFeedInterval = setInterval(async () => {
       console.log("updating feed...");
-      ipcRenderer.send("update-feed");
+      window.ipc.send("update-feed");
     }, 1 * 60 * 1000);
     this.getLatestPostsInterval = setInterval(
       this.getLatestPosts,
@@ -249,7 +251,7 @@ export default {
       console.log("getLatestPosts");
       if (this.posts.length > 0) {
         this.newestTs = this.posts[0].ts;
-        ipcRenderer
+        window.ipc
           .invoke("get-posts-newer-than", this.publisher, this.newestTs)
           .then((posts) => {
             if (posts.length > 0) {
@@ -269,7 +271,7 @@ export default {
       } else {
         this.oldestTs = Math.floor(new Date().getTime());
       }
-      ipcRenderer
+      window.ipc
         .invoke(
           "get-posts-older-than",
           this.publisher,
@@ -304,7 +306,7 @@ export default {
         },
       ];
       this.saving = true;
-      ipcRenderer.invoke("edit-identity", array).then((identity) => {
+      window.ipc.invoke("edit-identity", array).then((identity) => {
         console.log("edit-complete");
         console.log(identity);
         this.$store.state.identities[this.publisher] = identity;
@@ -319,7 +321,7 @@ export default {
       this.$emit("show-link-prompt", link);
     },
   },
-};
+});
 </script>
 
 <style scoped>

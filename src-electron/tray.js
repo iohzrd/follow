@@ -56,7 +56,11 @@ function buildMenu(ctx) {
       label: i18n.t(status),
       visible: false,
       enabled: false,
-      icon: path.join(__statics, `${color}.png`),
+      icon: path.resolve(
+        __dirname,
+        process.env.QUASAR_PUBLIC_FOLDER,
+        `${color}.png`
+      ),
     })),
     {
       id: "restartIpfs",
@@ -225,10 +229,18 @@ const off = "off";
 
 function icon(color) {
   if (!IS_MAC) {
-    return path.join(__statics, `${color}-big.png`);
+    return path.resolve(
+      __dirname,
+      process.env.QUASAR_PUBLIC_FOLDER,
+      `${color}-big.png`
+    );
   }
 
-  return path.join(__statics, `${color}-22Template.png`);
+  return path.resolve(
+    __dirname,
+    process.env.QUASAR_PUBLIC_FOLDER,
+    `${color}-22Template.png`
+  );
 }
 
 module.exports = function (ctx) {
@@ -245,6 +257,7 @@ module.exports = function (ctx) {
     // Show the context menu on left click on other
     // platforms than macOS.
     tray.on("click", (event) => {
+      logger.info(event);
       tray.popUpContextMenu();
     });
   }

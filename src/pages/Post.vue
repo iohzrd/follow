@@ -10,24 +10,26 @@
   </q-page>
 </template>
 <script>
+import { defineComponent } from "vue";
 import Comments from "../components/Comments.vue";
 import PostCard from "../components/PostCard.vue";
-export default {
+
+export default defineComponent({
   name: "Post",
   components: {
     Comments,
-    PostCard
+    PostCard,
   },
   props: {
     post: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
-  data: function() {
+  data: function () {
     return {};
   },
-  mounted: function() {},
+  mounted: function () {},
   methods: {
     unfollow(id) {
       console.log("on show-unfollow-prompt");
@@ -37,9 +39,9 @@ export default {
     deletePost(cid) {
       console.log("deletePost");
       console.log(cid);
-      this.feed = this.feed.filter(post => post.postCid !== cid);
-    }
-  }
-};
+      this.feed = this.feed.filter((post) => post.postCid !== cid);
+    },
+  },
+});
 </script>
 <style scoped></style>

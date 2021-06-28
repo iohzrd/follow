@@ -41,6 +41,7 @@ module.exports = Object.freeze({
   start: (msg, opts = {}) => {
     const start = performance.now();
     logger.info(`${msg} STARTED`);
+    logger.info(opts);
 
     return {
       end: () => {
@@ -75,6 +76,7 @@ module.exports = Object.freeze({
     // }
 
     logger.info(msg);
+    logger.info(opts);
   },
 
   error: (err) => {

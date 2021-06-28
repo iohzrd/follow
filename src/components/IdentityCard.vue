@@ -13,7 +13,7 @@
               :publisher="identity.publisher"
               :to="{
                 name: 'Identity',
-                params: { publisher: identity.publisher }
+                params: { publisher: identity.publisher },
               }"
             >
               {{ identity.dn }} - {{ identity.publisher }}
@@ -61,23 +61,25 @@
   </div>
 </template>
 <script>
-import { ipcRenderer } from "electron";
-export default {
+import { defineComponent } from "vue";
+
+export default defineComponent({
   name: "IdentityCard",
   props: {
     publisher: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
-  data: function() {
+  emits: ["show-unfollow-prompt"],
+  data: function () {
     return {
       unfollowModal: false,
       ipfs_id: {},
-      identity: {}
+      identity: {},
     };
   },
-  mounted: function() {
+  mounted: function () {
     console.log(this.publisher);
     this.ipfs_id = this.$store.state.ipfs_id;
     if (this.$store.state.identities[this.publisher]) {
@@ -85,7 +87,7 @@ export default {
       this.identity = this.$store.state.identities[this.publisher];
     } else {
       console.log("getting it...");
-      ipcRenderer.invoke("get-identity", this.publisher).then(identity => {
+      window.ipc.invoke("get-identity", this.publisher).then((identity) => {
         this.$store.commit("setIdentity", identity);
         this.identity = identity;
       });
@@ -95,9 +97,9 @@ export default {
     showUnfollowPrompt() {
       console.log(`IdentityCard: showUnfollowPrompt(${this.publisher})`);
       this.$emit("show-unfollow-prompt", this.publisher);
-    }
-  }
-};
+    },
+  },
+});
 </script>
 
 <style scoped lang="scss">

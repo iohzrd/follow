@@ -30,7 +30,7 @@
           <!--  -->
           <div class="col-auto">
             <q-btn
-              v-if="files.length"
+              v-if="files && files.length"
               color="primary"
               flat
               icon="preview"
@@ -162,12 +162,12 @@
   </div>
 </template>
 <script>
-import { ipcRenderer } from "electron";
-const { create } = require("ipfs-http-client");
-const all = require("it-all");
-const FileType = require("file-type");
+import { defineComponent } from "vue";
+import { create } from "ipfs-http-client";
+import all from "it-all";
+var Buffer = require("buffer/").Buffer;
 
-export default {
+export default defineComponent({
   name: "PostCard",
   props: {
     post: {
@@ -175,6 +175,7 @@ export default {
       required: true,
     },
   },
+  emits: ["remove-post", "show-unfollow-prompt", "show-link-prompt"],
   data: function () {
     return {
       body: "",
@@ -202,7 +203,7 @@ export default {
       this.identity = this.$store.state.identities[this.publisher];
     } else {
       console.log("getting it...");
-      ipcRenderer.invoke("get-identity", this.publisher).then((identity) => {
+      window.ipc.invoke("get-identity", this.publisher).then((identity) => {
         this.$store.commit("setIdentity", identity);
         this.identity = identity;
       });
@@ -228,17 +229,17 @@ export default {
       this.shareLink = "https://ipfs.io/ipfs/" + this.post.postCid;
     },
     removePost() {
-      ipcRenderer.invoke("remove-post", this.post.postCid).then((result) => {
+      window.ipc.invoke("remove-post", this.post.postCid).then((result) => {
         console.log("remove-post.then");
         console.log(result);
       });
       this.$emit("remove-post", this.post.postCid);
     },
     repost() {
-      ipcRenderer.invoke("repost", this.post.postCid).then((result) => {
+      window.ipc.invoke("repost", this.post.postCid).then((result) => {
         console.log("repost.then");
         console.log(result);
-        ipcRenderer.send("get-feed");
+        window.ipc.send("get-feed");
       });
     },
     async getContent(filesRoot) {
@@ -251,7 +252,7 @@ export default {
           bufs.push(buf);
         }
         const buf = Buffer.concat(bufs);
-        const fType = await FileType.fromBuffer(buf);
+        const fType = await window.ipc.getFileTypeFromBuffer(buf);
         var blob = new Blob([buf], { type: fType.mime });
         var urlCreator = window.URL || window.webkitURL;
         var blobUrl = urlCreator.createObjectURL(blob);
@@ -272,7 +273,7 @@ export default {
       this.$emit("show-link-prompt", this.shareLink);
     },
   },
-};
+});
 </script>
 
 <style scoped lang="scss">

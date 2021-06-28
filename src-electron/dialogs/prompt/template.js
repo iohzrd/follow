@@ -83,11 +83,9 @@ module.exports = ({
   }
   </style>
   <script>
-    const { ipcRenderer } = require('electron')
-
     for (const button of document.querySelectorAll('button')) {
       button.addEventListener('click', event => {
-        ipcRenderer.send('${id}', {
+        window.ipc.send('${id}', {
           input: document.querySelector('input').value,
           button: Number(button.id)
         })

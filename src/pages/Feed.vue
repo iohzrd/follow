@@ -21,11 +21,11 @@
 </template>
 
 <script>
-import { ipcRenderer } from "electron";
+import { defineComponent } from "vue";
 import NewPost from "../components/NewPost.vue";
 import PostCard from "../components/PostCard.vue";
 
-export default {
+export default defineComponent({
   name: "Feed",
   components: {
     NewPost,
@@ -37,6 +37,7 @@ export default {
       required: true,
     },
   },
+  emits: ["show-unfollow-prompt", "show-link-prompt"],
   data: function () {
     return {
       feed: [],
@@ -47,14 +48,15 @@ export default {
       updateFeedInterval: null,
     };
   },
-  beforeDestroy: function () {
+  beforeUnmount: function () {
     clearInterval(this.getLatestFeedInterval);
     clearInterval(this.updateFeedInterval);
   },
   mounted: function () {
+    console.log("Feed.vue mounted...");
     this.updateFeedInterval = setInterval(async () => {
       console.log("updating feed...");
-      ipcRenderer.send("update-feed");
+      window.ipc.send("update-feed");
     }, 1 * 60 * 1000);
     this.getLatestFeedInterval = setInterval(this.getLatestFeed, 1 * 60 * 1000);
   },
@@ -63,7 +65,7 @@ export default {
       console.log("getLatestFeed");
       if (this.feed.length > 0) {
         this.newestTs = this.feed[0].ts;
-        ipcRenderer
+        window.ipc
           .invoke("get-feed-newer-than", this.newestTs)
           .then((posts) => {
             if (posts.length > 0) {
@@ -81,7 +83,7 @@ export default {
       } else {
         this.oldestTs = Math.floor(new Date().getTime()) + 365 * 86400 * 1000;
       }
-      ipcRenderer
+      window.ipc
         .invoke("get-feed-older-than", this.oldestTs, this.pageSize)
         .then((posts) => {
           if (posts.length > 0) {
@@ -115,6 +117,6 @@ export default {
       this.feed = this.feed.filter((post) => post.postCid !== cid);
     },
   },
-};
+});
 </script>
 <style scoped></style>

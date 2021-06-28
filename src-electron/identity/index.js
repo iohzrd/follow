@@ -4,7 +4,7 @@ const all = require("it-all");
 const http = require("http");
 const path = require("path");
 const fs = require("fs-extra");
-const granax = require("granax");
+const granax = require("@iohzrd/granax");
 const tr = require("tor-request");
 const Knex = require("knex");
 const knexConfig = require("./db/knexfile");
@@ -68,7 +68,11 @@ module.exports = async function (ctx) {
       "up",
       {
         config: knex_config,
-        migrations: path.join(__statics, "/migrations/"),
+        migrations: path.resolve(
+          __dirname,
+          process.env.QUASAR_PUBLIC_FOLDER,
+          "migrations"
+        ),
       },
       logger.info
     );
@@ -276,30 +280,30 @@ module.exports = async function (ctx) {
     }
   );
 
-  // get comments Newest
-  const getCommentsNewest = async (publisher, postCid, ts, count) => {
-    logger.info("getCommentsNewest");
-    if (publisher != ipfs_id.id) {
-      const comments = await pubsubSendReceive(
-        publisher,
-        JSON.stringify({
-          count: count,
-          topic: postCid,
-          olderThan: ts,
-          type: "comment-request",
-        })
-      );
-      return comments;
-    } else {
-      const comments = await Comment.query()
-        .where("topic", postCid)
-        .max("ts")
-        .limit(count)
-        .orderBy("ts", "desc");
-      logger.info(comments);
-      return comments;
-    }
-  };
+  // // get comments Newest
+  // const getCommentsNewest = async (publisher, postCid, ts, count) => {
+  //   logger.info("getCommentsNewest");
+  //   if (publisher != ipfs_id.id) {
+  //     const comments = await pubsubSendReceive(
+  //       publisher,
+  //       JSON.stringify({
+  //         count: count,
+  //         topic: postCid,
+  //         olderThan: ts,
+  //         type: "comment-request",
+  //       })
+  //     );
+  //     return comments;
+  //   } else {
+  //     const comments = await Comment.query()
+  //       .where("topic", postCid)
+  //       .max("ts")
+  //       .limit(count)
+  //       .orderBy("ts", "desc");
+  //     logger.info(comments);
+  //     return comments;
+  //   }
+  // };
   ipcMain.on(
     "get-comments-newest",
     async (event, publisher, postCid, ts, count) => {
@@ -622,7 +626,7 @@ module.exports = async function (ctx) {
     identities.forEach((identity) => {
       identities_obj[identity.publisher] = identity;
     });
-    event.sender.send("identity", identities_obj);
+    event.sender.send("identities", identities_obj);
   });
   ipcMain.handle("get-identities", async (event) => {
     logger.info(`handle get-identities ${event}`);
@@ -963,7 +967,11 @@ module.exports = async function (ctx) {
       logger.info("post_object");
       logger.info(post_object);
       const index_html = await fs.readFile(
-        path.join(__statics, "/postStandalone.html")
+        path.resolve(
+          __dirname,
+          process.env.QUASAR_PUBLIC_FOLDER,
+          "postStandalone.html"
+        )
       );
       const obj = [
         {

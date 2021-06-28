@@ -52,52 +52,53 @@
   </q-card>
 </template>
 <script>
-import { ipcRenderer } from "electron";
-export default {
+import { defineComponent } from "vue";
+
+export default defineComponent({
   name: "Comments",
   props: {
     cid: {
       type: String,
-      required: true
+      required: true,
     },
     publisher: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
-  data: function() {
+  data: function () {
     return {
       newestTs: 0,
       oldestTs: 0,
       pageSize: 10,
       newComment: "",
-      comments: []
+      comments: [],
     };
   },
   watch: {},
-  beforeDestroy: function() {
-    // ipcRenderer.send("unsubscribe-from-publisher", this.publisher);
-    ipcRenderer.removeAllListeners("comment");
+  beforeUnmount: function () {
+    // window.ipc.send("unsubscribe-from-publisher", this.publisher);
+    window.ipc.removeAllListeners("comment");
   },
-  mounted: function() {
+  mounted: function () {
     console.log(this.cid);
-    ipcRenderer.on("comment", this.onComment);
-    ipcRenderer.on("comments", this.onComments);
-    ipcRenderer.on("comments-new", this.onCommentsNew);
-    ipcRenderer.on("comments-old", this.onCommentsOld);
-    // ipcRenderer.on("topic-subscribed", () => {
+    window.ipc.on("comment", this.onComment);
+    window.ipc.on("comments", this.onComments);
+    window.ipc.on("comments-new", this.onCommentsNew);
+    window.ipc.on("comments-old", this.onCommentsOld);
+    // window.ipc.on("topic-subscribed", () => {
     //   this.getComments();
     // });
-    // ipcRenderer.send("subscribe-to-publisher", this.publisher);
+    // window.ipc.send("subscribe-to-publisher", this.publisher);
   },
   methods: {
     getLatestComments() {
       console.log("getLatestFeed");
       if (this.comments.length > 0) {
         this.newestTs = this.comments[0].ts;
-        ipcRenderer
+        window.ipc
           .invoke("get-comments-newer-than", this.newestTs)
-          .then(comments => {
+          .then((comments) => {
             if (comments.length > 0) {
               this.onCommentsNew(undefined, comments);
             }
@@ -108,35 +109,37 @@ export default {
     },
     getComments(index, done) {
       console.log("getComments");
-      console.log(this.oldestTs);
-      console.log(this.comments);
-      if (this.comments.length > 0) {
-        this.oldestTs = this.comments[this.comments.length - 1].ts;
-      } else {
-        this.oldestTs = Math.floor(new Date().getTime());
-      }
-      ipcRenderer
-        .invoke(
-          "get-comments-older-than",
-          this.publisher,
-          this.cid,
-          this.oldestTs,
-          this.pageSize
-        )
-        .then(comments => {
-          if (comments.length > 0) {
-            this.onCommentsOld(undefined, comments);
-            if (done) {
-              done();
-            }
-          }
-        });
+      console.log(index);
+      console.log(done);
+      // console.log(this.oldestTs);
+      // console.log(this.comments);
+      // if (this.comments.length > 0) {
+      //   this.oldestTs = this.comments[this.comments.length - 1].ts;
+      // } else {
+      //   this.oldestTs = Math.floor(new Date().getTime());
+      // }
+      // window.ipc
+      //   .invoke(
+      //     "get-comments-older-than",
+      //     this.publisher,
+      //     this.cid,
+      //     this.oldestTs,
+      //     this.pageSize
+      //   )
+      //   .then((comments) => {
+      //     if (comments.length > 0) {
+      //       this.onCommentsOld(undefined, comments);
+      //       if (done) {
+      //         done();
+      //       }
+      //     }
+      //   });
     },
     addComment() {
       console.log("addComment");
-      ipcRenderer
+      window.ipc
         .invoke("add-comment", this.publisher, this.cid, this.newComment, "")
-        .then(comment => {
+        .then((comment) => {
           console.log("add-comment.then");
           console.log(comment);
           this.onComment(undefined, comment);
@@ -147,22 +150,22 @@ export default {
       this.comments.unshift(comment);
     },
     onComments(event, comments) {
-      comments.forEach(commentObj => {
+      comments.forEach((commentObj) => {
         this.comments.push(commentObj);
       });
     },
     onCommentsNew(event, comments) {
-      comments.forEach(commentObj => {
+      comments.forEach((commentObj) => {
         this.comments.unshift(commentObj);
       });
     },
     onCommentsOld(event, comments) {
-      comments.forEach(commentObj => {
+      comments.forEach((commentObj) => {
         this.comments.push(commentObj);
       });
-    }
-  }
-};
+    },
+  },
+});
 </script>
 <style scoped>
 .spinner {

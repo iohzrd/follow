@@ -3,20 +3,22 @@
 </template>
 
 <script>
+import { defineComponent } from "vue";
 import Feed from "../pages/Feed.vue";
-export default {
+
+export default defineComponent({
   name: "Home",
   components: {
-    Feed
+    Feed,
   },
   props: {
     publisher: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
-  data: function() {
+  data: function () {
     return {};
-  }
-};
+  },
+});
 </script>
