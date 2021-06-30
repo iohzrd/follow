@@ -1,6 +1,6 @@
 {
   "name": "follow",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Decentralized, censorship resistant social media on IPFS",
   "productName": "follow",
   "author": "iohzrd <iohzrd@gmail.com>",
@@ -18,7 +18,7 @@
     "@quasar/extras": "^1.10.8",
     "axios": "^0.21.1",
     "buffer": "^6.0.3",
-    "core-js": "^3.15.1",
+    "core-js": "^3.15.2",
     "countly-sdk-nodejs": "^20.11.0",
     "electron-store": "^8.0.0",
     "exifremove": "^1.0.1",
