@@ -1,10 +1,10 @@
 {
   "name": "follow",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Decentralized, censorship resistant social media on IPFS",
   "productName": "follow",
   "author": "iohzrd <iohzrd@gmail.com>",
-  "license": "GPLv3",
+  "license": "GPL-3.0",
   "private": true,
   "scripts": {
     "build:binaries": "electron-builder --publish onTag",
@@ -51,7 +51,7 @@
     "@quasar/app": "^3.0.1",
     "@quasar/quasar-app-extension-qmarkdown": "^1.4.3",
     "@quasar/quasar-app-extension-qmediaplayer": "^1.2.1",
-    "electron": "^13.1.4",
+    "electron": "^13.1.5",
     "electron-builder": "^22.11.7",
     "electron-packager": "^15.2.0",
     "eslint": "^7.29.0",
