@@ -117,10 +117,10 @@ function migrateConfig(ipfsd) {
 // runs then we leave them in, under the assumption that you really want it.
 // TODO: show warning in UI when wildcard is in the allowed origins.
 function checkCorsConfig(ipfsd) {
-  if (store.get("checkedCorsConfig")) {
-    // We've already checked so skip it.
-    return;
-  }
+  // if (store.get("checkedCorsConfig")) {
+  //   // We've already checked so skip it.
+  //   return;
+  // }
 
   let config = null;
 
@@ -138,9 +138,9 @@ function checkCorsConfig(ipfsd) {
   }
 
   config.API.HTTPHeaders["Access-Control-Allow-Origin"] = [
-    "http://localhost:1589",
-    "http://localhost:3000",
-    "http://localhost:5001",
+    "http://127.0.0.1:1589",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5001",
     "https://dev.webui.ipfs.io",
     "https://webui.ipfs.io",
   ];
