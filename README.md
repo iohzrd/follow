@@ -1,6 +1,6 @@
 # Follow
 
-decentralized, censorship resistant publication and subscription (social media) on IPFS
+Decentralized, censorship resistant social media on IPFS and TOR
 
 ## Status
 
