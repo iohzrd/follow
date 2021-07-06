@@ -1,6 +1,6 @@
 {
   "name": "follow",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Decentralized, censorship resistant social media on IPFS",
   "productName": "follow",
   "author": "iohzrd <iohzrd@gmail.com>",
@@ -51,7 +51,7 @@
     "@quasar/app": "^3.0.1",
     "@quasar/quasar-app-extension-qmarkdown": "^1.4.3",
     "@quasar/quasar-app-extension-qmediaplayer": "^1.2.1",
-    "electron": "^13.1.5",
+    "electron": "^13.1.6",
     "electron-builder": "^22.11.7",
     "electron-packager": "^15.2.0",
     "eslint": "^7.30.0",
@@ -61,7 +61,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-quasar": "^1.0.0",
-    "eslint-plugin-vue": "^7.12.1",
+    "eslint-plugin-vue": "^7.13.0",
     "eslint-webpack-plugin": "^2.5.4"
   },
   "browserslist": [

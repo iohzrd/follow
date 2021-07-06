@@ -40,7 +40,7 @@ First, we connect to IPFS and retrieve our ID.
 On first boot, we instantiate a new "Identity" object, which is ultimately saved to disk via SQLite.
 
 Most of the identity logic is contained in:
-`src/modules/identity.js`
+`src-electron/identity/index.js`
 
 Identity object structure:
 
@@ -178,7 +178,7 @@ npm start
 ## Follow me
 
 ```
-12D3KooWPPAV9MsQokpWnT3ufMoc8KDJrnEysBnwYW6pkbGEmzwa
+12D3KooWDED1CudLX9sdi1qBzy5tHS4Xi2Mpk45E5wrqteri1R8z
 ```
 
 and
