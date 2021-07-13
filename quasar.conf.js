@@ -205,10 +205,10 @@ module.exports = configure(function (ctx) {
         // https://www.electron.build/configuration/configuration
         appId: "follow",
         win: {
-          target: "nsis",
+          target: ["nsis", "tar.gz"],
         },
         linux: {
-          target: "AppImage",
+          target: ["AppImage", "tar.gz"],
         },
         publish: {
           provider: "github",
