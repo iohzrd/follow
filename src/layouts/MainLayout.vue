@@ -149,7 +149,7 @@ export default defineComponent({
       idToUnollow: "",
       ipfs_id: {},
       menuList,
-      publishInterval: null,
+      // publishInterval: null,
       refreshInterval: null,
       unfollowPrompt: false,
       shareLinkPrompt: false,
@@ -169,7 +169,7 @@ export default defineComponent({
     this.$q.dark.set(true);
   },
   beforeUnmount: function () {
-    clearInterval(this.publishInterval);
+    // clearInterval(this.publishInterval);
     clearInterval(this.refreshInterval);
   },
   mounted: function () {
@@ -201,10 +201,10 @@ export default defineComponent({
     window.ipc.send("publish-identity");
     window.ipc.send("update-following");
 
-    this.publishInterval = setInterval(async function () {
-      console.log("auto-publish...");
-      window.ipc.send("publish-identity");
-    }, 10 * 60 * 1000);
+    // this.publishInterval = setInterval(async function () {
+    //   console.log("auto-publish...");
+    //   window.ipc.send("publish-identity");
+    // }, 10 * 60 * 1000);
     this.refreshInterval = setInterval(async function () {
       console.log("refreshing identities...");
       window.ipc.send("update-following");

@@ -6,6 +6,9 @@ Decentralized, censorship resistant social media on IPFS and TOR
 
 Alpha
 
+![screenshot1](screenshot1.png)
+![screenshot2](screenshot2.png)
+
 ## Warnings
 
 This app will override anything you've previously published to your IPFS id (via IPNS)
