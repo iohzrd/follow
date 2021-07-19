@@ -37,7 +37,7 @@
   "cancel": "취소",
   "enable": "Enable",
   "reportTheError": "오류 보고",
-  "restartIpfsDesktop": "IPFS Desktop 재시작",
+  "restartIpfsDesktop": "follow 재시작",
   "openLogs": "로그 열기",
   "takeScreenshot": "스크린샷 찍기",
   "downloadCid": "다운로드",
@@ -61,19 +61,19 @@
   },
   "recoverableErrorDialog": {
     "title": "오류가 발생하였습니다",
-    "message": "오류가 발생하였지만 IPFS Desktop 실행에는 문제가 없었습니다. 로그를 조사하시거나 개발자에게 오류를 보고할 수 있습니다."
+    "message": "오류가 발생하였지만 follow 실행에는 문제가 없었습니다. 로그를 조사하시거나 개발자에게 오류를 보고할 수 있습니다."
   },
   "cannotConnectToApiDialog": {
     "title": "API에 연결할 수 없습니다",
-    "message": "IPFS Desktop이 해당 API 주소에 연결할 수 없습니다: { addr }"
+    "message": "follow이 해당 API 주소에 연결할 수 없습니다: { addr }"
   },
   "ipfsDesktopHasShutdownDialog": {
-    "title": "IPFS Desktop 종료됨",
-    "message": "IPFS Desktop이 오류로 인해 종료되었습니다. 앱을 재시작하거나 GitHub 계정을 사용하여 개발자에게 오류를 보고할 수 있습니다."
+    "title": "follow 종료됨",
+    "message": "follow이 오류로 인해 종료되었습니다. 앱을 재시작하거나 GitHub 계정을 사용하여 개발자에게 오류를 보고할 수 있습니다."
   },
   "moveRepositoryWarnDialog": {
     "title": "리포지터리 이동",
-    "message": "리포지터리가 주 드라이브에서 공간을 많이 차지하고 있다면, 리포지터리를 다른 위치로 옮길 수 있습니다. 새로운 위치가 항상 접근 가능해야 IPFS Desktop이 제대로 작동한다는 점을 알아두세요.",
+    "message": "리포지터리가 주 드라이브에서 공간을 많이 차지하고 있다면, 리포지터리를 다른 위치로 옮길 수 있습니다. 새로운 위치가 항상 접근 가능해야 follow이 제대로 작동한다는 점을 알아두세요.",
     "action": "옮기고 노드 재시작"
   },
   "moveRepositorySuccessDialog": {
@@ -117,11 +117,11 @@
   },
   "updateAvailableDialog": {
     "title": "업데이트 가능",
-    "message": "A new version ({ version }) of IPFS Desktop is available. The download will begin shortly in the background."
+    "message": "A new version ({ version }) of follow is available. The download will begin shortly in the background."
   },
   "updateNotAvailableDialog": {
     "title": "업데이트 불가능",
-    "message": "You are on the latest version of IPFS Desktop ({ version })."
+    "message": "You are on the latest version of follow ({ version })."
   },
   "updateErrorDialog": {
     "title": "Could not download update",
@@ -129,12 +129,12 @@
   },
   "updateDownloadedDialog": {
     "title": "Update downloaded",
-    "message": "Update for version { version } downloaded. To install the update, please restart IPFS Desktop.",
+    "message": "Update for version { version } downloaded. To install the update, please restart follow.",
     "action": "재시작"
   },
   "updateDownloadedNotification": {
     "title": "Update downloaded",
-    "message": "Update for version { version } of IPFS Desktop downloaded. Click this notification to install."
+    "message": "Update for version { version } of follow downloaded. Click this notification to install."
   },
   "runGarbageCollectorWarning": {
     "title": "Garbage collector",
@@ -199,11 +199,11 @@
   },
   "enableGlobalTakeScreenshotShortcut": {
     "title": "Enable screenshot shortcut",
-    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to take screenshots as long as IPFS Desktop is running."
+    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to take screenshots as long as follow is running."
   },
   "enableGlobalDownloadShortcut": {
     "title": "Enable download shortcut",
-    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to download files as long as IPFS Desktop is running."
+    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to download files as long as follow is running."
   },
   "installNpmOnIpfsWarning": {
     "title": "Install npm on IPFS",
@@ -236,11 +236,11 @@
   },
   "setCustomIpfsBinaryConfirmation": {
     "title": "Custom IPFS binary",
-    "message": "By setting a custom IPFS, IPFS Desktop will no longer use the bundled IPFS version and will use the binary you specify. Do you wish to proceed?"
+    "message": "By setting a custom IPFS, follow will no longer use the bundled IPFS version and will use the binary you specify. Do you wish to proceed?"
   },
   "setCustomIpfsBinarySuccess": {
     "title": "Custom IPFS binary",
-    "message": "IPFS Desktop will start using the binary located at { path }. To start using it, IPFS needs to be restarted first."
+    "message": "follow will start using the binary located at { path }. To start using it, IPFS needs to be restarted first."
   },
   "clearCustomIpfsBinarySuccess": {
     "title": "Clear custom IPFS binary",

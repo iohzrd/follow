@@ -37,7 +37,7 @@
   "cancel": "Cancelar",
   "enable": "Enable",
   "reportTheError": "Reportar o erro",
-  "restartIpfsDesktop": "Reiniciar o IPFS Desktop",
+  "restartIpfsDesktop": "Reiniciar o follow",
   "openLogs": "Abrir os registos",
   "takeScreenshot": "Tirar uma captura de ecrã",
   "downloadCid": "Download…",
@@ -61,19 +61,19 @@
   },
   "recoverableErrorDialog": {
     "title": "Ocorreu um erro",
-    "message": "Ocorreu um erro mas este não impede a execução do IPFS Desktop. Pode inspecionar os registos ou reportar o erro aos programadores."
+    "message": "Ocorreu um erro mas este não impede a execução do follow. Pode inspecionar os registos ou reportar o erro aos programadores."
   },
   "cannotConnectToApiDialog": {
     "title": "Não foi possível conectar à API",
-    "message": "O IPFS Desktop não consegue conectar ao endereço da API fornecido: { addr }."
+    "message": "O follow não consegue conectar ao endereço da API fornecido: { addr }."
   },
   "ipfsDesktopHasShutdownDialog": {
-    "title": "O IPFS Desktop desligou-se",
-    "message": "O IPFS Desktop desligou-se devido a um erro. Pode reiniciar a aplicação ou reportar o erro aos programadores, o que requer uma conta no GitHub."
+    "title": "O follow desligou-se",
+    "message": "O follow desligou-se devido a um erro. Pode reiniciar a aplicação ou reportar o erro aos programadores, o que requer uma conta no GitHub."
   },
   "moveRepositoryWarnDialog": {
     "title": "Move repository",
-    "message": "If your repository is taking too much space on your main drive, you can move it to some other location. Bear in mind that the new location must always be available in order for IPFS Desktop to work correctly.",
+    "message": "If your repository is taking too much space on your main drive, you can move it to some other location. Bear in mind that the new location must always be available in order for follow to work correctly.",
     "action": "Move and restart node"
   },
   "moveRepositorySuccessDialog": {
@@ -117,11 +117,11 @@
   },
   "updateAvailableDialog": {
     "title": "Atualização disponível",
-    "message": "A new version ({ version }) of IPFS Desktop is available. The download will begin shortly in the background."
+    "message": "A new version ({ version }) of follow is available. The download will begin shortly in the background."
   },
   "updateNotAvailableDialog": {
     "title": "Atualização não disponível",
-    "message": "You are on the latest version of IPFS Desktop ({ version })."
+    "message": "You are on the latest version of follow ({ version })."
   },
   "updateErrorDialog": {
     "title": "Could not download update",
@@ -129,12 +129,12 @@
   },
   "updateDownloadedDialog": {
     "title": "Update downloaded",
-    "message": "Update for version { version } downloaded. To install the update, please restart IPFS Desktop.",
+    "message": "Update for version { version } downloaded. To install the update, please restart follow.",
     "action": "Reiniciar"
   },
   "updateDownloadedNotification": {
     "title": "Update downloaded",
-    "message": "Update for version { version } of IPFS Desktop downloaded. Click this notification to install."
+    "message": "Update for version { version } of follow downloaded. Click this notification to install."
   },
   "runGarbageCollectorWarning": {
     "title": "Garbage collector",
@@ -199,11 +199,11 @@
   },
   "enableGlobalTakeScreenshotShortcut": {
     "title": "Enable screenshot shortcut",
-    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to take screenshots as long as IPFS Desktop is running."
+    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to take screenshots as long as follow is running."
   },
   "enableGlobalDownloadShortcut": {
     "title": "Enable download shortcut",
-    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to download files as long as IPFS Desktop is running."
+    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to download files as long as follow is running."
   },
   "installNpmOnIpfsWarning": {
     "title": "Install npm on IPFS",
@@ -236,11 +236,11 @@
   },
   "setCustomIpfsBinaryConfirmation": {
     "title": "Custom IPFS binary",
-    "message": "By setting a custom IPFS, IPFS Desktop will no longer use the bundled IPFS version and will use the binary you specify. Do you wish to proceed?"
+    "message": "By setting a custom IPFS, follow will no longer use the bundled IPFS version and will use the binary you specify. Do you wish to proceed?"
   },
   "setCustomIpfsBinarySuccess": {
     "title": "Custom IPFS binary",
-    "message": "IPFS Desktop will start using the binary located at { path }. To start using it, IPFS needs to be restarted first."
+    "message": "follow will start using the binary located at { path }. To start using it, IPFS needs to be restarted first."
   },
   "clearCustomIpfsBinarySuccess": {
     "title": "Clear custom IPFS binary",

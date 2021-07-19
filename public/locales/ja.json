@@ -43,7 +43,7 @@
   "ok": "OK",
   "cancel": "Cancel",
   "reportTheError": "Report the error",
-  "restartIpfsDesktop": "Restart IPFS Desktop",
+  "restartIpfsDesktop": "Restart follow",
   "openLogs": "Open logs",
   "takeScreenshot": "Take Screenshot",
   "downloadHash": "Download Hash",
@@ -62,19 +62,19 @@
   },
   "recoverableErrorDialog": {
     "title": "An error has occurred",
-    "message": "An error occurred but it does not prevent the execution of IPFS Desktop. You can either inspect the logs for yourself or report the error to the developers."
+    "message": "An error occurred but it does not prevent the execution of follow. You can either inspect the logs for yourself or report the error to the developers."
   },
   "cannotConnectToApiDialog": {
     "title": "Cannot connect to API",
-    "message": "IPFS Desktop cannot connect to the API address provided: { addr }."
+    "message": "follow cannot connect to the API address provided: { addr }."
   },
   "ipfsDesktopHasShutdownDialog": {
-    "title": "IPFS Desktop has shutdown",
-    "message": "IPFS Desktop has shutdown because of an error. You can restart the app or report the error to the developers, which requires a GitHub account."
+    "title": "follow has shutdown",
+    "message": "follow has shutdown because of an error. You can restart the app or report the error to the developers, which requires a GitHub account."
   },
   "moveRepositoryWarnDialog": {
     "title": "Move repository",
-    "message": "If your repository is taking too much space on your main drive, you can move it to some other location. Bear in mind that the new location must always be available in order for IPFS Desktop to work correctly.",
+    "message": "If your repository is taking too much space on your main drive, you can move it to some other location. Bear in mind that the new location must always be available in order for follow to work correctly.",
     "action": "Move and restart node"
   },
   "moveRepositorySuccessDialog": {

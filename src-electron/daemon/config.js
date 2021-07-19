@@ -35,7 +35,7 @@ function writeConfigFile(ipfsd, config) {
 
 // Set default minimum and maximum of connections to maintain
 // by default. This must only be called for repositories created
-// by IPFS Desktop. Existing ones shall remain intact.
+// by follow. Existing ones shall remain intact.
 function applyDefaults(ipfsd) {
   const config = readConfigFile(ipfsd);
 

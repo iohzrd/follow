@@ -117,7 +117,7 @@
   },
   "updateAvailableDialog": {
     "title": "Güncelleme mevcut",
-    "message": "IPFS Desktop’ın yeni bir sürümü ({ version }) mevcut. İndirme işlemi kısa süre sonra arka planda başlayacaktır."
+    "message": "follow’ın yeni bir sürümü ({ version }) mevcut. İndirme işlemi kısa süre sonra arka planda başlayacaktır."
   },
   "updateNotAvailableDialog": {
     "title": "Güncelleme mevcut değil",

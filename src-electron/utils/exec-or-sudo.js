@@ -84,7 +84,7 @@ module.exports = async function ({
   // Otherwise, try to elevate the user.
   const command = `${env.sudo} "${process.execPath}" "${script}" ${dataArg}`;
   return new Promise((resolve) => {
-    sudo.exec(command, { name: "IPFS Desktop" }, (err, stdout, stderr) => {
+    sudo.exec(command, { name: "follow" }, (err, stdout, stderr) => {
       resolve(
         getResult(err, stdout, stderr, scope, failSilently, errorOptions)
       );
