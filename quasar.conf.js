@@ -203,17 +203,26 @@ module.exports = configure(function (ctx) {
 
       builder: {
         // https://www.electron.build/configuration/configuration
-        appId: "follow",
+        appId: "app.iohzrd.follow",
+        copyright: "Copyright © 2021 follow",
+        name: "follow",
+        productName: "follow",
         win: {
           target: ["nsis", "tar.gz"],
+          // legalTrademarks: "Copyright © 2021 follow",
+          // publisherName: "iohzrd"
         },
         linux: {
           target: ["AppImage", "tar.gz"],
+          // arch: ["x64"],
+          icon: "electron-src/icons/linux-32x32.png",
+          category: ["Network", "FileTransfer", "P2P"]
+
         },
         publish: {
           provider: "github",
-          repo: "follow",
-          owner: "iohzrd",
+          // repo: "follow",
+          // owner: "iohzrd",
         },
       },
 
