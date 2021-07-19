@@ -37,7 +37,7 @@
   "cancel": "Zrušit",
   "enable": "Povolit",
   "reportTheError": "Nahlásit chybu",
-  "restartIpfsDesktop": "Restartovat IPFS Desktop",
+  "restartIpfsDesktop": "Restartovat follow",
   "openLogs": "Otevřít logy",
   "takeScreenshot": "Udělat snímek obrazovky",
   "downloadCid": "Stáhnout...",
@@ -65,7 +65,7 @@
   },
   "cannotConnectToApiDialog": {
     "title": "Nelze se připojit k API",
-    "message": "IPFS Desktop se nemůže připojit k uvedené adrese API: { addr }."
+    "message": "follow se nemůže připojit k uvedené adrese API: { addr }."
   },
   "ipfsDesktopHasShutdownDialog": {
     "title": "Desktop IPFS byl vypnut",
@@ -73,7 +73,7 @@
   },
   "moveRepositoryWarnDialog": {
     "title": "Přesunout úložiště",
-    "message": "Pokud vaše úložiště zabírá příliš mnoho místa na hlavním disku, můžete jej přesunout na jiné místo. Nezapomeňte, že nové umístění musí být vždy dostupné, aby IPFS Desktop fungoval správně.",
+    "message": "Pokud vaše úložiště zabírá příliš mnoho místa na hlavním disku, můžete jej přesunout na jiné místo. Nezapomeňte, že nové umístění musí být vždy dostupné, aby follow fungoval správně.",
     "action": "Přesunout a restartovat uzel"
   },
   "moveRepositorySuccessDialog": {
@@ -199,11 +199,11 @@
   },
   "enableGlobalTakeScreenshotShortcut": {
     "title": "Enable screenshot shortcut",
-    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to take screenshots as long as IPFS Desktop is running."
+    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to take screenshots as long as follow is running."
   },
   "enableGlobalDownloadShortcut": {
     "title": "Enable download shortcut",
-    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to download files as long as IPFS Desktop is running."
+    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to download files as long as follow is running."
   },
   "installNpmOnIpfsWarning": {
     "title": "Install npm on IPFS",
@@ -236,11 +236,11 @@
   },
   "setCustomIpfsBinaryConfirmation": {
     "title": "Custom IPFS binary",
-    "message": "By setting a custom IPFS, IPFS Desktop will no longer use the bundled IPFS version and will use the binary you specify. Do you wish to proceed?"
+    "message": "By setting a custom IPFS, follow will no longer use the bundled IPFS version and will use the binary you specify. Do you wish to proceed?"
   },
   "setCustomIpfsBinarySuccess": {
     "title": "Custom IPFS binary",
-    "message": "IPFS Desktop will start using the binary located at { path }. To start using it, IPFS needs to be restarted first."
+    "message": "follow will start using the binary located at { path }. To start using it, IPFS needs to be restarted first."
   },
   "clearCustomIpfsBinarySuccess": {
     "title": "Clear custom IPFS binary",

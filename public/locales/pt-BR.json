@@ -37,7 +37,7 @@
   "cancel": "Cancelar",
   "enable": "Habilitar",
   "reportTheError": "Relatar o erro",
-  "restartIpfsDesktop": "Reiniciar IPFS Desktop",
+  "restartIpfsDesktop": "Reiniciar follow",
   "openLogs": "Abrir logs",
   "takeScreenshot": "Capturar a tela",
   "downloadCid": "Baixar...",
@@ -61,19 +61,19 @@
   },
   "recoverableErrorDialog": {
     "title": "Ocorreu um erro",
-    "message": "Ocorreu um erro, mas isso não impede a execução do IPFS Desktop. Você pode inspecionar os logs por conta própria ou relatar o erro aos desenvolvedores."
+    "message": "Ocorreu um erro, mas isso não impede a execução do follow. Você pode inspecionar os logs por conta própria ou relatar o erro aos desenvolvedores."
   },
   "cannotConnectToApiDialog": {
     "title": "Não é possível conectar a API",
-    "message": "O IPFS Desktop não pode se conectar ao endereço da API fornecido: { addr }."
+    "message": "O follow não pode se conectar ao endereço da API fornecido: { addr }."
   },
   "ipfsDesktopHasShutdownDialog": {
-    "title": "O IPFS Desktop foi desligado",
-    "message": "O IPFS Desktop foi desligado devido a um erro. Você pode reiniciar o aplicativo ou relatar o erro aos desenvolvedores, o que requer uma conta do GitHub."
+    "title": "O follow foi desligado",
+    "message": "O follow foi desligado devido a um erro. Você pode reiniciar o aplicativo ou relatar o erro aos desenvolvedores, o que requer uma conta do GitHub."
   },
   "moveRepositoryWarnDialog": {
     "title": "Mover repositório",
-    "message": "Se o seu repositório estiver ocupando muito espaço em sua unidade principal, você poderá movê-lo para outro local. Lembre-se de que o novo local sempre deve estar disponível para que o IPFS Desktop funcione corretamente.",
+    "message": "Se o seu repositório estiver ocupando muito espaço em sua unidade principal, você poderá movê-lo para outro local. Lembre-se de que o novo local sempre deve estar disponível para que o follow funcione corretamente.",
     "action": "Mover e reiniciar nó"
   },
   "moveRepositorySuccessDialog": {
@@ -117,11 +117,11 @@
   },
   "updateAvailableDialog": {
     "title": "Atualização disponível",
-    "message": "Uma nova versão({ version }) do IPFS Desktop está disponível. O download irá começar em segundo plano."
+    "message": "Uma nova versão({ version }) do follow está disponível. O download irá começar em segundo plano."
   },
   "updateNotAvailableDialog": {
     "title": "Atualização não disponível",
-    "message": "Você está na versão mais recente do IPFS Desktop ({ version })"
+    "message": "Você está na versão mais recente do follow ({ version })"
   },
   "updateErrorDialog": {
     "title": "Download da atualização não pôde ser feito",
@@ -129,12 +129,12 @@
   },
   "updateDownloadedDialog": {
     "title": "Atualização baixada",
-    "message": "Atualização para versão { version }baixada. Para instalar atualização, por favor reinicie IPFS Desktop.",
+    "message": "Atualização para versão { version }baixada. Para instalar atualização, por favor reinicie follow.",
     "action": "Reiniciar"
   },
   "updateDownloadedNotification": {
     "title": "Atualização baixada",
-    "message": "Atualização para versão { version }do IPFS Desktop baixada. Clique nesta notificação para instalar"
+    "message": "Atualização para versão { version }do follow baixada. Clique nesta notificação para instalar"
   },
   "runGarbageCollectorWarning": {
     "title": "Limpeza",
@@ -236,11 +236,11 @@
   },
   "setCustomIpfsBinaryConfirmation": {
     "title": "Binário IPFS personalizado",
-    "message": "Ao definir um IPFS personalizado, o IPFS Desktop não utilizará mais a versão IPFS integrada e utilizará o binário que você especificar. Deseja prosseguir?"
+    "message": "Ao definir um IPFS personalizado, o follow não utilizará mais a versão IPFS integrada e utilizará o binário que você especificar. Deseja prosseguir?"
   },
   "setCustomIpfsBinarySuccess": {
     "title": "Binário IPFS personalizado",
-    "message": "O IPFS Desktop começará a utilizar o binário localizado em { path }. Para começar a utilizá-lo, o IPFS precisa ser reiniciado primeiro."
+    "message": "O follow começará a utilizar o binário localizado em { path }. Para começar a utilizá-lo, o IPFS precisa ser reiniciado primeiro."
   },
   "clearCustomIpfsBinarySuccess": {
     "title": "Limpar binário IPFS personalizado",

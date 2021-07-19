@@ -37,7 +37,7 @@
   "cancel": "Abbrechen",
   "enable": "Aktivieren",
   "reportTheError": "Den Fehler melden",
-  "restartIpfsDesktop": "IPFS Desktop neu starten",
+  "restartIpfsDesktop": "follow neu starten",
   "openLogs": "Protokolle öffnen",
   "takeScreenshot": "Bildschirmfoto aufnehmen",
   "downloadCid": "Herunterladen...",
@@ -61,19 +61,19 @@
   },
   "recoverableErrorDialog": {
     "title": "Ein Fehler ist aufgetreten",
-    "message": "Ein Fehler ist aufgetreten, der die Ausführung von IPFS Desktop jedoch nicht verhindert. Du kannst Dir entweder die Protokolle selbst anschauen oder den Fehler den Entwicklern melden."
+    "message": "Ein Fehler ist aufgetreten, der die Ausführung von follow jedoch nicht verhindert. Du kannst Dir entweder die Protokolle selbst anschauen oder den Fehler den Entwicklern melden."
   },
   "cannotConnectToApiDialog": {
     "title": "Es kann keine Verbindung zur API hergestellt werden",
-    "message": "IPFS Desktop kann keine Verbindung mit der angegebenen API Adresse herstellen: { addr }."
+    "message": "follow kann keine Verbindung mit der angegebenen API Adresse herstellen: { addr }."
   },
   "ipfsDesktopHasShutdownDialog": {
-    "title": "IPFS Desktop wurde gestoppt",
-    "message": "IPFS Desktop wurde aufgrund eines Fehlers angehalten. Du kannst die App neu starten oder den Fehler den Entwicklern melden, hierfür wird ein GitHub Konto benötigt."
+    "title": "follow wurde gestoppt",
+    "message": "follow wurde aufgrund eines Fehlers angehalten. Du kannst die App neu starten oder den Fehler den Entwicklern melden, hierfür wird ein GitHub Konto benötigt."
   },
   "moveRepositoryWarnDialog": {
     "title": "Speicherort verschieben",
-    "message": "Wenn der Speicher zu viel Platz auf der Festplatte einnimmt, kannst du ihn an einen anderen Ort verschieben. Beachte aber, dass dieser Ort immer verfügbar sein muss, damit IPFS Desktop korrekt funktioniert.",
+    "message": "Wenn der Speicher zu viel Platz auf der Festplatte einnimmt, kannst du ihn an einen anderen Ort verschieben. Beachte aber, dass dieser Ort immer verfügbar sein muss, damit follow korrekt funktioniert.",
     "action": "Move and restart node"
   },
   "moveRepositorySuccessDialog": {
@@ -117,11 +117,11 @@
   },
   "updateAvailableDialog": {
     "title": "Update verfügbar",
-    "message": "Eine neue Version ({ version })von IPFS Desktop ist verfügbar. Das Update wird im Hintergrund geladen."
+    "message": "Eine neue Version ({ version })von follow ist verfügbar. Das Update wird im Hintergrund geladen."
   },
   "updateNotAvailableDialog": {
     "title": "Update nicht verfügbar",
-    "message": "IPFS Desktop ist auf dem neuesten Stand ({ version })."
+    "message": "follow ist auf dem neuesten Stand ({ version })."
   },
   "updateErrorDialog": {
     "title": "Update konnte nicht geladen werden",
@@ -129,12 +129,12 @@
   },
   "updateDownloadedDialog": {
     "title": "Update heruntergeladen",
-    "message": "Das Update für Version { version } ist geladen. Bitte starte IPFS Desktop neu, um es zu installieren.",
+    "message": "Das Update für Version { version } ist geladen. Bitte starte follow neu, um es zu installieren.",
     "action": "Neu starten"
   },
   "updateDownloadedNotification": {
     "title": "Update heruntergeladen",
-    "message": "Das Update für Version { version } ist geladen. Klicke hier um IPFS Desktop zu aktualisieren,"
+    "message": "Das Update für Version { version } ist geladen. Klicke hier um follow zu aktualisieren,"
   },
   "runGarbageCollectorWarning": {
     "title": "Automatische Speicherbereinigung",
@@ -199,11 +199,11 @@
   },
   "enableGlobalTakeScreenshotShortcut": {
     "title": "Enable screenshot shortcut",
-    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to take screenshots as long as IPFS Desktop is running."
+    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to take screenshots as long as follow is running."
   },
   "enableGlobalDownloadShortcut": {
     "title": "Enable download shortcut",
-    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to download files as long as IPFS Desktop is running."
+    "message": "By enabling this, the shortcut \"{ accelerator }\" will be available to download files as long as follow is running."
   },
   "installNpmOnIpfsWarning": {
     "title": "npm auf IPFS installieren",
@@ -236,11 +236,11 @@
   },
   "setCustomIpfsBinaryConfirmation": {
     "title": "Benutzerdefinierte IPFS-Binärdatei",
-    "message": "By setting a custom IPFS, IPFS Desktop will no longer use the bundled IPFS version and will use the binary you specify. Do you wish to proceed?"
+    "message": "By setting a custom IPFS, follow will no longer use the bundled IPFS version and will use the binary you specify. Do you wish to proceed?"
   },
   "setCustomIpfsBinarySuccess": {
     "title": "Benutzerdefinierte IPFS-Binärdatei",
-    "message": "IPFS Desktop will start using the binary located at { path }. To start using it, IPFS needs to be restarted first."
+    "message": "follow will start using the binary located at { path }. To start using it, IPFS needs to be restarted first."
   },
   "clearCustomIpfsBinarySuccess": {
     "title": "Benutzerdefinierte IPFS-Binärdatei löschen",

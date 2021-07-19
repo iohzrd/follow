@@ -37,7 +37,7 @@
   "cancel": "Annuler",
   "enable": "Activer",
   "reportTheError": "Signaler l'erreur",
-  "restartIpfsDesktop": "Redémarrer IPFS Desktop",
+  "restartIpfsDesktop": "Redémarrer follow",
   "openLogs": "Ouvrir les logs",
   "takeScreenshot": "Prendre une capture d'écran",
   "downloadCid": "Télécharger...",
@@ -61,19 +61,19 @@
   },
   "recoverableErrorDialog": {
     "title": "Une erreur est apparue",
-    "message": "Une erreur est apparue, mais cela ne semble pas venir de l'exécution d’IPFS Desktop. Vous pouvez inspecter les logs vous-même ou signaler l'erreur aux développeurs. "
+    "message": "Une erreur est apparue, mais cela ne semble pas venir de l'exécution d’follow. Vous pouvez inspecter les logs vous-même ou signaler l'erreur aux développeurs. "
   },
   "cannotConnectToApiDialog": {
     "title": "Connexion à l'API impossible",
-    "message": "IPFS Desktop ne peut pas se connecter à l'address d'API fournie : { addr }."
+    "message": "follow ne peut pas se connecter à l'address d'API fournie : { addr }."
   },
   "ipfsDesktopHasShutdownDialog": {
-    "title": "IPFS Desktop s'est éteint",
-    "message": "IPFS Desktop s'est éteint à cause d'une erreur. Vous pouvez tenter de le redémarrer ou signaler l'erreur aux développeurs, ce qui nécessite un compte GitHub."
+    "title": "follow s'est éteint",
+    "message": "follow s'est éteint à cause d'une erreur. Vous pouvez tenter de le redémarrer ou signaler l'erreur aux développeurs, ce qui nécessite un compte GitHub."
   },
   "moveRepositoryWarnDialog": {
     "title": "Déplacer le répertoire",
-    "message": "Si votre répertoire prend trop de place sur votre disque principal, vous pouvez le déplacer ailleurs. Garder à l'esprit qu’IPFS Desktop doit avoir accès à cet emplacement pour son bon fonctionnement.",
+    "message": "Si votre répertoire prend trop de place sur votre disque principal, vous pouvez le déplacer ailleurs. Garder à l'esprit qu’follow doit avoir accès à cet emplacement pour son bon fonctionnement.",
     "action": "Déplacer et redémarrer le nœud"
   },
   "moveRepositorySuccessDialog": {
@@ -117,11 +117,11 @@
   },
   "updateAvailableDialog": {
     "title": "Mise à jour disponible",
-    "message": "Une nouvelle version ({ version }) d'IPFS Desktop est disponible. Le téléchargement va commencer en tâche de fond."
+    "message": "Une nouvelle version ({ version }) d'follow est disponible. Le téléchargement va commencer en tâche de fond."
   },
   "updateNotAvailableDialog": {
     "title": "Mise à jour indisponible",
-    "message": "Vous avez la dernière version d'IPFS Desktop ({ version })."
+    "message": "Vous avez la dernière version d'follow ({ version })."
   },
   "updateErrorDialog": {
     "title": "Nous n'avons pas pu télécharger la mise à jour. ",
@@ -129,12 +129,12 @@
   },
   "updateDownloadedDialog": {
     "title": "Mise à jour téléchargée",
-    "message": "Mise à jour version { version }téléchargée. Pour l'installer, redémarrez IPFS Desktop.",
+    "message": "Mise à jour version { version }téléchargée. Pour l'installer, redémarrez follow.",
     "action": "Redémarrer"
   },
   "updateDownloadedNotification": {
     "title": "Mise à jour téléchargée",
-    "message": "Mise à jour d'IPFS Desktop version { version }téléchargée. Cliquez ici pour l'installer."
+    "message": "Mise à jour d'follow version { version }téléchargée. Cliquez ici pour l'installer."
   },
   "runGarbageCollectorWarning": {
     "title": "Ramasse-miettes",
@@ -199,11 +199,11 @@
   },
   "enableGlobalTakeScreenshotShortcut": {
     "title": "Activer le raccourci pour les captures d'écran",
-    "message": "En activant cette option, le raccourci \"{ accelerator }\" pourra prendre une capture d'écran tant que IPFS Desktop fonctionne."
+    "message": "En activant cette option, le raccourci \"{ accelerator }\" pourra prendre une capture d'écran tant que follow fonctionne."
   },
   "enableGlobalDownloadShortcut": {
     "title": "Activer le raccourci de capture d'écran",
-    "message": "En activant cette option, le raccourci \"{ accelerator }\" pourra télécharger des fichiers tant que IPFS Desktop fonctionne."
+    "message": "En activant cette option, le raccourci \"{ accelerator }\" pourra télécharger des fichiers tant que follow fonctionne."
   },
   "installNpmOnIpfsWarning": {
     "title": "Installer npm sur IPFS",
@@ -236,11 +236,11 @@
   },
   "setCustomIpfsBinaryConfirmation": {
     "title": "Binaire IPFS personnalisé",
-    "message": "En sélectionnant un binaire IPFS personnalisé, IPFS Desktop n'utilisera plus la version d'IPFS intégrée mais utilisera le fichier binaire que vous choisirez. Voulez-vous continuer?"
+    "message": "En sélectionnant un binaire IPFS personnalisé, follow n'utilisera plus la version d'IPFS intégrée mais utilisera le fichier binaire que vous choisirez. Voulez-vous continuer?"
   },
   "setCustomIpfsBinarySuccess": {
     "title": "Binaire IPFS personnalisé",
-    "message": "IPFS Desktop va démarrer en utilisant le fichier binaire situé ici: { path }. Pour commencer à l'utiliser, IPFS doit d'abord être redémarré."
+    "message": "follow va démarrer en utilisant le fichier binaire situé ici: { path }. Pour commencer à l'utiliser, IPFS doit d'abord être redémarré."
   },
   "clearCustomIpfsBinarySuccess": {
     "title": "Désélectionner le binaire IPFS personnalisé",

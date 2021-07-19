@@ -61,7 +61,7 @@
   },
   "recoverableErrorDialog": {
     "title": "Hiba történt.",
-    "message": "Hiba történt, de ez nem akadályozza meg az IPFS Desktop működését. Vagy ellenőrizheti a naplókat saját maga, vagy jelentheti a hibát a fejlesztőknek."
+    "message": "Hiba történt, de ez nem akadályozza meg az follow működését. Vagy ellenőrizheti a naplókat saját maga, vagy jelentheti a hibát a fejlesztőknek."
   },
   "cannotConnectToApiDialog": {
     "title": "Nem tudok csatlakozni az API-hoz.",
@@ -69,11 +69,11 @@
   },
   "ipfsDesktopHasShutdownDialog": {
     "title": "Az IPFS asztalli program leállt",
-    "message": "Az IPFS Desktop hiba miatt leállt. Újra indíthatja az alkalmazást, vagy jelentheti a hibát a fejlesztőknek, amelyhez GitHub-fiók szükséges."
+    "message": "Az follow hiba miatt leállt. Újra indíthatja az alkalmazást, vagy jelentheti a hibát a fejlesztőknek, amelyhez GitHub-fiók szükséges."
   },
   "moveRepositoryWarnDialog": {
     "title": "A tároló áthelyezve",
-    "message": "Ha a tárhely túl sok helyet foglal el a fő meghajtón, áthelyezheti más helyre. Ne feledje, hogy az új helynek mindig elérhetőnek kell lennie ahhoz, hogy az IPFS Desktop megfelelően működjön.",
+    "message": "Ha a tárhely túl sok helyet foglal el a fő meghajtón, áthelyezheti más helyre. Ne feledje, hogy az új helynek mindig elérhetőnek kell lennie ahhoz, hogy az follow megfelelően működjön.",
     "action": "Módosítsd, vagy indítsd újra a csomópontot"
   },
   "moveRepositorySuccessDialog": {
@@ -129,12 +129,12 @@
   },
   "updateDownloadedDialog": {
     "title": "Frissítés letöltve",
-    "message": "A frissítés a { version }verzióhoz letöltve. A telepítéshez kérlek indítsd újra az IPFS Desktop-ot.",
+    "message": "A frissítés a { version }verzióhoz letöltve. A telepítéshez kérlek indítsd újra az follow-ot.",
     "action": "Újraindítás"
   },
   "updateDownloadedNotification": {
     "title": "Frissítés letöltve",
-    "message": "Frissítés a { version } letöltött IPFS Desktop verzióhoz. Kattintson erre az értesítésre a telepítéshez."
+    "message": "Frissítés a { version } letöltött follow verzióhoz. Kattintson erre az értesítésre a telepítéshez."
   },
   "runGarbageCollectorWarning": {
     "title": "Szemetes",
@@ -199,11 +199,11 @@
   },
   "enableGlobalTakeScreenshotShortcut": {
     "title": "A képernyőmentés parancs engedélyezve",
-    "message": "Ennek a parancsikonnak az engedélyezésével a \"{ accelerator }\" parancsikon elérhető lesz képernyőképeket készíteni mindaddig, amíg az IPFS Desktop fut."
+    "message": "Ennek a parancsikonnak az engedélyezésével a \"{ accelerator }\" parancsikon elérhető lesz képernyőképeket készíteni mindaddig, amíg az follow fut."
   },
   "enableGlobalDownloadShortcut": {
     "title": "A letöltési parancs engedélyezve",
-    "message": "Ennek engedélyezésével a \"{ accelerator }\" parancsikon elérhető lesz a fájlok letöltésére mindaddig, amíg az IPFS Desktop fut."
+    "message": "Ennek engedélyezésével a \"{ accelerator }\" parancsikon elérhető lesz a fájlok letöltésére mindaddig, amíg az follow fut."
   },
   "installNpmOnIpfsWarning": {
     "title": "Az npm telepítése az IPFS-re",
@@ -236,11 +236,11 @@
   },
   "setCustomIpfsBinaryConfirmation": {
     "title": "Saját IPFS bináris",
-    "message": "Az egyéni IPFS beállításával az IPFS Desktop már nem használja a csomagban szereplő IPFS verziót, és a megadott bináris fájlt használja. Folytatni akarja?"
+    "message": "Az egyéni IPFS beállításával az follow már nem használja a csomagban szereplő IPFS verziót, és a megadott bináris fájlt használja. Folytatni akarja?"
   },
   "setCustomIpfsBinarySuccess": {
     "title": "Saját IPFS bináris",
-    "message": "Az IPFS Desktop elkezdi használni a bináris fájlt, amely a { path } helyen található:. A használat megkezdéséhez az IPFS-t előbb újra kell indítani."
+    "message": "Az follow elkezdi használni a bináris fájlt, amely a { path } helyen található:. A használat megkezdéséhez az IPFS-t előbb újra kell indítani."
   },
   "clearCustomIpfsBinarySuccess": {
     "title": "A saját IPFS bináris törlése",
