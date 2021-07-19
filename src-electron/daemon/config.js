@@ -137,6 +137,8 @@ function checkCorsConfig(ipfsd) {
     return;
   }
 
+  config.Addresses["API"] = "/ip4/127.0.0.1/tcp/5001";
+  config.Addresses["Gateway"] = "/ip4/127.0.0.1/tcp/8080";
   config.API.HTTPHeaders["Access-Control-Allow-Origin"] = [
     "http://127.0.0.1:1589",
     "http://127.0.0.1:3000",
@@ -146,6 +148,8 @@ function checkCorsConfig(ipfsd) {
     "http://localhost:5001",
     "https://dev.webui.ipfs.io",
     "https://webui.ipfs.io",
+    "http://webui.ipfs.io.ipns.localhost:8080",
+    "http://dev.webui.ipfs.io.ipns.localhost:8080",
   ];
   config.API.HTTPHeaders["Access-Control-Allow-Methods"] = ["PUT", "POST"];
   try {

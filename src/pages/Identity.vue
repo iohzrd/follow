@@ -302,7 +302,8 @@ export default defineComponent({
         },
         {
           key: "aux",
-          value: this.identity.aux,
+          // hack to flatten proxy object
+          value: JSON.parse(JSON.stringify(this.identity.aux)),
         },
       ];
       this.saving = true;

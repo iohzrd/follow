@@ -4,7 +4,8 @@
       <q-toolbar>
         <q-btn flat round dense icon="menu" @click="drawer = !drawer" />
         <q-toolbar-title>Follow</q-toolbar-title>
-        <div>ID: {{ ipfs_id.id }}</div>
+        <div v-if="ipfs_id.id">ID: {{ ipfs_id.id }}</div>
+        <q-spinner-dots v-else color="primary" size="40px" />
         <q-space />
       </q-toolbar>
 
@@ -55,6 +56,11 @@
         @show-unfollow-prompt="showUnfollowPrompt"
         @show-link-prompt="showLinkPrompt"
       />
+      <q-page v-else>
+        <div class="row justify-center q-my-md">
+          <q-spinner-dots color="primary" size="80px" />
+        </div>
+      </q-page>
     </q-page-container>
 
     <!-- share link modal -->
