@@ -35,6 +35,7 @@ module.exports = async function (ctx) {
   let ipfs = null;
   let ipfs_id = null;
   let self = null;
+  let tor_enabled = false;
   let tor = null;
   let hiddenservice = {};
 
@@ -86,51 +87,53 @@ module.exports = async function (ctx) {
       await saveIdentity();
     }
 
-    const server = http.createServer((req, res) => {
-      res.setHeader("Content-Type", "application/json");
-      switch (req.url) {
-        case "/identity.json":
-          res.writeHead(200);
-          res.end(JSON.stringify(self));
-          break;
+    if (tor_enabled) {
+      const server = http.createServer((req, res) => {
+        res.setHeader("Content-Type", "application/json");
+        switch (req.url) {
+          case "/identity.json":
+            res.writeHead(200);
+            res.end(JSON.stringify(self));
+            break;
 
-        default:
-          res.writeHead(200);
-          res.end(JSON.stringify(self));
+          default:
+            res.writeHead(200);
+            res.end(JSON.stringify(self));
+        }
+      });
+      server.listen(0, "127.0.0.1");
+      tor = await granax();
+      ctx.tor = tor;
+
+      let hs_query = await Hiddenservice.query().findById(1);
+      if (hs_query) {
+        hiddenservice = hs_query;
       }
-    });
-    server.listen(0, "127.0.0.1");
-    tor = await granax();
-    ctx.tor = tor;
 
-    let hs_query = await Hiddenservice.query().findById(1);
-    if (hs_query) {
-      hiddenservice = hs_query;
-    }
+      const tor_hs = await tor.createHiddenServicePromise(
+        `127.0.0.1:${server.address().port}`,
+        hiddenservice
+      );
+      logger.info("serving identity via tor hidden service:");
+      logger.info(tor_hs);
 
-    const tor_hs = await tor.createHiddenServicePromise(
-      `127.0.0.1:${server.address().port}`,
-      hiddenservice
-    );
-    logger.info("serving identity via tor hidden service:");
-    logger.info(tor_hs);
+      if (self && tor_hs && tor_hs.serviceId) {
+        logger.info("self && data && data.serviceId");
+        self.hs = tor_hs.serviceId;
+        ctx.tor_hs = tor_hs;
+      }
 
-    if (self && tor_hs && tor_hs.serviceId) {
-      logger.info("self && data && data.serviceId");
-      self.hs = tor_hs.serviceId;
-      ctx.tor_hs = tor_hs;
-    }
-
-    if (!hs_query) {
-      if (tor_hs && tor_hs.privateKey && tor_hs.serviceId) {
-        const pk = tor_hs.privateKey.split(":");
-        hiddenservice = {
-          keyType: pk[0],
-          keyBlob: pk[1],
-          serviceId: tor_hs.serviceId,
-        };
-        const hs = await Hiddenservice.query().insert(hiddenservice);
-        logger.info("Tor hidden service created:", hs);
+      if (!hs_query) {
+        if (tor_hs && tor_hs.privateKey && tor_hs.serviceId) {
+          const pk = tor_hs.privateKey.split(":");
+          hiddenservice = {
+            keyType: pk[0],
+            keyBlob: pk[1],
+            serviceId: tor_hs.serviceId,
+          };
+          const hs = await Hiddenservice.query().insert(hiddenservice);
+          logger.info("Tor hidden service created:", hs);
+        }
       }
     }
 
@@ -659,12 +662,12 @@ module.exports = async function (ctx) {
     for await (const publisher of self.following) {
       let identity_object = null;
       if (publisher !== ipfs_id.id) {
-        // try retreiving identity from tor
+        // if tor fails, try retreiving identity from IPFS
         identity_object = await getIdentityIpfs(publisher).catch(() => {
           logger.info("failed to fetch identity from ipfs");
         });
-        // if tor fails, try retreiving identity from IPFS
-        if (!identity_object) {
+        // try retreiving identity from tor
+        if (tor_enabled && !identity_object) {
           identity_object = await getIdentityTor(publisher).catch(() => {
             logger.info(`failed to fetch identity from tor: ${publisher}`);
           });
