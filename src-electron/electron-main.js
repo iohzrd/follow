@@ -73,6 +73,10 @@ async function createWindow(ctx) {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
+    title: 'follow',
+    autoHideMenuBar: process.env.NODE_ENV === 'production',
+    titleBarStyle: 'hiddenInset',
+    fullscreenWindowTitle: true,
     width: 960,
     height: 1080,
     useContentSize: true,
