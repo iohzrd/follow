@@ -266,7 +266,7 @@ module.exports = function (ctx) {
     menu = buildMenu(ctx);
 
     tray.setContextMenu(menu);
-    tray.setToolTip("IPFS Desktop");
+    tray.setToolTip("follow");
 
     menu.on("menu-will-show", () => {
       ipcMain.emit("menubar-will-open");
