@@ -1,6 +1,6 @@
 const { Menu, Tray, shell, app, ipcMain } = require("electron");
 const i18n = require("i18next");
-const path = require("path");
+const { resolve } = require("path");
 const logger = require("./common/logger");
 const store = require("./common/store");
 const moveRepositoryLocation = require("./move-repository-location");
@@ -25,6 +25,9 @@ const {
 } = require("./auto-launch");
 
 const CONFIG_KEYS = [AUTO_LAUNCH_KEY];
+
+const publicFolder = resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER);
+const iconsFolder = resolve(publicFolder, "icons-tray");
 
 function buildCheckbox(key, label) {
   return {
@@ -56,11 +59,7 @@ function buildMenu(ctx) {
       label: i18n.t(status),
       visible: false,
       enabled: false,
-      icon: path.resolve(
-        __dirname,
-        process.env.QUASAR_PUBLIC_FOLDER,
-        `${color}.png`
-      ),
+      icon: resolve(iconsFolder, `${color}.png`),
     })),
     {
       id: "restartIpfs",
@@ -229,18 +228,10 @@ const off = "off";
 
 function icon(color) {
   if (!IS_MAC) {
-    return path.resolve(
-      __dirname,
-      process.env.QUASAR_PUBLIC_FOLDER,
-      `${color}-big.png`
-    );
+    return resolve(iconsFolder, `${color}-big.png`);
   }
 
-  return path.resolve(
-    __dirname,
-    process.env.QUASAR_PUBLIC_FOLDER,
-    `${color}-22Template.png`
-  );
+  return resolve(iconsFolder, `${color}-22Template.png`);
 }
 
 module.exports = function (ctx) {

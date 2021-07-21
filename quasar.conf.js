@@ -214,7 +214,7 @@ module.exports = configure(function (ctx) {
         linux: {
           target: ["AppImage", "tar.gz"],
           // arch: ["x64"],
-          icon: "electron-src/icons/linux-512x512.png",
+          icon: "public/icons-electron/icon.png",
           category: "Network",
         },
         publish: {

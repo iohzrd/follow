@@ -1,9 +1,14 @@
-const path = require("path");
+const { resolve } = require("path");
 const { ipcMain } = require("electron");
 const i18n = require("i18next");
 const ICU = require("i18next-icu");
 const Backend = require("i18next-node-fs-backend");
 const store = require("./common/store");
+const localesPath = resolve(
+  __dirname,
+  process.env.QUASAR_PUBLIC_FOLDER,
+  "locales"
+);
 
 module.exports = async function () {
   await i18n
@@ -18,11 +23,7 @@ module.exports = async function () {
         default: ["en"],
       },
       backend: {
-        loadPath: path.resolve(
-          __dirname,
-          process.env.QUASAR_PUBLIC_FOLDER,
-          "locales/{{lng}}.json"
-        ),
+        loadPath: resolve(localesPath, "{{lng}}.json"),
       },
     });
 

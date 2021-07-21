@@ -73,16 +73,23 @@ async function createWindow(ctx) {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    title: 'follow',
-    autoHideMenuBar: process.env.NODE_ENV === 'production',
-    titleBarStyle: 'hiddenInset',
+    title: "follow",
+    autoHideMenuBar: process.env.NODE_ENV === "production",
+    titleBarStyle: "hiddenInset",
     fullscreenWindowTitle: true,
+    icon: path.resolve(
+      __dirname,
+      process.env.QUASAR_PUBLIC_FOLDER,
+      "icons-electron",
+      process.platform === "win32" ? "icon.ico"
+        : process.platform === "darwin" ? "icon.icns"
+        : "icon.png"
+    ),
     width: 960,
     height: 1080,
     useContentSize: true,
     webPreferences: {
       contextIsolation: true,
-      // More info: /quasar-cli/developing-electron-apps/electron-preload-script
       preload: path.resolve(__dirname, process.env.QUASAR_ELECTRON_PRELOAD),
     },
   });
