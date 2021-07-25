@@ -2,23 +2,23 @@
   <q-layout view="hHh Lpr lFr">
     <q-header class="bg-black row no-wrap">
       <q-toolbar>
-        <q-btn flat round dense icon="menu" @click="drawer = !drawer" />
+        <q-btn flat icon="menu" @click="drawer = !drawer" />
         <q-toolbar-title>Follow</q-toolbar-title>
-        <div v-if="ipfs_id.id">ID: {{ ipfs_id.id }}</div>
+        <q-btn
+          v-if="ipfs_id.id"
+          unelevated
+          icon="qr_code"
+          @click="qrPrompt = !qrPrompt"
+        >
+          {{ ipfs_id.id }}
+        </q-btn>
         <q-spinner-dots v-else color="primary" size="40px" />
         <q-space />
+        <q-btn unelevated icon="person_add" @click="followPrompt = true" />
       </q-toolbar>
-
-      <q-btn unelevated icon="person_add" @click="followPrompt = true" />
     </q-header>
 
-    <q-drawer
-      v-model="drawer"
-      behavior="desktop"
-      bordered
-      show-if-above
-      side="left"
-    >
+    <q-drawer v-model="drawer" show-if-above side="left" overlay>
       <q-scroll-area class="fit">
         <q-list v-for="(menuItem, index) in menuList" :key="index">
           <q-item
@@ -62,69 +62,84 @@
         </div>
       </q-page>
     </q-page-container>
-
-    <!-- share link modal -->
-    <q-dialog v-model="shareLinkPrompt">
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">Link</div>
-        </q-card-section>
-
-        <q-card-section class="text-body2">{{ shareLink }}</q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn v-close-popup flat label="OK" color="primary" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <!-- follow new id modal -->
-    <q-dialog v-model="followPrompt" persistent>
-      <q-card style="min-width: 350px">
-        <q-card-section>
-          <div class="text-h6">Enter an ID to follow</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <q-input
-            v-model="idToFollow"
-            dense
-            autofocus
-            @keyup.enter="followPrompt = false"
-          />
-        </q-card-section>
-
-        <q-card-actions align="right" class="text-primary">
-          <q-btn v-close-popup flat label="Cancel" />
-          <q-btn v-close-popup flat label="Add ID" @click="addFollowing()" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-    <!-- unfollow confirmation modal -->
-    <q-dialog v-model="unfollowPrompt">
-      <q-card>
-        <q-card-section>
-          <div class="text-body">Unfollow {{ idToUnollow }}?</div>
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn v-close-popup flat label="Cancel" color="primary" />
-          <q-btn
-            v-close-popup
-            flat
-            label="Unfollow"
-            color="primary"
-            @click="removeFollowing()"
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-    <!--  -->
   </q-layout>
+
+  <!-- share link modal -->
+  <q-dialog v-model="shareLinkPrompt">
+    <q-card style="min-width: 400px">
+      <q-card-section>
+        <div class="text-h6">Link</div>
+      </q-card-section>
+
+      <q-card-section class="text-body2">{{ shareLink }}</q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn v-close-popup flat label="OK" color="primary" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <!-- follow new id modal -->
+  <q-dialog v-model="followPrompt" persistent>
+    <q-card style="min-width: 400px">
+      <q-card-section>
+        <div class="text-h6">Enter an ID to follow</div>
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <q-input
+          v-model="idToFollow"
+          dense
+          autofocus
+          @keyup.enter="followPrompt = false"
+        />
+      </q-card-section>
+
+      <q-card-actions align="right" class="text-primary">
+        <q-btn v-close-popup flat label="Cancel" />
+        <q-btn v-close-popup flat label="Add ID" @click="addFollowing()" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+  <!-- unfollow confirmation modal -->
+  <q-dialog v-model="unfollowPrompt">
+    <q-card style="min-width: 400px">
+      <q-card-section>
+        <div class="text-body">Unfollow {{ idToUnfollow }}</div>
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn v-close-popup flat label="Cancel" color="primary" />
+        <q-btn
+          v-close-popup
+          flat
+          label="Unfollow"
+          color="primary"
+          @click="removeFollowing()"
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+  <!-- ID qr modal -->
+  <q-dialog v-model="qrPrompt">
+    <q-card style="min-width: 400px">
+      <q-card-section>
+        <div class="text-body">{{ ipfs_id.id }}</div>
+      </q-card-section>
+      <q-card-section align="center">
+        <qrcode-vue :value="ipfs_id.id" :size="400" :margin="1" level="H" />
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn v-close-popup flat label="Close" color="primary" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+  <!--  -->
 </template>
 
 <script>
 import { defineComponent } from "vue";
+import QrcodeVue from "qrcode.vue";
 
 const menuList = [
   {
@@ -146,13 +161,18 @@ const menuList = [
 
 export default defineComponent({
   name: "App",
+  components: {
+    QrcodeVue,
+  },
   data() {
     return {
       dark: true,
       drawer: false,
       followPrompt: false,
+      qrPrompt: false,
+      qr: "",
       idToFollow: "",
-      idToUnollow: "",
+      idToUnfollow: "",
       ipfs_id: {},
       menuList,
       // publishInterval: null,
@@ -162,7 +182,6 @@ export default defineComponent({
       shareLink: "",
     };
   },
-
   watch: {
     dark: {
       handler: function (after) {
@@ -219,7 +238,7 @@ export default defineComponent({
   methods: {
     showUnfollowPrompt(id) {
       console.log(`App: showUnfollowPrompt(${id})`);
-      this.idToUnollow = id;
+      this.idToUnfollow = id;
       this.unfollowPrompt = true;
     },
     showLinkPrompt(link) {
@@ -232,16 +251,16 @@ export default defineComponent({
       this.idToFollow = "";
     },
     async removeFollowing() {
-      window.ipc.send("unfollow", this.idToUnollow);
-      this.idToUnollow = "";
+      window.ipc.send("unfollow", this.idToUnfollow);
+      this.idToUnfollow = "";
     },
   },
 });
 </script>
 <style scoped>
 .root-container {
-  padding-left: 16.5%;
-  padding-right: 16.5%;
+  padding-left: 25%;
+  padding-right: 25%;
   position: relative;
 }
 </style>

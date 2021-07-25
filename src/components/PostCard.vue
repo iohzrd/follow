@@ -71,9 +71,9 @@
         <div class="q-gutter-sm row items-start">
           <div v-for="(fileObj, idx) in fileObjs" :key="fileObj.name">
             <q-img
-              v-if="fileObj.mime.includes('image')"
+              v-if="fileObj.mime && fileObj.mime.includes('image')"
               :alt="fileObj.name"
-              :src="fileObj.blobUrl"
+              :src="fileObj.data"
               spinner-color="primary"
               spinner-size="82px"
               style="height: 125px; width: 125px"
@@ -83,11 +83,14 @@
               "
             />
             <q-media-player
-              v-else-if="fileObj.mime.includes('video')"
-              :sources="[{ src: fileObj.blobUrl }]"
+              v-else-if="fileObj.mime && fileObj.mime.includes('video')"
+              :sources="[{ src: fileObj.data }]"
               type="video"
-            >
-            </q-media-player>
+            />
+            <q-markdown
+              v-else-if="fileObj.name && fileObj.name.includes('.md')"
+              :src="fileObj.data"
+            />
           </div>
         </div>
       </q-card-section>
@@ -131,7 +134,7 @@
             v-for="(fileObj, idx) in fileObjs"
             :key="fileObj.name"
             :name="idx"
-            :img-src="fileObj.blobUrl"
+            :img-src="fileObj.data"
             style="height: 100%; width: 100%"
           />
         </q-carousel>
@@ -253,13 +256,18 @@ export default defineComponent({
         }
         const buf = Buffer.concat(bufs);
         const fType = await window.ipc.getFileTypeFromBuffer(buf);
-        var blob = new Blob([buf], { type: fType.mime });
-        var urlCreator = window.URL || window.webkitURL;
-        var blobUrl = urlCreator.createObjectURL(blob);
+        if (fType && fType.mime) {
+          var blob = new Blob([buf], { type: fType.mime });
+          var urlCreator = window.URL || window.webkitURL;
+          var data = urlCreator.createObjectURL(blob);
+        } else if (file && file.name.includes(".md")) {
+          blob = new Blob([buf]);
+          data = await blob.text();
+        }
         const fileObj = {
           ...file,
           ...fType,
-          blobUrl,
+          data,
         };
         this.fileObjs.push(fileObj);
       }

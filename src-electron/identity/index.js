@@ -938,6 +938,8 @@ module.exports = async function (ctx) {
         for await (const file of files) {
           const file_object = {
             path: file.name,
+            type: file.type,
+            size: file.size,
             content: await fs.readFile(file.path),
           };
           file_names.push(file.name);
