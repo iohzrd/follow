@@ -1,6 +1,6 @@
 {
   "name": "follow",
-  "version": "0.3.19",
+  "version": "0.3.20",
   "description": "Decentralized, censorship resistant social media on IPFS",
   "productName": "follow",
   "main": ".quasar/electron/electron-main.js",
@@ -12,8 +12,7 @@
     "build:linux": "quasar build -m electron linux -t mat",
     "build:mac": "quasar build -m electron mac -t mat",
     "build:win": "quasar build -m electron win -t mat",
-    "start": "quasar dev -m electron",
-    "tauri": "tauri"
+    "start": "quasar dev -m electron"
   },
   "dependencies": {
     "@iohzrd/granax": "git://github.com/iohzrd/granax.git",
@@ -54,9 +53,8 @@
     "@babel/eslint-parser": "^7.14.7",
     "@quasar/app": "^3.0.3",
     "@quasar/quasar-app-extension-qmarkdown": "^2.0.0-alpha.4",
-    "@quasar/quasar-app-extension-qmediaplayer": "^1.3.0",
+    "@quasar/quasar-app-extension-qmediaplayer": "^2.0.0-alpha.1",
     "@quasar/quasar-app-extension-qoverlay": "^1.0.5",
-    "@tauri-apps/cli": "^1.0.0-beta.6",
     "electron": "^13.1.7",
     "electron-builder": "^22.11.7",
     "electron-packager": "^15.3.0",
