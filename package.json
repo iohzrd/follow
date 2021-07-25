@@ -1,6 +1,6 @@
 {
   "name": "follow",
-  "version": "0.3.20",
+  "version": "0.3.21",
   "description": "Decentralized, censorship resistant social media on IPFS",
   "productName": "follow",
   "main": ".quasar/electron/electron-main.js",
@@ -53,7 +53,7 @@
     "@babel/eslint-parser": "^7.14.7",
     "@quasar/app": "^3.0.3",
     "@quasar/quasar-app-extension-qmarkdown": "^2.0.0-alpha.4",
-    "@quasar/quasar-app-extension-qmediaplayer": "^2.0.0-alpha.1",
+    "@quasar/quasar-app-extension-qmediaplayer": "^2.0.0-alpha.2",
     "@quasar/quasar-app-extension-qoverlay": "^1.0.5",
     "electron": "^13.1.7",
     "electron-builder": "^22.11.7",
