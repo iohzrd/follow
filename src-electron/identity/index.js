@@ -216,7 +216,7 @@ module.exports = async function (ctx) {
         type: "comment",
       };
       // const ret = await ipfs.add(JSON.stringify(obj), { timeout: 60 * 1000 });
-      // obj.cid = ret.cid.string;
+      // obj.cid = String(ret.cid);
       obj.cid = "";
       if (publisher != ipfs_id.id) {
         // ipfs.pubsub.publish(publisher, JSON.stringify(obj));
@@ -455,9 +455,9 @@ module.exports = async function (ctx) {
         timeout: 60 * 1000,
       };
       const publish_object = await ipfs.add(obj, add_options);
-      await pinIdentity(ipfs_id.id, publish_object.cid.string);
+      await pinIdentity(ipfs_id.id, String(publish_object.cid));
       const publish_result = await ipfs.name.publish(
-        publish_object.cid.string,
+        String(publish_object.cid),
         {
           lifetime: "24h",
         }
@@ -513,7 +513,7 @@ module.exports = async function (ctx) {
         }
 
         let ipfs_pins = await all(ipfs.pin.ls());
-        if (ipfs_pins.some((pin) => pin.cid.string === cid)) {
+        if (ipfs_pins.some((pin) => String(pin.cid) === cid)) {
           logger.info(`${cid} already pinned, skipping...`);
           if (!db_pins.pins.some((pin) => pin === cid)) {
             db_pins.pins.push(cid);
@@ -954,7 +954,7 @@ module.exports = async function (ctx) {
           timeout: 60 * 1000,
         };
         const add_result = await ipfs.add(file_list, add_options);
-        filesRoot = add_result.cid.string;
+        filesRoot = String(add_result.cid);
         logger.info("addRet1");
         logger.info(add_result);
       }
@@ -995,8 +995,8 @@ module.exports = async function (ctx) {
       };
       const add_result = await ipfs.add(obj, add_options);
       logger.info("addRet2");
-      logger.info(add_result);
-      const cid = add_result.cid.string;
+      console.log(JSON.stringify(add_result));
+      const cid = String(add_result.cid);
       if (typeof cid === "string" && cid.length == 46) {
         self.posts.unshift(cid);
         saveIdentity();
@@ -1015,12 +1015,12 @@ module.exports = async function (ctx) {
   };
   ipcMain.on("add-post", async (event, post_object) => {
     const add_result = await addPost(post_object);
-    const post = await Post.query().findOne("postCid", add_result.cid.string);
+    const post = await Post.query().findOne("postCid", String(add_result.cid));
     event.sender.send("add-post-complete", post);
   });
   ipcMain.handle("add-post", async (event, post_object) => {
     const add_result = await addPost(post_object);
-    const post = await Post.query().findOne("postCid", add_result.cid.string);
+    const post = await Post.query().findOne("postCid", String(add_result.cid));
     return post;
   });
 
