@@ -142,16 +142,22 @@ function checkCorsConfig(ipfsd) {
   config.API.HTTPHeaders["Access-Control-Allow-Origin"] = [
     "http://127.0.0.1:1589",
     "http://127.0.0.1:3000",
+    "http://127.0.0.1:5000",
     "http://127.0.0.1:5001",
     "http://localhost:1589",
     "http://localhost:3000",
+    "http://localhost:5000",
     "http://localhost:5001",
     "https://dev.webui.ipfs.io",
     "https://webui.ipfs.io",
     "http://webui.ipfs.io.ipns.localhost:8080",
     "http://dev.webui.ipfs.io.ipns.localhost:8080",
   ];
-  config.API.HTTPHeaders["Access-Control-Allow-Methods"] = ["PUT", "POST"];
+  config.API.HTTPHeaders["Access-Control-Allow-Methods"] = [
+    "GET",
+    "POST",
+    "PUT",
+  ];
   try {
     writeConfigFile(ipfsd, config);
     store.set("updatedCorsConfig", Date.now());

@@ -81,8 +81,10 @@ async function createWindow(ctx) {
       __dirname,
       process.env.QUASAR_PUBLIC_FOLDER,
       "icons-electron",
-      process.platform === "win32" ? "icon.ico"
-        : process.platform === "darwin" ? "icon.icns"
+      process.platform === "win32"
+        ? "icon.ico"
+        : process.platform === "darwin"
+        ? "icon.icns"
         : "icon.png"
     ),
     width: 960,

@@ -10,8 +10,8 @@ const leveldown = require("leveldown");
 const encode = require("encoding-down");
 
 const dbContainsKey = (db, key) => {
-  return new Promise(resolve => {
-    db.get(key, function(err) {
+  return new Promise((resolve) => {
+    db.get(key, function (err) {
       if (err) resolve(false);
       resolve(true);
     });
@@ -24,21 +24,21 @@ async function main() {
   const ipfs = IpfsHttpClient({
     host: "localhost",
     port: "5001",
-    protocol: "http"
+    protocol: "http",
   });
   const { id } = await ipfs.id();
-  const appDataPath = path.join(APP_DATA_PATH, "follow");
+  const appDataPath = path.join(APP_DATA_PATH, "identicity");
   if (!fs.existsSync(appDataPath)) {
     fs.mkdirSync(appDataPath);
   }
-  const followStoragePath = path.join(appDataPath, "Follow Storage");
+  const followStoragePath = path.join(appDataPath, "identicity Storage");
   if (!fs.existsSync(followStoragePath)) {
     fs.mkdirSync(followStoragePath);
   }
 
   const level_db = levelup(
     encode(leveldown(followStoragePath), {
-      valueEncoding: "json"
+      valueEncoding: "json",
     })
   );
 
@@ -81,7 +81,7 @@ async function main() {
       tor_id = {
         keyType: pk[0],
         keyBlob: pk[1],
-        serviceId: data.serviceId
+        serviceId: data.serviceId,
       };
       await level_db.put("tor_id", tor_id);
     }
@@ -96,7 +96,7 @@ async function main() {
     id: id,
     meta: [],
     posts: [],
-    ts: Math.floor(new Date().getTime())
+    ts: Math.floor(new Date().getTime()),
   };
   console.log("idObj");
   console.log(idObj);
@@ -106,15 +106,15 @@ async function main() {
 
   const obj = {
     path: "identity.json",
-    content: JSON.stringify(idObj)
+    content: JSON.stringify(idObj),
   };
   const addOptions = {
     pin: true,
     wrapWithDirectory: true,
-    timeout: 10000
+    timeout: 10000,
   };
   const pub = await ipfs.add(obj, addOptions);
-  await ipfs.name.publish(pub.cid.string, { lifetime: "8760h" });
+  await ipfs.name.publish(String(pub.cid), { lifetime: "8760h" });
 
   const db_id = await level_db.get(id);
   console.log("db_id");
