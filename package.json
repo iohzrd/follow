@@ -1,6 +1,6 @@
 {
   "name": "follow",
-  "version": "0.3.23",
+  "version": "0.3.24",
   "description": "Decentralized, censorship resistant social media on IPFS",
   "productName": "follow",
   "main": ".quasar/electron/electron-main.js",
