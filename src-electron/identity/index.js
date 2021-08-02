@@ -717,9 +717,11 @@ module.exports = async function (ctx) {
 
   const followId = async (publisher) => {
     logger.info("[Identity] followId()");
-    if (!self.following.includes(publisher)) {
-      self.following.push(publisher);
-      await saveIdentity();
+    if (typeof publisher === "string") {
+      if (!self.following.includes(publisher)) {
+        self.following.push(publisher.replace(" ", ""));
+        await saveIdentity();
+      }
     }
   };
   ipcMain.on("follow", async (event, publisher) => {
