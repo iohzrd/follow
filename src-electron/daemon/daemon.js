@@ -13,6 +13,7 @@ const {
   configExists,
   rmApiFile,
   apiFileExists,
+  configPath,
 } = require("./config");
 const { getCustomBinary } = require("../custom-ipfs-binary");
 
@@ -83,6 +84,29 @@ module.exports = async function (opts) {
   if (!isRemote) await checkPorts(ipfsd);
 
   try {
+    try {
+      // this should fail...
+      const p = join(ipfsd.path, "api");
+      console.log("p");
+      console.log(p);
+      if (fs.existsSync(p)) {
+        fs.unlinkSync(p);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    try {
+      // this should fail...
+      const p = join(ipfsd.path, "repo.lock");
+      console.log("p");
+      console.log(p);
+      if (fs.existsSync(p)) {
+        fs.unlinkSync(p);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    //file exists
     await ipfsd.start();
     const { id } = await ipfsd.api.id();
     logger.info(`[daemon] PeerID is ${id}`);
