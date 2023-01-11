@@ -35,7 +35,7 @@
     "ipfsd-ctl": "^10.0.1",
     "is-ipfs": "^6.0.1",
     "it-all": "^1.0.5",
-    "knex": "^0.21.19",
+    "knex": "^2.4.0",
     "knex-migrate": "^1.7.4",
     "objection": "^2.2.15",
     "qrcode.vue": "^3.2.2",
